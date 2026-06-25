@@ -112,15 +112,15 @@ export function Sidebar({
           <div className="relative flex-shrink-0">
             <div
               className={cn(
-                'flex items-center justify-center rounded-lg',
-                'bg-[var(--color-accent-glow)] border border-[var(--color-accent-primary)]/30',
+                'flex items-center justify-center rounded-lg overflow-hidden',
+                'bg-transparent border border-[var(--color-accent-primary)]/30',
                 isCollapsed ? 'w-9 h-9' : 'w-8 h-8'
               )}
             >
-              <Shield
-                size={isCollapsed ? 18 : 16}
-                className="text-[var(--color-accent-primary)]"
-                strokeWidth={1.5}
+              <img 
+                src="/optimus-logo.png" 
+                alt="Optimus" 
+                className="w-full h-full object-cover mix-blend-screen" 
               />
             </div>
             {/* Active pulse dot */}

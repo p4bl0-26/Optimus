@@ -3,6 +3,7 @@ import { Orbitron, Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import { AppShell } from '@/components/layout/AppShell'
+import { StartupWrapper } from '@/components/layout/StartupWrapper'
 
 // ─── Fonts ───────────────────────────────────────────────────
 const orbitron = Orbitron({
@@ -43,6 +44,11 @@ export const metadata: Metadata = {
     description: 'Predict. Plan. Prevent.',
     siteName: 'OPTIMUS',
   },
+  icons: {
+    icon: '/optimus-logo.png',
+    shortcut: '/optimus-logo.png',
+    apple: '/optimus-logo.png',
+  },
   robots: {
     index: false, // Private app — don't index
     follow: false,
@@ -72,7 +78,9 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <AppShell>{children}</AppShell>
+          <StartupWrapper>
+            <AppShell>{children}</AppShell>
+          </StartupWrapper>
         </ThemeProvider>
       </body>
     </html>
