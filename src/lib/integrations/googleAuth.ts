@@ -2,9 +2,9 @@ import { google } from 'googleapis';
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GMAIL_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/api/integrations/gmail/callback';
-const CLASSROOM_REDIRECT_URI = process.env.GOOGLE_CLASSROOM_REDIRECT_URI || 'http://localhost:3000/api/integrations/classroom/callback';
-const CALENDAR_REDIRECT_URI = process.env.GOOGLE_CALENDAR_REDIRECT_URI || 'http://localhost:3000/api/integrations/calendar/callback';
+const GMAIL_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'https://optimus-gray.vercel.app/api/integrations/gmail/callback';
+const CLASSROOM_REDIRECT_URI = process.env.GOOGLE_CLASSROOM_REDIRECT_URI || 'https://optimus-gray.vercel.app/api/integrations/classroom/callback';
+const CALENDAR_REDIRECT_URI = process.env.GOOGLE_CALENDAR_REDIRECT_URI || 'https://optimus-gray.vercel.app/api/integrations/calendar/callback';
 
 export function getGoogleOAuthClient(redirectUri?: string) {
   return new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, redirectUri ?? GMAIL_REDIRECT_URI);

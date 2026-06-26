@@ -28,7 +28,7 @@ import { Obligation as IntelObligation, ImportanceLevel } from '@/types';
 const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
 const CALENDAR_REDIRECT_URI =
   process.env.GOOGLE_CALENDAR_REDIRECT_URI ||
-  'http://localhost:3000/api/integrations/calendar/callback';
+  'https://optimus-gray.vercel.app/api/integrations/calendar/callback';
 
 // ─── Helpers ──────────────────────────────────────────────────
 

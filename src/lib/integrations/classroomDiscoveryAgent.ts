@@ -34,7 +34,7 @@ import { Obligation as IntelObligation, ImportanceLevel } from '@/types';
 const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
 const CLASSROOM_REDIRECT_URI =
   process.env.GOOGLE_CLASSROOM_REDIRECT_URI ||
-  'http://localhost:3000/api/integrations/classroom/callback';
+  'https://optimus-gray.vercel.app/api/integrations/classroom/callback';
 
 // ─── Priority → ImportanceLevel mapping ───────────────────────
 function priorityToImportance(priority: string): ImportanceLevel {
