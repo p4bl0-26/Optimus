@@ -266,9 +266,16 @@ export function AskChiefDrawer({ isOpen, onClose }: AskChiefDrawerProps) {
                   <div className="flex-shrink-0 w-7 h-7 rounded-full bg-[var(--color-accent-glow)] border border-[var(--color-accent-primary)]/30 flex items-center justify-center">
                     <Bot size={13} className="text-[var(--color-accent-primary)]" />
                   </div>
-                  <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl px-3 py-2.5 flex items-center gap-2">
-                    <Loader2 size={12} className="animate-spin text-[var(--color-accent-primary)]" />
-                    <span className="text-xs text-[var(--color-text-muted)]">Analyzing operational context…</span>
+                  <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl px-4 py-3 flex flex-col gap-2 min-w-[200px]">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Loader2 size={10} className="animate-spin text-[var(--color-accent-primary)]" />
+                      <span className="text-[10px] text-[var(--color-accent-primary)] font-mono uppercase tracking-wider">Analyzing Operational Context</span>
+                    </div>
+                    <div className="space-y-2 w-full">
+                      <div className="h-2 w-full bg-[var(--color-bg-elevated)] rounded animate-pulse" />
+                      <div className="h-2 w-[80%] bg-[var(--color-bg-elevated)] rounded animate-pulse" />
+                      <div className="h-2 w-[90%] bg-[var(--color-bg-elevated)] rounded animate-pulse" />
+                    </div>
                   </div>
                 </motion.div>
               )}

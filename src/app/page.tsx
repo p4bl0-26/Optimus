@@ -103,9 +103,25 @@ export default function CommandCenterPage() {
   if (loading) {
     return (
       <PageContainer id="command-center-loading">
-        <div className="flex flex-col items-center justify-center h-[50vh] gap-4">
-          <div className="w-8 h-8 border-t-2 border-[var(--color-accent-primary)] rounded-full animate-spin" />
-          <p className="text-xs font-mono text-[var(--color-text-muted)] animate-pulse">Establishing connection to OPTIMUS Core...</p>
+        <div className="mb-6 animate-pulse">
+          <div className="h-6 w-48 bg-[var(--color-bg-elevated)] rounded mb-2"></div>
+          <div className="h-4 w-72 bg-[var(--color-bg-elevated)] rounded"></div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="intel-card h-24 animate-pulse bg-[var(--color-bg-elevated)]"></div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          <div className="intel-card h-64 animate-pulse bg-[var(--color-bg-elevated)]"></div>
+          <div className="intel-card h-64 animate-pulse bg-[var(--color-bg-elevated)]"></div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          <div className="lg:col-span-2 intel-card h-[380px] animate-pulse bg-[var(--color-bg-elevated)]"></div>
+          <div className="lg:col-span-1 intel-card h-[380px] animate-pulse bg-[var(--color-bg-elevated)]"></div>
         </div>
       </PageContainer>
     )
