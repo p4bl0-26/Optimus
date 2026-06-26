@@ -35,8 +35,7 @@ export default async function ObligationsPage() {
           className="flex items-center gap-2 h-9 px-4 rounded-lg text-xs font-semibold
             bg-[var(--color-accent-primary)] text-[var(--color-text-inverse)]
             hover:opacity-90 transition-opacity duration-150 cursor-not-allowed opacity-60"
-          disabled
-          title="Add Obligation — Phase 2"
+          title="Add Obligation"
         >
           <Plus size={14} strokeWidth={2} />
           Add Obligation

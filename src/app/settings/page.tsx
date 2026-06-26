@@ -45,18 +45,8 @@ function SettingsRow({ label, value }: { label: string; value?: string }) {
   return (
     <div className="flex items-center justify-between py-2 border-b border-[var(--color-border-subtle)] last:border-0">
       <span className="text-[12px] text-[var(--color-text-secondary)]">{label}</span>
-      {value ? (
+      {value && (
         <span className="text-[11px] text-[var(--color-text-muted)]">{value}</span>
-      ) : (
-        <span
-          className="text-[10px] px-2 py-0.5 rounded-full border"
-          style={{
-            borderColor: 'var(--color-border)',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          Phase 2
-        </span>
       )}
     </div>
   )
@@ -128,12 +118,6 @@ export default function SettingsPage() {
               className="flex items-center justify-between py-2 border-b border-[var(--color-border-subtle)] last:border-0"
             >
               <span className="text-[12px] text-[var(--color-text-secondary)]">{name}</span>
-              <span
-                className="text-[10px] px-2 py-0.5 rounded-full border"
-                style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
-              >
-                Phase 2
-              </span>
             </div>
           ))}
         </SettingsSection>

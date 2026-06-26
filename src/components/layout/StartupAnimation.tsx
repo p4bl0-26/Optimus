@@ -7,12 +7,12 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    // Phase 1: Core Ignite (0.0s)
-    // Phase 2: Assembly (0.8s)
+    // Step 1: Core Ignite (0.0s)
+    // Step 2: Assembly (0.8s)
     const t1 = setTimeout(() => setPhase(1), 800);
-    // Phase 3: Eye Glow & Pulse (1.8s)
+    // Step 3: Eye Glow & Pulse (1.8s)
     const t2 = setTimeout(() => setPhase(2), 1800);
-    // Phase 4: Text Reveal (2.4s)
+    // Step 4: Text Reveal (2.4s)
     const t3 = setTimeout(() => setPhase(3), 2400);
     // Phase 5: Fade Out (3.0s)
     const t4 = setTimeout(() => {

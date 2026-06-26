@@ -6,8 +6,9 @@
 // Matches reference: "Good evening, [Name] 🌿" pattern
 // ============================================================
 
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, Menu, Bot } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PAGE_META } from '@/constants/navigation'
@@ -21,6 +22,7 @@ interface TopBarProps {
 export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
   const pathname = usePathname()
   const meta = PAGE_META[pathname as AppRoute] ?? PAGE_META['/']
+  const [showToast, setShowToast] = useState(false)
 
   return (
     <header
@@ -78,22 +80,24 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
 
       {/* Right: Ask Chief + Notifications + Avatar */}
       <div className="flex items-center gap-2 flex-shrink-0">
-        {/* Ask Chief — placeholder */}
+        {/* Ask Chief */}
         <button
           id="ask-chief-btn"
+          onClick={() => {
+            setShowToast(true)
+            setTimeout(() => setShowToast(false), 3000)
+          }}
           className={cn(
             'hidden sm:flex items-center gap-2 h-8 px-3 rounded-lg',
             'border border-[var(--color-border)]',
             'bg-[var(--color-bg-elevated)]',
             'text-[var(--color-text-secondary)] text-xs font-medium',
-            'hover:text-[var(--color-accent-primary)]',
+            'hover:text-[var(--color-text-primary)]',
             'hover:border-[var(--color-accent-primary)]/40',
             'hover:bg-[var(--color-accent-glow)]',
-            'transition-all duration-150',
-            'cursor-not-allowed opacity-60' // placeholder state
+            'transition-all duration-150'
           )}
-          title="Ask Chief — Coming in Phase 2"
-          disabled
+          title="Ask Chief"
         >
           <Bot size={13} strokeWidth={1.5} />
           <span>Ask Chief</span>
@@ -116,11 +120,6 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           title="Notifications"
         >
           <Bell size={15} strokeWidth={1.5} />
-          {/* Unread dot — placeholder */}
-          <span
-            className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[var(--color-risk-critical)]"
-            aria-label="Unread notifications"
-          />
         </button>
 
         {/* Divider */}
@@ -152,6 +151,36 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           </span>
         </button>
       </div>
+
+      {/* Polished Toast for Ask Chief */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 5, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              'absolute top-16 right-4 sm:right-6',
+              'px-4 py-3 rounded-lg shadow-lg',
+              'bg-[var(--color-bg-elevated)] border border-[var(--color-border)]',
+              'flex items-center gap-3 z-50'
+            )}
+          >
+            <div className="w-8 h-8 rounded-full bg-[var(--color-accent-glow)] flex items-center justify-center border border-[var(--color-accent-primary)]/20">
+              <Bot size={14} className="text-[var(--color-accent-primary)]" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+                Ask Chief
+              </p>
+              <p className="text-xs text-[var(--color-text-secondary)]">
+                Chief Assistant will arrive in Phase 8.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   )
 }
