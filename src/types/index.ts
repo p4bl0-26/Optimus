@@ -102,3 +102,26 @@ export interface ExecutiveBriefing {
   strategicRecommendations: StrategicRecommendation[]
   overloadedDays: string[]
 }
+
+export interface WeeklyExecutiveReport {
+  weekLabel: string
+  executiveSummary: string
+  completedCount: number
+  missedCount: number
+  activeCount: number
+  productivityScore: number
+  riskReduction: number
+  highestRiskCategory: string
+  strategicRecommendations: StrategicRecommendation[]
+  memoryInsights: string[]
+  chiefAssessment: {
+    summary: string
+    recommendation: string
+    grade: string
+    confidence: number
+  }
+  trendData: {
+    day: string
+    risk: number
+  }[]
+}

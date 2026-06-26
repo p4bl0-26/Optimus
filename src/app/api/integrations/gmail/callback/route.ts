@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const code = searchParams.get('code');
 
   if (!code) {
-    console.error('[GMAIL CALLBACK] [FAIL] No authorization code provided in URL.');
+    console.log('[GMAIL CALLBACK] [FAIL] No authorization code provided in URL.');
     return NextResponse.redirect(new URL('/?error=no_code', request.url));
   }
 
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const tokens = await getTokensFromCode(code);
     
     if (!tokens || !tokens.access_token) {
-      console.error('[GMAIL CALLBACK] [FAIL] Failed to retrieve access token from Google.');
+      console.log('[GMAIL CALLBACK] [FAIL] Failed to retrieve access token from Google.');
       return NextResponse.redirect(new URL('/?error=token_exchange_failed', request.url));
     }
 
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
       .single();
 
     if (selectError && selectError.code !== 'PGRST116') {
-      console.error('[GMAIL CALLBACK] [FAIL] Error checking existing integration:', selectError);
+      console.log('[GMAIL CALLBACK] [FAIL] Error checking existing integration:', selectError);
       return NextResponse.redirect(new URL('/?error=db_select_failed', request.url));
     }
 
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
         .eq('id', existing.id);
         
       if (updateError) {
-         console.error('[GMAIL CALLBACK] [FAIL] Failed to update integration tokens:', updateError);
+         console.log('[GMAIL CALLBACK] [FAIL] Failed to update integration tokens:', updateError);
          return NextResponse.redirect(new URL('/?error=db_update_failed', request.url));
       }
       console.log(`[GMAIL CALLBACK] [SUCCESS] Updated existing integration ${existing.id}`);
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
         });
         
       if (insertError) {
-         console.error('[GMAIL CALLBACK] [FAIL] Failed to insert new integration tokens:', insertError);
+         console.log('[GMAIL CALLBACK] [FAIL] Failed to insert new integration tokens:', insertError);
          return NextResponse.redirect(new URL('/?error=db_insert_failed', request.url));
       }
       console.log('[GMAIL CALLBACK] [SUCCESS] Inserted new integration tokens');
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
     // Redirect back to dashboard
     return NextResponse.redirect(new URL('/', request.url));
   } catch (error: any) {
-    console.error('[GMAIL CALLBACK] [CRITICAL] Error in Google callback:', error);
+    console.log('[GMAIL CALLBACK] [CRITICAL] Error in Google callback:', error);
     return NextResponse.redirect(new URL('/?error=callback_failed', request.url));
   }
 }

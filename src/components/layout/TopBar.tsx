@@ -9,8 +9,9 @@
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Bell, Menu, Bot, Play } from 'lucide-react'
+import { Bell, Menu, Bot, Play, Crosshair, BarChart3 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 import { PAGE_META } from '@/constants/navigation'
 import type { AppRoute } from '@/constants/navigation'
 import { AskChiefDrawer } from '@/components/intelligence/AskChiefDrawer'
@@ -24,9 +25,10 @@ interface TopBarProps {
 
 export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
   const pathname = usePathname()
-  const meta = PAGE_META[pathname as AppRoute] ?? PAGE_META['/']
+  const meta = PAGE_META[pathname as AppRoute] ?? { title: pathname === '/focus' ? 'Focus Mode' : 'OPTIMUS', description: '' }
   const [isChiefOpen, setIsChiefOpen] = useState(false)
   const [isTourOpen, setIsTourOpen] = useState(false)
+  const isFocusMode = pathname === '/focus'
 
   return (
     <>
@@ -105,6 +107,45 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
             <span>Start Demo</span>
           </button>
 
+          {/* WEEKLY REPORT button */}
+          <Link
+            href="/reports"
+            id="weekly-report-btn"
+            className={cn(
+              'hidden sm:flex items-center gap-1.5 h-8 px-3 rounded-lg',
+              'border border-[var(--color-border)]',
+              'bg-[var(--color-bg-elevated)]',
+              'text-[var(--color-text-secondary)] text-xs font-bold uppercase tracking-wider',
+              'hover:bg-[var(--color-accent-primary)]/10',
+              'hover:text-[var(--color-accent-primary)]',
+              'hover:border-[var(--color-accent-primary)]/40',
+              'transition-all duration-150'
+            )}
+            title="View Weekly Executive Report"
+          >
+            <BarChart3 size={12} strokeWidth={2} />
+            <span>Weekly Report</span>
+          </Link>
+
+          {/* FOCUS MODE button */}
+          <Link
+            href="/focus"
+            id="enter-focus-mode-btn"
+            className={cn(
+              'hidden sm:flex items-center gap-1.5 h-8 px-3 rounded-lg',
+              'border border-[var(--color-risk-high)]/50',
+              'bg-[var(--color-risk-high)]/10',
+              'text-[var(--color-risk-high)] text-xs font-bold uppercase tracking-wider',
+              'hover:bg-[var(--color-risk-high)]/20',
+              'hover:border-[var(--color-risk-high)]',
+              'transition-all duration-150'
+            )}
+            title="Enter distraction-free execution mode"
+          >
+            <Crosshair size={12} strokeWidth={2} />
+            <span>Enter Focus Mode</span>
+          </Link>
+
           {/* Reset Demo */}
           <DemoResetButton />
 
@@ -112,43 +153,47 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           <div className="w-px h-5 bg-[var(--color-border)] hidden sm:block" />
 
           {/* Ask Chief — wired to Chief of Staff Intelligence Layer */}
-          <button
-            id="ask-chief-btn"
-            onClick={() => setIsChiefOpen(true)}
-            className={cn(
-              'hidden sm:flex items-center gap-2 h-8 px-3 rounded-lg',
-              'border border-[var(--color-border)]',
-              'bg-[var(--color-bg-elevated)]',
-              'text-[var(--color-text-secondary)] text-xs font-medium',
-              'hover:text-[var(--color-accent-primary)]',
-              'hover:border-[var(--color-accent-primary)]/40',
-              'hover:bg-[var(--color-accent-glow)]',
-              'transition-all duration-150'
-            )}
-            title="Open Chief of Staff Intelligence Layer"
-          >
-            <Bot size={13} strokeWidth={1.5} />
-            <span>Ask Chief</span>
-          </button>
+          {!isFocusMode && (
+            <button
+              id="ask-chief-btn"
+              onClick={() => setIsChiefOpen(true)}
+              className={cn(
+                'hidden sm:flex items-center gap-2 h-8 px-3 rounded-lg',
+                'border border-[var(--color-border)]',
+                'bg-[var(--color-bg-elevated)]',
+                'text-[var(--color-text-secondary)] text-xs font-medium',
+                'hover:text-[var(--color-accent-primary)]',
+                'hover:border-[var(--color-accent-primary)]/40',
+                'hover:bg-[var(--color-accent-glow)]',
+                'transition-all duration-150'
+              )}
+              title="Open Chief of Staff Intelligence Layer"
+            >
+              <Bot size={13} strokeWidth={1.5} />
+              <span>Ask Chief</span>
+            </button>
+          )}
 
           {/* Notifications */}
-          <button
-            id="notifications-btn"
-            className={cn(
-              'relative flex items-center justify-center w-9 h-9 rounded-lg',
-              'border border-[var(--color-border)]',
-              'bg-[var(--color-bg-elevated)]',
-              'text-[var(--color-text-secondary)]',
-              'hover:text-[var(--color-text-primary)]',
-              'hover:border-[var(--color-accent-primary)]/40',
-              'hover:bg-[var(--color-accent-glow)]',
-              'transition-all duration-150'
-            )}
-            aria-label="Notifications"
-            title="Notifications"
-          >
-            <Bell size={15} strokeWidth={1.5} />
-          </button>
+          {!isFocusMode && (
+            <button
+              id="notifications-btn"
+              className={cn(
+                'relative flex items-center justify-center w-9 h-9 rounded-lg',
+                'border border-[var(--color-border)]',
+                'bg-[var(--color-bg-elevated)]',
+                'text-[var(--color-text-secondary)]',
+                'hover:text-[var(--color-text-primary)]',
+                'hover:border-[var(--color-accent-primary)]/40',
+                'hover:bg-[var(--color-accent-glow)]',
+                'transition-all duration-150'
+              )}
+              aria-label="Notifications"
+              title="Notifications"
+            >
+              <Bell size={15} strokeWidth={1.5} />
+            </button>
+          )}
 
           {/* Divider */}
           <div className="w-px h-5 bg-[var(--color-border)] hidden sm:block" />

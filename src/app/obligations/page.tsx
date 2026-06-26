@@ -16,49 +16,17 @@ export default async function ObligationsPage() {
   return (
     <PageContainer id="obligations-page">
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1
-            className="text-lg font-bold text-[var(--color-text-primary)] mb-0.5"
-            style={{ fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)' }}
-          >
-            Obligations
-          </h1>
-          <p className="text-[13px] text-[var(--color-text-muted)]">
-            All tracked commitments, deadlines, and work items
-          </p>
-        </div>
-
-        {/* Add Obligation CTA — placeholder */}
-        <button
-          id="add-obligation-btn"
-          className="flex items-center gap-2 h-9 px-4 rounded-lg text-xs font-semibold
-            bg-[var(--color-accent-primary)] text-[var(--color-text-inverse)]
-            hover:opacity-90 transition-opacity duration-150 cursor-not-allowed opacity-60"
-          title="Add Obligation"
+      <div className="mb-6">
+        <h1
+          className="text-lg font-bold text-[var(--color-text-primary)] mb-0.5"
+          style={{ fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)' }}
         >
-          <Plus size={14} strokeWidth={2} />
-          Add Obligation
-        </button>
+          Obligations
+        </h1>
+        <p className="text-[13px] text-[var(--color-text-muted)]">
+          All tracked commitments, deadlines, and work items
+        </p>
       </div>
-
-      {/* Filter tabs — placeholder */}
-      <SectionContainer spacing="md">
-        <div className="flex items-center gap-2 flex-wrap">
-          {['All', 'High Risk', 'Due Today', 'This Week'].map((tab) => (
-            <button
-              key={tab}
-              className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-all duration-150
-                ${tab === 'All'
-                  ? 'bg-[var(--color-accent-glow)] border-[var(--color-accent-primary)]/30 text-[var(--color-accent-primary)]'
-                  : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-focus)]'
-                }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-      </SectionContainer>
 
       {/* Obligations List */}
       <div className="space-y-3 mt-4">
@@ -77,12 +45,6 @@ export default async function ObligationsPage() {
               Connect your Gmail, Calendar, or manually add obligations. OPTIMUS will
               discover, analyze, and monitor them automatically.
             </p>
-            <div
-              className="mt-6 px-3 py-1.5 rounded-full text-[10px] font-medium tracking-wider
-                border border-[var(--color-border)] text-[var(--color-text-muted)]"
-            >
-              Integrations available in future phases
-            </div>
           </div>
         ) : (
           obligations.map((ob) => (

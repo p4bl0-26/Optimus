@@ -135,7 +135,7 @@ export function UtilityPanel({
           <div className="space-y-3 font-mono text-[9px] text-[var(--color-text-muted)]">
             <p className="flex gap-2">
               <span className="text-[var(--color-accent-primary)] opacity-70">12:24:01</span>
-              <span>[RISK] Recalculating Hackathon baseline... OK</span>
+              <span>[RISK] Recalculating system baseline... OK</span>
             </p>
             <p className="flex gap-2">
               <span className="text-[var(--color-accent-primary)] opacity-70">12:23:45</span>

@@ -371,10 +371,16 @@ export default function CommandCenterPage() {
                     <p className="text-md font-bold text-[var(--color-text-primary)] mb-2 pr-12">
                       {recommendedFocus.title}
                     </p>
-                    <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                    <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-4">
                       <span className="font-semibold text-[var(--color-accent-primary)]">Reason: </span>
                       {recommendedFocus.reason}
                     </p>
+                    <Link
+                      href="/focus"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--color-accent-primary)] text-[var(--color-bg-primary)] text-xs font-bold uppercase tracking-wider hover:bg-[var(--color-accent-secondary)] transition-colors w-full justify-center"
+                    >
+                      <Target size={14} /> Focus Now
+                    </Link>
                   </div>
                 </div>
               )}

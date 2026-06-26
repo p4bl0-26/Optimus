@@ -141,13 +141,13 @@ export async function POST(req: NextRequest) {
     const { message, history } = await req.json();
 
     if (!message || typeof message !== 'string') {
-      console.error('[CHIEF][FAIL] Invalid query format');
+      console.log('[CHIEF][FAIL] Invalid query format');
       return NextResponse.json({ success: false, message: 'Invalid query format.' }, { status: 400 });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error('[CHIEF][FAIL] Missing GEMINI_API_KEY');
+      console.log('[CHIEF][FAIL] Missing GEMINI_API_KEY');
       return NextResponse.json({ success: false, message: 'Chief intelligence temporarily unavailable. Please try again in a few moments.' }, { status: 500 });
     }
 
@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
     console.log('[CHIEF][SUCCESS] Query processed successfully');
     return NextResponse.json({ response });
   } catch (err: any) {
-    console.error('[CHIEF][FAIL] Gemini integration error:', err?.message || err);
+    console.log('[CHIEF][FAIL] Gemini integration error:', err?.message || err);
     return NextResponse.json(
       { 
         success: false, 

@@ -24,32 +24,7 @@ export default function ActionsPage() {
         </p>
       </div>
 
-      {/* Status tabs — placeholder */}
-      <SectionContainer spacing="md">
-        <div className="flex items-center gap-2 flex-wrap">
-          {[
-            { label: 'Prepared', count: 0 },
-            { label: 'Needs Approval', count: 0 },
-            { label: 'Submitted', count: 0 },
-          ].map((tab) => (
-            <button
-              key={tab.label}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-all duration-150
-                ${tab.label === 'Prepared'
-                  ? 'bg-[var(--color-accent-glow)] border-[var(--color-accent-primary)]/30 text-[var(--color-accent-primary)]'
-                  : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
-                }`}
-            >
-              {tab.label}
-              {tab.count > 0 && (
-                <span className="bg-[var(--color-accent-primary)] text-[var(--color-text-inverse)] rounded-full px-1.5 text-[9px] font-bold">
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </SectionContainer>
+
 
       {/* Feature explanation grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

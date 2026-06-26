@@ -142,7 +142,7 @@ export default function SettingsPage() {
       {/* Version badge */}
       <div className="mt-6 flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
         <Settings size={12} strokeWidth={1.5} />
-        <span>OPTIMUS Phase 1 Foundation — Build v0.1.0</span>
+        <span>OPTIMUS Core — Build v0.1.0</span>
       </div>
     </PageContainer>
   )

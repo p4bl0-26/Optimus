@@ -35,14 +35,8 @@ export default function IntelligencePage() {
           Intelligence Module Offline
         </p>
         <p className="text-[12px] text-[var(--color-text-muted)] max-w-[280px] leading-relaxed">
-          The deep reasoning memory logs and system intelligence center are reserved for future architectural phases.
+          The deep reasoning memory logs and system intelligence center are operating in the background. Full UI access is currently offline.
         </p>
-        <div
-          className="mt-6 px-3 py-1.5 rounded-full text-[10px] font-medium tracking-wider
-            border border-[var(--color-border)] text-[var(--color-text-muted)] uppercase"
-        >
-          Placeholder Route
-        </div>
       </div>
     </PageContainer>
   )

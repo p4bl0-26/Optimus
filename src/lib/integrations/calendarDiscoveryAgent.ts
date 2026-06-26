@@ -192,7 +192,7 @@ export async function runCalendarDiscoveryAgent() {
     .single();
 
   if (integrationError || !integration?.access_token) {
-    console.error('[CALENDAR AGENT] [FAIL] Calendar not connected — missing tokens.', integrationError);
+    console.log('[CALENDAR AGENT] [FAIL] Calendar not connected — missing tokens.', integrationError);
     throw new Error('Google Calendar not connected. Please authorize via Connect Calendar.');
   }
 
@@ -221,7 +221,7 @@ export async function runCalendarDiscoveryAgent() {
     });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error('[CALENDAR AGENT] [FAIL] Failed to fetch events:', msg);
+    console.log('[CALENDAR AGENT] [FAIL] Failed to fetch events:', msg);
     throw new Error(`Calendar API error: ${msg}`);
   }
 
@@ -283,7 +283,7 @@ export async function runCalendarDiscoveryAgent() {
       });
 
       if (!dbObligation) {
-        console.error(`[CALENDAR AGENT] [FAIL] Failed to create obligation for event: ${event.id}`);
+        console.log(`[CALENDAR AGENT] [FAIL] Failed to create obligation for event: ${event.id}`);
         continue;
       }
 
@@ -355,7 +355,7 @@ export async function runCalendarDiscoveryAgent() {
       newObligationsCount++;
     } catch (cwError: unknown) {
       const msg = cwError instanceof Error ? cwError.message : String(cwError);
-      console.error(`[CALENDAR AGENT] [FAIL] Error processing event ${event.id}: ${msg}`);
+      console.log(`[CALENDAR AGENT] [FAIL] Error processing event ${event.id}: ${msg}`);
     }
   }
 

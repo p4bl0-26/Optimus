@@ -9,6 +9,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
@@ -62,6 +63,10 @@ export function Sidebar({
   onMobileClose,
 }: SidebarProps) {
   const pathname = usePathname()
+  const isFocusMode = pathname === '/focus'
+
+  // Force collapse in focus mode
+  const effectiveIsCollapsed = isFocusMode ? true : isCollapsed
 
   return (
     <>
@@ -84,7 +89,7 @@ export function Sidebar({
       {/* Sidebar Panel */}
       <motion.aside
         id="sidebar"
-        animate={{ width: isCollapsed ? 64 : 240 }}
+        animate={{ width: effectiveIsCollapsed ? 64 : 240 }}
         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
         className={cn(
           // Base styles
@@ -105,7 +110,7 @@ export function Sidebar({
           className={cn(
             'flex items-center border-b border-[var(--sidebar-border)]',
             'flex-shrink-0 h-16',
-            isCollapsed ? 'justify-center px-0' : 'px-4 gap-3'
+            effectiveIsCollapsed ? 'justify-center px-0' : 'px-4 gap-3'
           )}
         >
           {/* Shield Logo Mark */}
@@ -114,12 +119,14 @@ export function Sidebar({
               className={cn(
                 'flex items-center justify-center rounded-lg overflow-hidden',
                 'bg-transparent border border-[var(--color-accent-primary)]/30',
-                isCollapsed ? 'w-9 h-9' : 'w-8 h-8'
+                effectiveIsCollapsed ? 'w-9 h-9' : 'w-8 h-8'
               )}
             >
-              <img 
+              <Image 
                 src="/optimus-logo.png" 
                 alt="Optimus" 
+                width={36}
+                height={36}
                 className="w-full h-full object-cover mix-blend-screen" 
               />
             </div>
@@ -129,7 +136,7 @@ export function Sidebar({
 
           {/* Wordmark */}
           <AnimatePresence initial={false}>
-            {!isCollapsed && (
+            {!effectiveIsCollapsed && (
               <motion.div
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -153,7 +160,7 @@ export function Sidebar({
 
         {/* ── Navigation Items ──────────────────────────────── */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 space-y-0.5 px-2">
-          {NAV_ITEMS.map((item) => {
+          {!isFocusMode && NAV_ITEMS.map((item) => {
             const isActive = item.href === '/'
               ? pathname === '/'
               : pathname.startsWith(item.href)
@@ -168,12 +175,12 @@ export function Sidebar({
                   'relative flex items-center rounded-lg',
                   'transition-all duration-150 group',
                   'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-accent-primary)]',
-                  isCollapsed ? 'h-9 w-9 mx-auto justify-center' : 'h-9 px-3 gap-3',
+                  effectiveIsCollapsed ? 'h-9 w-9 mx-auto justify-center' : 'h-9 px-3 gap-3',
                   isActive
                     ? 'bg-[var(--color-accent-glow)] text-[var(--color-accent-primary)] border border-[var(--color-accent-primary)]/20'
                     : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)]'
                 )}
-                title={isCollapsed ? item.label : undefined}
+                title={effectiveIsCollapsed ? item.label : undefined}
                 aria-current={isActive ? 'page' : undefined}
               >
                 {/* Active indicator line */}
@@ -191,7 +198,7 @@ export function Sidebar({
 
                 {/* Label + Badge */}
                 <AnimatePresence initial={false}>
-                  {!isCollapsed && (
+                  {!effectiveIsCollapsed && (
                     <motion.span
                       initial={{ opacity: 0, x: -6 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -222,7 +229,7 @@ export function Sidebar({
 
         {/* ── AI Chief of Staff Status ──────────────────────── */}
         <AnimatePresence initial={false}>
-          {!isCollapsed && (
+          {!effectiveIsCollapsed && !isFocusMode && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -250,7 +257,7 @@ export function Sidebar({
         </AnimatePresence>
 
         {/* Collapsed AI icon */}
-        {isCollapsed && (
+        {effectiveIsCollapsed && !isFocusMode && (
           <div className="mx-auto mb-2 flex flex-col items-center gap-1">
             <div className="w-9 h-9 rounded-lg bg-[var(--color-accent-glow)] border border-[var(--color-accent-primary)]/30 flex items-center justify-center">
               <Bot size={15} className="text-[var(--color-accent-primary)]" strokeWidth={1.5} />
@@ -265,32 +272,47 @@ export function Sidebar({
             'border-t border-[var(--sidebar-border)] p-2 space-y-2 flex-shrink-0'
           )}
         >
-          <ThemeToggle collapsed={isCollapsed} />
+          {!isFocusMode && <ThemeToggle collapsed={effectiveIsCollapsed} />}
 
-          {/* Collapse toggle */}
-          <button
-            id="sidebar-collapse-btn"
-            onClick={onToggle}
-            className={cn(
-              'flex items-center rounded-lg border border-[var(--color-border)]',
-              'bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]',
-              'hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-focus)]',
-              'transition-all duration-150 cursor-pointer',
-              'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-accent-primary)]',
-              isCollapsed ? 'h-9 w-9 mx-auto justify-center' : 'h-9 w-full px-3 gap-2.5'
-            )}
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {isCollapsed ? (
-              <ChevronRight size={14} strokeWidth={1.5} />
-            ) : (
-              <>
-                <ChevronLeft size={14} strokeWidth={1.5} />
-                <span className="text-xs font-medium">Collapse</span>
-              </>
-            )}
-          </button>
+          {/* Exit Focus Mode OR Collapse toggle */}
+          {isFocusMode ? (
+            <Link
+              href="/"
+              className={cn(
+                'flex items-center rounded-lg border border-[var(--color-risk-critical)]/30',
+                'bg-[var(--color-risk-critical-bg)] text-[var(--color-risk-critical)]',
+                'hover:bg-[var(--color-risk-critical)] hover:text-[var(--color-text-inverse)]',
+                'transition-all duration-150 cursor-pointer justify-center h-9 w-9 mx-auto'
+              )}
+              title="Exit Focus Mode"
+            >
+              <Target size={14} strokeWidth={2} />
+            </Link>
+          ) : (
+            <button
+              id="sidebar-collapse-btn"
+              onClick={onToggle}
+              className={cn(
+                'flex items-center rounded-lg border border-[var(--color-border)]',
+                'bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]',
+                'hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-focus)]',
+                'transition-all duration-150 cursor-pointer',
+                'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-accent-primary)]',
+                effectiveIsCollapsed ? 'h-9 w-9 mx-auto justify-center' : 'h-9 w-full px-3 gap-2.5'
+              )}
+              aria-label={effectiveIsCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              title={effectiveIsCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {effectiveIsCollapsed ? (
+                <ChevronRight size={14} strokeWidth={1.5} />
+              ) : (
+                <>
+                  <ChevronLeft size={14} strokeWidth={1.5} />
+                  <span className="text-xs font-medium">Collapse</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </motion.aside>
     </>

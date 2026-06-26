@@ -115,7 +115,7 @@ export async function runClassroomDiscoveryAgent() {
     .single();
 
   if (integrationError || !integration?.access_token) {
-    console.error('[CLASSROOM AGENT] [FAIL] Classroom not connected — missing tokens.', integrationError);
+    console.log('[CLASSROOM AGENT] [FAIL] Classroom not connected — missing tokens.', integrationError);
     throw new Error('Google Classroom not connected. Please authorize via Connect Classroom.');
   }
 
@@ -138,7 +138,7 @@ export async function runClassroomDiscoveryAgent() {
     });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error('[CLASSROOM AGENT] [FAIL] Failed to fetch courses:', msg);
+    console.log('[CLASSROOM AGENT] [FAIL] Failed to fetch courses:', msg);
     throw new Error(`Classroom API error (courses.list): ${msg}`);
   }
 
@@ -217,7 +217,7 @@ export async function runClassroomDiscoveryAgent() {
         });
 
         if (!dbObligation) {
-          console.error(`[CLASSROOM AGENT] [FAIL] Failed to create obligation for coursework: ${cw.id}`);
+          console.log(`[CLASSROOM AGENT] [FAIL] Failed to create obligation for coursework: ${cw.id}`);
           continue;
         }
 
@@ -306,7 +306,7 @@ export async function runClassroomDiscoveryAgent() {
         newObligationsCount++;
       } catch (cwError: unknown) {
         const msg = cwError instanceof Error ? cwError.message : String(cwError);
-        console.error(`[CLASSROOM AGENT] [FAIL] Error processing coursework ${cw.id}: ${msg}`);
+        console.log(`[CLASSROOM AGENT] [FAIL] Error processing coursework ${cw.id}: ${msg}`);
       }
     }
   }

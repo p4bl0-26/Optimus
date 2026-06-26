@@ -441,7 +441,7 @@ export async function resetDemoWorkspace(): Promise<{ success: boolean; message:
       duration,
     };
   } catch (err: any) {
-    console.error('[JUDGE][FAIL] Demo reset failed:', err);
+    console.log('[JUDGE][FAIL] Demo reset failed:', err);
     return {
       success: false,
       message: err?.message || 'Demo reset failed.',

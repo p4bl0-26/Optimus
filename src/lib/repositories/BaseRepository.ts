@@ -15,7 +15,7 @@ export class BaseRepository<T extends { id?: string }> {
       .single();
 
     if (error) {
-      console.error(`Error finding by id in ${this.tableName}:`, error);
+      console.log(`[FAIL] Error finding by id in ${this.tableName}:`, error.message);
       return null;
     }
     return data as T;
@@ -32,7 +32,7 @@ export class BaseRepository<T extends { id?: string }> {
 
     const { data, error } = await query;
     if (error) {
-      console.error(`Error finding all in ${this.tableName}:`, error);
+      console.log(`[FAIL] Error finding all in ${this.tableName}:`, error.message);
       return [];
     }
     return data as T[];
@@ -46,7 +46,7 @@ export class BaseRepository<T extends { id?: string }> {
       .single();
 
     if (error) {
-      console.error(`Error creating in ${this.tableName}:`, error);
+      console.log(`[FAIL] Error creating in ${this.tableName}:`, error.message);
       return null;
     }
     return data as T;
@@ -61,7 +61,7 @@ export class BaseRepository<T extends { id?: string }> {
       .single();
 
     if (error) {
-      console.error(`Error updating in ${this.tableName}:`, error);
+      console.log(`[FAIL] Error updating in ${this.tableName}:`, error.message);
       return null;
     }
     return data as T;
@@ -74,7 +74,7 @@ export class BaseRepository<T extends { id?: string }> {
       .eq('id', id);
 
     if (error) {
-      console.error(`Error deleting from ${this.tableName}:`, error);
+      console.log(`[FAIL] Error deleting from ${this.tableName}:`, error.message);
       return false;
     }
     return true;

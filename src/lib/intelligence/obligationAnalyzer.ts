@@ -10,7 +10,7 @@ export function analyzeObligation(obligation: Obligation): RiskAnalysis {
 
   const hoursRemaining = Math.max(0, (obligation.deadline.getTime() - Date.now()) / (1000 * 60 * 60))
   
-  // Deterministic Mock Generation based on attributes
+  // Deterministic Analysis Generation based on attributes
   const factors: string[] = []
   if (hoursRemaining < 48) factors.push('Extreme time pressure')
   if (obligation.importance === 'Critical' || obligation.importance === 'High') factors.push('High strategic impact')

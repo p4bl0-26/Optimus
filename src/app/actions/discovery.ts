@@ -15,7 +15,7 @@ export async function runDiscoveryAction() {
     console.log(`[DISCOVERY ACTION] [SUCCESS] Sweep complete. Found ${result.newObligations}`);
     return { success: true, newObligations: result.newObligations };
   } catch (error: any) {
-    console.error('[DISCOVERY ACTION] [FAIL] Error during discovery action:', error);
+    console.log('[DISCOVERY ACTION] [FAIL] Error during discovery action:', error);
     return { success: false, error: error.message };
   }
 }
@@ -32,7 +32,7 @@ export async function runClassroomDiscoveryAction() {
     return { success: true, newObligations: result.newObligations, coursesScanned: result.coursesScanned };
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error('[CLASSROOM ACTION] [FAIL] Error during Classroom sweep:', msg);
+    console.log('[CLASSROOM ACTION] [FAIL] Error during Classroom sweep:', msg);
     return { success: false, error: msg };
   }
 }
@@ -49,7 +49,7 @@ export async function runCalendarDiscoveryAction() {
     return { success: true, newObligations: result.newObligations, eventsScanned: result.eventsScanned, conflictsDetected: result.conflictsDetected };
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error('[CALENDAR ACTION] [FAIL] Error during Calendar sweep:', msg);
+    console.log('[CALENDAR ACTION] [FAIL] Error during Calendar sweep:', msg);
     return { success: false, error: msg };
   }
 }

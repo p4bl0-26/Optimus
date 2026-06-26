@@ -18,14 +18,6 @@ export function generateRescuePlan(obligation: Obligation, risk: RiskAnalysis): 
     actionsBeforeDeadline.push(`Complete standard review cycle.`)
   }
 
-  // Inject specific actions based on mock obligation title for realism
-  if (obligation.title.toLowerCase().includes('hackathon')) {
-    actionsToday.unshift('Finalize demo video recording.')
-    actionsTomorrow.unshift('Push final code to repository and deploy.')
-  } else if (obligation.title.toLowerCase().includes('dbms')) {
-    actionsToday.unshift('Draft database schema diagram.')
-    actionsTomorrow.unshift('Write remaining SQL queries.')
-  }
 
   const recoveryStrategy = isUrgent 
     ? 'Aggressive deficit reduction. Drop non-essential tasks.'

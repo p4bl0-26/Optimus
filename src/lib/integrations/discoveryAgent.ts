@@ -22,7 +22,7 @@ export async function runDiscoveryAgent() {
   try {
     const health = await runIntegrationHealthCheck();
     if (health.overallStatus === 'FAIL') {
-      console.error('[DISCOVERY AGENT] [FAIL] Health Check Failed:', health.errorDetails);
+      console.log('[DISCOVERY AGENT] [FAIL] Health Check Failed:', health.errorDetails);
       throw new Error(`Integration Health Check Failed: ${health.errorDetails.join(' | ')}`);
     }
 
@@ -35,7 +35,7 @@ export async function runDiscoveryAgent() {
       .single();
 
     if (integrationError || !integration || !integration.access_token) {
-      console.error('[DISCOVERY AGENT] [FAIL] Missing integration tokens.', integrationError);
+      console.log('[DISCOVERY AGENT] [FAIL] Missing integration tokens.', integrationError);
       throw new Error('Gmail not connected. Missing integration tokens.');
     }
 
@@ -57,7 +57,7 @@ export async function runDiscoveryAgent() {
         q: '-category:promotions -category:social', // Basic filter to avoid spam
       });
     } catch (fetchError: any) {
-      console.error('[DISCOVERY AGENT] [FAIL] Failed to fetch emails:', fetchError);
+      console.log('[DISCOVERY AGENT] [FAIL] Failed to fetch emails:', fetchError);
       throw new Error(`Failed to fetch emails: ${fetchError.message}`);
     }
 
@@ -120,7 +120,7 @@ export async function runDiscoveryAgent() {
       });
 
       if (!newObligation) {
-        console.error(`[DISCOVERY AGENT] [FAIL] Failed to create obligation for msg ${message.id}`);
+        console.log(`[DISCOVERY AGENT] [FAIL] Failed to create obligation for msg ${message.id}`);
         continue;
       }
       console.log(`[DISCOVERY AGENT] [SUCCESS] Created obligation ${newObligation.id}`);
@@ -192,14 +192,14 @@ export async function runDiscoveryAgent() {
       newObligationsCount++;
     }
     } catch (msgError: any) {
-      console.error(`[DISCOVERY AGENT] [FAIL] Error processing message ${message.id}:`, msgError);
+      console.log(`[DISCOVERY AGENT] [FAIL] Error processing message ${message.id}:`, msgError);
     }
   }
 
   console.log(`[DISCOVERY AGENT] [SUCCESS] Sweep complete. Found ${newObligationsCount} new obligations.`);
   return { status: 'success', newObligations: newObligationsCount };
   } catch (globalError: any) {
-    console.error('[DISCOVERY AGENT] [CRITICAL] Unhandled error during discovery run:', globalError);
+    console.log('[DISCOVERY AGENT] [CRITICAL] Unhandled error during discovery run:', globalError);
     throw globalError;
   }
 }
@@ -233,7 +233,7 @@ async function extractObligationWithGemini(subject: string, from: string, bodySn
     
     return JSON.parse(text);
   } catch (error) {
-    console.error('Gemini Extraction Error:', error);
+    console.log('Gemini Extraction Error:', error);
     return { isObligation: false, confidenceScore: 0 };
   }
 }

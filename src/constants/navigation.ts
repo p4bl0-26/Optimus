@@ -10,6 +10,7 @@ export const ROUTES = {
   obligations: '/obligations',
   actions: '/actions',
   briefings: '/briefings',
+  reports: '/reports',
   settings: '/settings',
 } as const
 
@@ -42,6 +43,12 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'FileText',
   },
   {
+    id: 'reports',
+    label: 'Executive Reports',
+    href: '/reports',
+    icon: 'BarChart3',
+  },
+  {
     id: 'settings',
     label: 'Settings',
     href: '/settings',
@@ -66,6 +73,10 @@ export const PAGE_META: Record<AppRoute, { title: string; description: string }>
   '/briefings': {
     title: 'Briefings',
     description: 'Morning, evening, and critical intelligence briefings',
+  },
+  '/reports': {
+    title: 'Executive Reports',
+    description: 'Weekly intelligence and operational performance',
   },
   '/settings': {
     title: 'Settings',

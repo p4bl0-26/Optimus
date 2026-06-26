@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
+import Image from 'next/image';
+
 export default function StartupAnimation({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState(0);
 
@@ -92,10 +94,13 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
           transition={{ duration: 0.8, ease: "easeOut" }}
           style={{ clipPath: phase < 3 ? 'inset(0% 0% 30% 0%)' : 'inset(0% 0% 0% 0%)' }} // Hide text until phase 3
         >
-          <img 
+          <Image 
             src="/optimus-logo.png" 
             alt="OPTIMUS Logo" 
+            width={500}
+            height={500}
             className="w-full h-full object-contain mix-blend-screen"
+            priority
           />
         </motion.div>
 

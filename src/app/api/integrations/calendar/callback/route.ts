@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   const code = searchParams.get('code');
 
   if (!code) {
-    console.error('[CALENDAR CALLBACK] [FAIL] No authorization code in URL.');
+    console.log('[CALENDAR CALLBACK] [FAIL] No authorization code in URL.');
     return NextResponse.redirect(new URL('/?error=no_code', request.url));
   }
 
@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     const tokens = await getCalendarTokensFromCode(code);
 
     if (!tokens?.access_token) {
-      console.error('[CALENDAR CALLBACK] [FAIL] Token exchange failed — no access_token returned.');
+      console.log('[CALENDAR CALLBACK] [FAIL] Token exchange failed — no access_token returned.');
       return NextResponse.redirect(new URL('/?error=token_exchange_failed', request.url));
     }
 
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       .single();
 
     if (selectError && selectError.code !== 'PGRST116') {
-      console.error('[CALENDAR CALLBACK] [FAIL] DB select error:', selectError);
+      console.log('[CALENDAR CALLBACK] [FAIL] DB select error:', selectError);
       return NextResponse.redirect(new URL('/?error=db_select_failed', request.url));
     }
 
@@ -55,7 +55,7 @@ export async function GET(request: Request) {
         .eq('id', existing.id);
 
       if (updateError) {
-        console.error('[CALENDAR CALLBACK] [FAIL] Update error:', updateError);
+        console.log('[CALENDAR CALLBACK] [FAIL] Update error:', updateError);
         return NextResponse.redirect(new URL('/?error=db_update_failed', request.url));
       }
       console.log(`[CALENDAR CALLBACK] [SUCCESS] Updated Calendar integration ${existing.id}`);
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
         });
 
       if (insertError) {
-        console.error('[CALENDAR CALLBACK] [FAIL] Insert error:', insertError);
+        console.log('[CALENDAR CALLBACK] [FAIL] Insert error:', insertError);
         return NextResponse.redirect(new URL('/?error=db_insert_failed', request.url));
       }
       console.log('[CALENDAR CALLBACK] [SUCCESS] Inserted new Calendar integration.');
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL('/', request.url));
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error('[CALENDAR CALLBACK] [CRITICAL] Unhandled error:', msg);
+    console.log('[CALENDAR CALLBACK] [CRITICAL] Unhandled error:', msg);
     return NextResponse.redirect(new URL('/?error=callback_failed', request.url));
   }
 }

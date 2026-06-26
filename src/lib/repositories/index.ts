@@ -26,7 +26,7 @@ export class ObligationRepo extends BaseRepository<Obligation> {
       .eq('status', 'pending');
       
     if (error) {
-      console.error('Error in findPendingByUser:', error);
+      console.log('[FAIL] Error in findPendingByUser:', error.message);
       return [];
     }
     return data as Obligation[];
@@ -47,7 +47,7 @@ export class RiskProfileRepo extends BaseRepository<RiskProfile> {
 
     if (error) {
       if (error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-        console.error('Error in findByObligation:', error);
+        console.log('[FAIL] Error in findByObligation:', error.message);
       }
       return null;
     }
@@ -68,7 +68,7 @@ export class InterventionRepo extends BaseRepository<Intervention> {
       .eq('status', 'pending');
 
     if (error) {
-      console.error('Error in findActiveByUser:', error);
+      console.log('[FAIL] Error in findActiveByUser:', error.message);
       return [];
     }
     return data as Intervention[];

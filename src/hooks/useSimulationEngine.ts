@@ -103,7 +103,7 @@ export function useSimulationEngine() {
           Future: 'COMPLETE'
         }))
       } catch (err: any) {  
-        console.error('Supabase fetch failed:', err)
+        console.log('Supabase fetch failed:', err)
         setError('Intelligence Core Offline - Database Connection Failed')
       } finally {
         setLoading(false)
