@@ -372,16 +372,18 @@ function nowStr(): string {
 // ─── Main Reset Function ──────────────────────────────────────
 export async function resetDemoWorkspace(): Promise<{ success: boolean; message: string; duration: number }> {
   const start = Date.now();
+  console.log('[JUDGE][INFO] Initiating Demo Workspace Reset');
 
   try {
+    console.log('[JUDGE][INFO] Wiping existing demo data...');
     // Step 1: Wipe all existing demo data in parallel
     await Promise.all([
-      supabase.from('obligations').delete().eq('user_id', DEMO_USER_ID),
-      supabase.from('risk_profiles').delete().eq('user_id', DEMO_USER_ID),
-      supabase.from('interventions').delete().eq('user_id', DEMO_USER_ID),
-      supabase.from('agent_memory').delete().eq('user_id', DEMO_USER_ID),
-      supabase.from('agent_activity').delete().eq('user_id', DEMO_USER_ID),
-      supabase.from('briefings').delete().eq('user_id', DEMO_USER_ID),
+      supabase.from('obligations').delete().eq('user_id', DEMO_USER_ID).throwOnError(),
+      supabase.from('risk_profiles').delete().eq('user_id', DEMO_USER_ID).throwOnError(),
+      supabase.from('interventions').delete().eq('user_id', DEMO_USER_ID).throwOnError(),
+      supabase.from('agent_memory').delete().eq('user_id', DEMO_USER_ID).throwOnError(),
+      supabase.from('agent_activity').delete().eq('user_id', DEMO_USER_ID).throwOnError(),
+      supabase.from('briefings').delete().eq('user_id', DEMO_USER_ID).throwOnError(),
     ]);
 
     // Step 2: Insert fresh demo data in parallel waves
@@ -415,21 +417,31 @@ export async function resetDemoWorkspace(): Promise<{ success: boolean; message:
       created_at: now,
     }));
 
+    console.log('[JUDGE][INFO] Seeding new demo data...');
     await Promise.all([
-      supabase.from('obligations').upsert(obligationsWithTimestamps, { onConflict: 'id' }),
-      supabase.from('risk_profiles').upsert(riskProfilesWithTimestamps, { onConflict: 'id' }),
-      supabase.from('interventions').upsert(interventionsWithTimestamps, { onConflict: 'id' }),
-      supabase.from('agent_memory').upsert(memoryWithTimestamps, { onConflict: 'id' }),
-      supabase.from('agent_activity').upsert(activityWithTimestamps, { onConflict: 'id' }),
+      supabase.from('obligations').upsert(obligationsWithTimestamps, { onConflict: 'id' }).throwOnError(),
+      supabase.from('risk_profiles').upsert(riskProfilesWithTimestamps, { onConflict: 'id' }).throwOnError(),
+      supabase.from('interventions').upsert(interventionsWithTimestamps, { onConflict: 'id' }).throwOnError(),
+      supabase.from('agent_memory').upsert(memoryWithTimestamps, { onConflict: 'id' }).throwOnError(),
+      supabase.from('agent_activity').upsert(activityWithTimestamps, { onConflict: 'id' }).throwOnError(),
     ]);
 
     const duration = Date.now() - start;
+    
+    console.log(`[JUDGE][SUCCESS] Demo data restored successfully in ${duration}ms`);
+    console.log(`[JUDGE][SUCCESS] ${DEMO_OBLIGATIONS.length} obligations inserted`);
+    console.log(`[JUDGE][SUCCESS] ${DEMO_RISK_PROFILES.length} risks inserted`);
+    console.log(`[JUDGE][SUCCESS] ${DEMO_INTERVENTIONS.length} interventions inserted`);
+    console.log(`[JUDGE][SUCCESS] ${DEMO_AGENT_MEMORY.length} memories inserted`);
+    console.log(`[JUDGE][SUCCESS] ${DEMO_AGENT_ACTIVITY.length} activities inserted`);
+
     return {
       success: true,
       message: 'OPTIMUS operational state restored.',
       duration,
     };
   } catch (err: any) {
+    console.error('[JUDGE][FAIL] Demo reset failed:', err);
     return {
       success: false,
       message: err?.message || 'Demo reset failed.',
