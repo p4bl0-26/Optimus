@@ -116,8 +116,8 @@ export function AskChiefDrawer({ isOpen, onClose }: AskChiefDrawerProps) {
 
       const data = await res.json()
 
-      if (!res.ok || data.error) {
-        throw new Error(data.error || 'Unknown error')
+      if (!res.ok || data.error || data.success === false) {
+        throw new Error(data.error || data.message || 'Unknown error')
       }
 
       const chiefMsg: ChatMessage = { role: 'chief', text: data.response, timestamp: new Date() }

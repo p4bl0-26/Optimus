@@ -137,15 +137,18 @@ async function buildContext(dashboardState: Awaited<ReturnType<typeof commandCen
 // ─── Route Handler ────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
+    console.log('[CHIEF][INFO] Processing Ask Chief query');
     const { message, history } = await req.json();
 
     if (!message || typeof message !== 'string') {
-      return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
+      console.error('[CHIEF][FAIL] Invalid query format');
+      return NextResponse.json({ success: false, message: 'Invalid query format.' }, { status: 400 });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: 'Gemini API key not configured.' }, { status: 500 });
+      console.error('[CHIEF][FAIL] Missing GEMINI_API_KEY');
+      return NextResponse.json({ success: false, message: 'Chief intelligence temporarily unavailable. Please try again in a few moments.' }, { status: 500 });
     }
 
     // Fetch current operational state from the Chief of Staff engine
@@ -155,7 +158,7 @@ export async function POST(req: NextRequest) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       systemInstruction: systemPrompt,
     });
 
@@ -169,11 +172,15 @@ export async function POST(req: NextRequest) {
     const result = await chat.sendMessage(message);
     const response = result.response.text();
 
+    console.log('[CHIEF][SUCCESS] Query processed successfully');
     return NextResponse.json({ response });
   } catch (err: any) {
-    console.error('[ASK CHIEF API]', err);
+    console.error('[CHIEF][FAIL] Gemini integration error:', err?.message || err);
     return NextResponse.json(
-      { error: err?.message || 'Chief is temporarily unavailable.' },
+      { 
+        success: false, 
+        message: 'Chief intelligence temporarily unavailable. Please try again in a few moments.' 
+      },
       { status: 500 }
     );
   }
