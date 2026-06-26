@@ -2,18 +2,20 @@
 
 // ============================================================
 // OPTIMUS — TopBar
-// Page title, AI greeting, notifications, user avatar
-// Ask Chief wired to the Chief of Staff Intelligence Layer
+// Phase 8: Judge Mode — Demo Tour + Reset Demo added
+// Ask Chief wired to Chief of Staff Intelligence Layer
 // ============================================================
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Bell, Menu, Bot } from 'lucide-react'
+import { Bell, Menu, Bot, Play } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PAGE_META } from '@/constants/navigation'
 import type { AppRoute } from '@/constants/navigation'
 import { AskChiefDrawer } from '@/components/intelligence/AskChiefDrawer'
+import { DemoTour } from '@/components/demo/DemoTour'
+import { DemoResetButton } from '@/components/demo/DemoResetButton'
 
 interface TopBarProps {
   onMobileMenuToggle?: () => void
@@ -24,6 +26,7 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
   const pathname = usePathname()
   const meta = PAGE_META[pathname as AppRoute] ?? PAGE_META['/']
   const [isChiefOpen, setIsChiefOpen] = useState(false)
+  const [isTourOpen, setIsTourOpen] = useState(false)
 
   return (
     <>
@@ -80,8 +83,34 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           </motion.div>
         </div>
 
-        {/* Right: Ask Chief + Notifications + Avatar */}
+        {/* Right: Demo Controls + Ask Chief + Notifications + Avatar */}
         <div className="flex items-center gap-2 flex-shrink-0">
+
+          {/* ▶ START DEMO button */}
+          <button
+            id="start-demo-btn"
+            onClick={() => setIsTourOpen(true)}
+            className={cn(
+              'hidden md:flex items-center gap-1.5 h-8 px-3 rounded-lg',
+              'border border-[var(--color-accent-primary)]/50',
+              'bg-[var(--color-accent-glow)]',
+              'text-[var(--color-accent-primary)] text-xs font-bold',
+              'hover:bg-[var(--color-accent-primary)]/20',
+              'hover:border-[var(--color-accent-primary)]',
+              'transition-all duration-150'
+            )}
+            title="Start guided demo tour"
+          >
+            <Play size={10} className="fill-current" />
+            <span>Start Demo</span>
+          </button>
+
+          {/* Reset Demo */}
+          <DemoResetButton />
+
+          {/* Divider */}
+          <div className="w-px h-5 bg-[var(--color-border)] hidden sm:block" />
+
           {/* Ask Chief — wired to Chief of Staff Intelligence Layer */}
           <button
             id="ask-chief-btn"
@@ -154,6 +183,9 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
 
       {/* Ask Chief Drawer — Chief of Staff Intelligence Layer */}
       <AskChiefDrawer isOpen={isChiefOpen} onClose={() => setIsChiefOpen(false)} />
+
+      {/* Demo Tour */}
+      <DemoTour isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} />
     </>
   )
 }

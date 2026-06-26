@@ -8,6 +8,7 @@ import { useMemo } from 'react'
 import Link from 'next/link'
 import { useSimulationEngine } from '@/hooks/useSimulationEngine'
 import { runDiscoveryAction, runClassroomDiscoveryAction, runCalendarDiscoveryAction } from '@/app/actions/discovery'
+import { SystemHealthPanel } from '@/components/dashboard/SystemHealthPanel'
 
 
 // ─── Stat Card ────────────────────────────────────────────────
@@ -450,7 +451,17 @@ export default function CommandCenterPage() {
                   </div>
                 )
               }) : (
-                <div className="text-xs text-[var(--color-text-muted)]">No future outcomes available.</div>
+                <div className="flex flex-col items-center justify-center h-full gap-3 text-center py-6">
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
+                    <Shield size={16} className="text-[var(--color-risk-safe)]" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">All Systems Stable</p>
+                    <p className="text-[10px] text-[var(--color-text-muted)] max-w-[180px] leading-relaxed">
+                      OPTIMUS predicts no critical future risks. Operational state remains stable.
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -499,12 +510,34 @@ export default function CommandCenterPage() {
           </div>
         </SectionContainer>
 
-        {/* Dynamic Action Center */}
-        <SectionContainer title="Action Center (Interventions)">
-          <div className="intel-card p-0 overflow-hidden h-[300px] overflow-y-auto scrollbar-hide">
+        {/* System Health + Action Center Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* System Health */}
+          <div className="lg:col-span-1">
+            <SystemHealthPanel
+              isGmailConnected={isGmailConnected}
+              isClassroomConnected={isClassroomConnected}
+              isCalendarConnected={isCalendarConnected}
+            />
+          </div>
+
+          {/* Dynamic Action Center */}
+          <div className="lg:col-span-2">
+          <SectionContainer title="Action Center (Interventions)">
+            <div className="intel-card p-0 overflow-hidden h-[300px] overflow-y-auto scrollbar-hide">
             <AnimatePresence>
               {interventions.length === 0 && (
-                <div className="p-4 text-xs text-[var(--color-text-muted)]">No active interventions required.</div>
+                <div className="flex flex-col items-center justify-center h-full gap-3 py-8 px-4 text-center">
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
+                    <Shield size={16} className="text-[var(--color-risk-safe)]" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">No Active Interventions</p>
+                    <p className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">
+                      OPTIMUS is monitoring all obligations. No conflicts or overloads detected.
+                    </p>
+                  </div>
+                </div>
               )}
               {[...interventions].sort((a, b) => {
                 const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
@@ -548,8 +581,10 @@ export default function CommandCenterPage() {
                 </motion.div>
               )})}
             </AnimatePresence>
+            </div>
+          </SectionContainer>
           </div>
-        </SectionContainer>
+        </div>
       </div>
     </PageContainer>
   )
