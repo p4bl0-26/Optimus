@@ -3,11 +3,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Play, ShieldAlert, ChevronDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { isJudgeMode, exitJudgeSession } from '@/lib/demo/judgeSession';
 
 export function AccountDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   
   const [judgeMode, setJudgeMode] = useState(false);
 
@@ -45,11 +47,10 @@ export function AccountDropdown() {
     localStorage.removeItem("optimus_judge");
     sessionStorage.clear();
     
-    // Clear any ?mode=judge from URL without reloading immediately
     window.history.replaceState({}, "", window.location.pathname);
     
-    // Hard redirect to root which will trigger the Auth Gate due to missing localStorage
-    window.location.replace('/');
+    router.replace('/');
+    window.location.reload();
   };
 
   return (
@@ -77,53 +78,83 @@ export function AccountDropdown() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 bg-[var(--color-bg-base)] overflow-hidden"
+            className="absolute overflow-hidden flex flex-col w-[calc(100vw-32px)] md:w-[280px] lg:w-[300px]"
             style={{
-              top: 'calc(100% + 12px)',
-              width: '280px',
-              borderRadius: '16px',
+              top: 'calc(100% + 16px)',
+              right: '12px',
+              maxWidth: 'calc(100vw - 32px)',
               zIndex: 9999,
-              boxShadow: '0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(118,192,67,.15)',
+              background: 'rgba(9,9,9,0.96)',
+              backdropFilter: 'blur(24px)',
+              border: '1px solid rgba(118,192,67,0.15)',
+              borderRadius: '18px',
+              boxShadow: '0 24px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(118,192,67,0.10)',
             }}
           >
-            <div className="p-5">
-            <div className="pb-4 mb-2 border-b border-[var(--color-border)]">
-              <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase">
-                Himank Garg
-              </p>
-              <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider mt-1 uppercase">
-                AI Chief of Staff Operator
-              </p>
-            </div>
-            
-            <div className="p-2 space-y-1">
-              <button
-                onClick={handleToggleJudgeMode}
-                className="w-full flex items-center gap-3 px-3 py-2 text-xs font-bold tracking-widest uppercase rounded-lg transition-colors hover:bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)]"
-              >
-                {judgeMode ? (
-                  <>
-                    <ShieldAlert size={14} className="text-[var(--color-risk-critical)]" />
-                    Exit Judge Mode
-                  </>
-                ) : (
-                  <>
-                    <Play size={14} className="text-[var(--color-accent-primary)]" />
-                    Enter Judge Mode
-                  </>
-                )}
-              </button>
+            <div style={{ paddingTop: '24px', paddingBottom: '20px', paddingInline: '24px' }}>
+              <div style={{ marginBottom: '24px' }} className="border-b border-[var(--color-border)] pb-6 flex flex-col items-center">
+                <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase text-center">
+                  Himank Garg
+                </p>
+                <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider uppercase text-center" style={{ marginTop: '16px' }}>
+                  AI Chief of Staff Operator
+                </p>
+              </div>
+              
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={handleToggleJudgeMode}
+                  className="w-full flex items-center justify-center gap-3 text-[11px] font-bold tracking-widest uppercase transition-all hover:bg-[rgba(118,192,67,0.10)] text-[var(--color-text-primary)] group"
+                  style={{
+                    height: '48px',
+                    paddingInline: '20px',
+                    borderRadius: '12px',
+                    transition: 'all 200ms ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 0 24px rgba(118,192,67,0.12)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  {judgeMode ? (
+                    <>
+                      <ShieldAlert size={14} className="text-[var(--color-risk-critical)]" />
+                      Exit Judge Mode
+                    </>
+                  ) : (
+                    <>
+                      <Play size={14} className="text-[var(--color-accent-primary)]" />
+                      Enter Judge Mode
+                    </>
+                  )}
+                </button>
 
-              <div className="h-px bg-[var(--color-border)] my-1" />
-
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2 text-xs font-bold tracking-widest uppercase rounded-lg transition-colors hover:bg-[var(--color-risk-critical-bg)] text-[var(--color-risk-critical)]"
-              >
-                <LogOut size={14} />
-                Logout
-              </button>
-            </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-3 text-[11px] font-bold tracking-widest uppercase transition-all hover:bg-[var(--color-risk-critical-bg)] text-[var(--color-risk-critical)] group"
+                  style={{
+                    height: '48px',
+                    paddingInline: '20px',
+                    borderRadius: '12px',
+                    transition: 'all 200ms ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 0 24px rgba(255,68,68,0.12)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <LogOut size={14} />
+                  Logout
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
