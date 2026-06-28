@@ -31,7 +31,7 @@ import {
 import { processObligation } from '../intelligence';
 import { Obligation as IntelObligation, ImportanceLevel } from '@/types';
 
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
+import { getActiveUserId } from '../auth';
 const CLASSROOM_REDIRECT_URI =
   process.env.GOOGLE_CLASSROOM_REDIRECT_URI ||
   'https://optimus-gray.vercel.app/api/integrations/classroom/callback';
@@ -107,10 +107,13 @@ export async function runClassroomDiscoveryAgent() {
   console.log('[CLASSROOM AGENT] Booting up...');
 
   // 1. Retrieve Classroom integration tokens
+  const userId = await getActiveUserId();
+  if (!userId) throw new Error("No active user session.");
+
   const { data: integration, error: integrationError } = await supabase
     .from('integrations')
     .select('access_token, refresh_token')
-    .eq('user_id', DEMO_USER_ID)
+    .eq('user_id', userId)
     .eq('provider', 'classroom')
     .single();
 
@@ -205,7 +208,7 @@ export async function runClassroomDiscoveryAgent() {
 
         // 5c. Create DB obligation
         const dbObligation = await obligationRepo.create({
-          user_id: DEMO_USER_ID,
+          user_id: userId,
           title: cw.title ?? 'Untitled Assignment',
           description: cw.description ?? `Coursework from ${course.name}`,
           source: 'classroom',
@@ -230,7 +233,7 @@ export async function runClassroomDiscoveryAgent() {
 
         // 5e. Persist RiskProfile (using existing riskProfileRepo)
         await riskProfileRepo.create({
-          user_id: DEMO_USER_ID,
+          user_id: userId,
           obligation_id: dbObligation.id,
           risk_score: decision.risk.score,
           risk_band: decision.risk.band,
@@ -258,7 +261,7 @@ export async function runClassroomDiscoveryAgent() {
 
         // 5f. Persist Briefing entry
         await briefingRepo.create({
-          user_id: DEMO_USER_ID,
+          user_id: userId,
           briefing_type: 'discovery',
           content: {
             title: 'Classroom Obligation Discovered',
@@ -274,7 +277,7 @@ export async function runClassroomDiscoveryAgent() {
             decision.rescuePlan.actions.today[0] ?? 'Begin implementation today.';
 
           await interventionRepo.create({
-            user_id: DEMO_USER_ID,
+            user_id: userId,
             obligation_id: dbObligation.id,
             type: 'risk_alert',
             severity: decision.risk.band === 'Critical' ? 'critical' : 'high',
@@ -289,7 +292,7 @@ export async function runClassroomDiscoveryAgent() {
 
         // 5h. Log agent activity
         await agentActivityRepo.create({
-          user_id: DEMO_USER_ID,
+          user_id: userId,
           agent_name: 'CLASSROOM AGENT',
           action: `Discovered and processed coursework: ${dbObligation.title}`,
           obligation_id: dbObligation.id,

@@ -3,7 +3,9 @@ import { getTokensFromCode } from '@/lib/integrations/googleAuth';
 import { supabase } from '@/lib/db/supabase';
 
 // For the demo we use a fixed user ID
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000000";
+import { getActiveUserId } from '@/lib/auth';
+
+// Replaced (await getActiveUserId() || '') with activeUserId logic
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -27,7 +29,7 @@ export async function GET(request: Request) {
     const { data: existing, error: selectError } = await supabase
       .from('integrations')
       .select('id')
-      .eq('user_id', DEMO_USER_ID)
+      .eq('user_id', (await getActiveUserId() || ''))
       .eq('provider', 'gmail')
       .single();
 
@@ -56,7 +58,7 @@ export async function GET(request: Request) {
       const { error: insertError } = await supabase
         .from('integrations')
         .insert({
-          user_id: DEMO_USER_ID,
+          user_id: (await getActiveUserId() || ''),
           provider: 'gmail',
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,

@@ -3,7 +3,9 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { commandCenterRepo } from '@/lib/repositories/CommandCenterRepository';
 import { getActivePatterns } from '@/lib/intelligence/memoryEngine';
 
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
+import { getActiveUserId } from '@/lib/auth';
+
+// Replaced (await getActiveUserId() || '') with activeUserId logic
 
 // ─── System Prompt ────────────────────────────────────────────
 function buildSystemPrompt(context: string): string {
@@ -152,7 +154,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch current operational state from the Chief of Staff engine
-    const dashboardState = await commandCenterRepo.getDashboardState(DEMO_USER_ID);
+    const dashboardState = await commandCenterRepo.getDashboardState((await getActiveUserId() || ''));
     const context = await buildContext(dashboardState);
     const systemPrompt = buildSystemPrompt(context);
 

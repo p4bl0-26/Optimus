@@ -3,6 +3,7 @@ export const JUDGE_KEY = 'optimus_judge_mode';
 export function startJudgeSession(mode: "manual" | "url") {
   if (typeof window !== 'undefined') {
     localStorage.setItem(JUDGE_KEY, 'true');
+    document.cookie = `${JUDGE_KEY}=true; path=/`;
     window.dispatchEvent(new Event('judge-mode-changed'));
   }
 }
@@ -15,6 +16,7 @@ export function isJudgeMode(): boolean {
 export function exitJudgeSession() {
   if (typeof window !== 'undefined') {
     localStorage.removeItem(JUDGE_KEY);
+    document.cookie = `${JUDGE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     window.dispatchEvent(new Event('judge-mode-changed'));
     window.location.href = '/';
   }

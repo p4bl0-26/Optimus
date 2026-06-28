@@ -3,7 +3,9 @@ import { supabase } from '../db/supabase';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { google } from 'googleapis';
 
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000000";
+import { getActiveUserId } from '@/lib/auth';
+
+// Replaced (await getActiveUserId() || '') with activeUserId logic
 
 export async function runIntegrationHealthCheck() {
   const status = {
@@ -41,7 +43,7 @@ export async function runIntegrationHealthCheck() {
       const { data, error } = await supabase
         .from('integrations')
         .select('access_token, refresh_token')
-        .eq('user_id', DEMO_USER_ID)
+        .eq('user_id', (await getActiveUserId() || ''))
         .eq('provider', 'gmail')
         .single();
       

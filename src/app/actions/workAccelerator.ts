@@ -14,7 +14,9 @@ import { generateWorkAccelerationPackage } from '@/lib/intelligence/workAccelera
 import { generateFormDraft } from '@/lib/intelligence/formAssistantEngine';
 import { WorkAccelerationPackage, FormDraft } from '@/types';
 
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
+import { getActiveUserId } from '@/lib/auth';
+
+// Replaced (await getActiveUserId() || '') with activeUserId logic
 
 // ─── Action 1: Work Acceleration Package ─────────────────────
 export async function generateAccelerationPackageAction(
@@ -26,7 +28,7 @@ export async function generateAccelerationPackageAction(
     const [obligation, riskProfile, dashboardState] = await Promise.all([
       obligationRepo.findById(obligationId),
       riskProfileRepo.findByObligation(obligationId),
-      commandCenterRepo.getDashboardState(DEMO_USER_ID),
+      commandCenterRepo.getDashboardState((await getActiveUserId() || '')),
     ]);
 
     if (!obligation) {
@@ -56,7 +58,7 @@ export async function generateFormDraftAction(
   try {
     const [obligation, memories] = await Promise.all([
       obligationRepo.findById(obligationId),
-      agentMemoryRepo.findAll({ user_id: DEMO_USER_ID }),
+      agentMemoryRepo.findAll({ user_id: (await getActiveUserId() || '') }),
     ]);
 
     if (!obligation) {

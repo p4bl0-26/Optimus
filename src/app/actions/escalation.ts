@@ -3,11 +3,14 @@
 import { revalidatePath } from 'next/cache'
 import { interventionRepo } from '@/lib/repositories'
 
-const DEMO_USER_ID = 'demo-user-1'
+import { getActiveUserId } from '@/lib/auth'
 
 export async function escalateToPartnerAction(obligationId: string, partnerEmail: string) {
+  const userId = await getActiveUserId()
+  if (!userId) throw new Error("Unauthorized")
+
   await interventionRepo.create({
-    user_id: DEMO_USER_ID,
+    user_id: userId,
     obligation_id: obligationId,
     type: 'Partner Escalation',
     severity: 'Critical',

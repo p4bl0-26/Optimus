@@ -15,9 +15,9 @@ export default async function WeeklyReportsPage() {
   try {
     dashboardState = await fetchDashboardStateAction()
     if (dashboardState) {
-      // Demo User ID used in actions
-      const DEMO_USER_ID = "00000000-0000-0000-0000-000000000000"
-      const memories = await agentMemoryRepo.findAll({ user_id: DEMO_USER_ID })
+      const { getActiveUserId } = await import('@/lib/auth')
+      const userId = await getActiveUserId()
+      const memories = userId ? await agentMemoryRepo.findAll({ user_id: userId }) : []
       
       report = await generateWeeklyReport(
         dashboardState.obligations,

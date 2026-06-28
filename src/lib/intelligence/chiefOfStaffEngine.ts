@@ -57,9 +57,14 @@ export async function generateChiefOfStaffBriefing(
   const eveningBriefing = generateEveningBriefing(obligations, sortedProfiles);
 
   // 7. Executive Summary
-  const executiveSummary = `You have ${activeObligations.length} active commitments. ` +
-    (highestRiskObligation ? `Immediate attention required on ${highestRiskObligation.title}. ` : 'All systems stable. ') +
-    (overloadedDays.length > 0 ? `Warning: ${overloadedDays.join(', ')} ${overloadedDays.length > 1 ? 'are' : 'is'} overloaded.` : '');
+  let executiveSummary = ''
+  if (activeObligations.length === 0) {
+    executiveSummary = 'No actionable obligations detected.'
+  } else {
+    executiveSummary = `You have ${activeObligations.length} active commitments. ` +
+      (highestRiskObligation ? `Immediate attention required on ${highestRiskObligation.title}. ` : 'All systems stable. ') +
+      (overloadedDays.length > 0 ? `Warning: ${overloadedDays.join(', ')} ${overloadedDays.length > 1 ? 'are' : 'is'} overloaded.` : '');
+  }
 
   return {
     executiveSummary,

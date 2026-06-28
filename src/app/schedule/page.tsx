@@ -5,11 +5,13 @@ import { ScheduleClient } from '@/components/schedule/ScheduleClient';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { SectionContainer } from '@/components/layout/SectionContainer';
 
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
+import { getActiveUserId } from '@/lib/auth';
+
+// Replaced (await getActiveUserId() || '') with activeUserId logic
 
 export default async function SchedulePage() {
   // Fetch unified state
-  const state = await commandCenterRepo.getDashboardState(DEMO_USER_ID);
+  const state = await commandCenterRepo.getDashboardState((await getActiveUserId() || ''));
   
   // Fetch memory patterns
   const memoryPatterns = await getActivePatterns();

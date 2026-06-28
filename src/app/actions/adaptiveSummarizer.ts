@@ -15,7 +15,9 @@ import { generateAdaptiveExecutiveSummary } from '@/lib/intelligence/adaptiveExe
 import { generateFormDraft } from '@/lib/intelligence/formAssistantEngine';
 import { ExecutiveSummaryPackage, FutureOutcome, RescuePlan } from '@/types';
 
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
+import { getActiveUserId } from '@/lib/auth';
+
+// Replaced (await getActiveUserId() || '') with activeUserId logic
 
 export async function generateAdaptiveSummaryAction(
   obligationId: string
@@ -25,8 +27,8 @@ export async function generateAdaptiveSummaryAction(
     const [obligation, riskProfile, dashboardState, memories] = await Promise.all([
       obligationRepo.findById(obligationId),
       riskProfileRepo.findByObligation(obligationId),
-      commandCenterRepo.getDashboardState(DEMO_USER_ID),
-      agentMemoryRepo.findAll({ user_id: DEMO_USER_ID }),
+      commandCenterRepo.getDashboardState((await getActiveUserId() || '')),
+      agentMemoryRepo.findAll({ user_id: (await getActiveUserId() || '') }),
     ]);
 
     if (!obligation) {

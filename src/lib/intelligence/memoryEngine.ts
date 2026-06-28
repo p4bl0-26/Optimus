@@ -9,7 +9,7 @@
 import { agentMemoryRepo } from '../repositories';
 import { AgentMemory } from '@/types/database';
 
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
+import { getActiveUserId } from '@/lib/auth';
 
 export interface MemoryPattern {
   pattern: string;
@@ -20,8 +20,11 @@ export interface MemoryPattern {
 
 export async function storeMemoryPattern(pattern: MemoryPattern): Promise<void> {
   // Try to find an existing memory for this pattern
+  const userId = await getActiveUserId();
+  if (!userId) return;
+
   const existingMemories = await agentMemoryRepo.findAll({
-    user_id: DEMO_USER_ID,
+    user_id: userId,
     memory_type: 'pattern',
   });
 
@@ -41,7 +44,7 @@ export async function storeMemoryPattern(pattern: MemoryPattern): Promise<void> 
   } else {
     // Create new
     await agentMemoryRepo.create({
-      user_id: DEMO_USER_ID,
+      user_id: userId,
       agent_name: 'CHIEF_OF_STAFF',
       memory_type: 'pattern',
       content: pattern,
@@ -50,8 +53,11 @@ export async function storeMemoryPattern(pattern: MemoryPattern): Promise<void> 
 }
 
 export async function getActivePatterns(): Promise<MemoryPattern[]> {
+  const userId = await getActiveUserId();
+  if (!userId) return [];
+
   const memories = await agentMemoryRepo.findAll({
-    user_id: DEMO_USER_ID,
+    user_id: userId,
     memory_type: 'pattern',
   });
 
@@ -59,8 +65,11 @@ export async function getActivePatterns(): Promise<MemoryPattern[]> {
 }
 
 export async function logHistoricalRecommendation(recommendationTitle: string, reason: string): Promise<void> {
+  const userId = await getActiveUserId();
+  if (!userId) return;
+
   await agentMemoryRepo.create({
-    user_id: DEMO_USER_ID,
+    user_id: userId,
     agent_name: 'CHIEF_OF_STAFF',
     memory_type: 'historical_recommendation',
     content: {

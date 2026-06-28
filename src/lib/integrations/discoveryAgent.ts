@@ -13,7 +13,7 @@ import { processObligation } from '../intelligence'; // Assuming this is where t
 import { Obligation } from '@/types/database';
 import { runIntegrationHealthCheck } from './healthCheck';
 
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000000";
+import { getActiveUserId } from '../auth';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function runDiscoveryAgent() {
@@ -26,11 +26,13 @@ export async function runDiscoveryAgent() {
       throw new Error(`Integration Health Check Failed: ${health.errorDetails.join(' | ')}`);
     }
 
-    // 1. Get Integration Token
+    const userId = await getActiveUserId();
+    if (!userId) throw new Error("No active user session.");
+
     const { data: integration, error: integrationError } = await supabase
       .from('integrations')
       .select('access_token, refresh_token')
-      .eq('user_id', DEMO_USER_ID)
+      .eq('user_id', userId)
       .eq('provider', 'gmail')
       .single();
 
@@ -108,7 +110,7 @@ export async function runDiscoveryAgent() {
       
       // 4. Persist Obligation
       const newObligation = await obligationRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: userId,
         title: extraction.title,
         description: extraction.description,
         source: 'gmail',
@@ -133,7 +135,7 @@ export async function runDiscoveryAgent() {
       const riskBand = riskScore >= 80 ? 'Critical' : riskScore >= 60 ? 'High Risk' : riskScore >= 30 ? 'Monitor' : 'Safe';
       
       const riskProfile = await riskProfileRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: userId,
         obligation_id: newObligation.id,
         risk_score: riskScore,
         risk_band: riskBand,
@@ -152,7 +154,7 @@ export async function runDiscoveryAgent() {
 
       // 6. Generate Briefing
       await briefingRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: userId,
         briefing_type: 'discovery',
         content: {
           title: 'New Obligation Discovered',
@@ -165,7 +167,7 @@ export async function runDiscoveryAgent() {
       // 7. Generate Intervention (if critical)
       if (riskBand === 'Critical') {
         await interventionRepo.create({
-          user_id: DEMO_USER_ID,
+          user_id: userId,
           obligation_id: newObligation.id,
           type: 'risk_alert',
           severity: 'high',
@@ -176,7 +178,7 @@ export async function runDiscoveryAgent() {
 
       // 8. Log Activity
       const activityResult = await agentActivityRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: userId,
         agent_name: 'DISCOVERY AGENT',
         action: `New obligation discovered from Gmail: ${extraction.title}`,
         obligation_id: newObligation.id,
@@ -215,6 +217,9 @@ async function extractObligationWithGemini(subject: string, from: string, bodySn
       From: ${from}
       Subject: ${subject}
       Snippet: ${bodySnippet}
+
+      Special Rule for Security Notifications (e.g. "New Google Sign-in", "New Device Login", "Security Alert"):
+      Default classification should be Priority: "Low", and it is NOT an obligation unless there is explicit urgency requiring the user to take a specific action (like "Action Required: Account Suspended"). Do not fabricate deadlines or urgency without evidence.
 
       Respond strictly in JSON format with the following schema:
       {

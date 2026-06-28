@@ -30,7 +30,6 @@ import {
   Calendar,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { ThemeToggle } from './ThemeToggle'
 import { NAV_ITEMS } from '@/constants/navigation'
 
 // ─── Icon Map ────────────────────────────────────────────────
@@ -69,7 +68,6 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const isFocusMode = pathname === '/focus'
 
   const [judgeMode, setJudgeMode] = useState(false)
   const [user, setUser] = useState<any>(null)
@@ -120,8 +118,8 @@ export function Sidebar({
     }, 50)
   }
 
-  // Force collapse in focus mode
-  const effectiveIsCollapsed = isFocusMode ? true : isCollapsed
+  // Force collapse logic
+  const effectiveIsCollapsed = isCollapsed
 
   return (
     <>
@@ -161,11 +159,14 @@ export function Sidebar({
         aria-label="Main navigation"
       >
         {/* ── Logo Area ────────────────────────────────────── */}
-        <div
+        <Link
+          href={judgeMode ? "/?mode=judge" : "/"}
+          aria-label="Return to Command Center"
+          title="Return to Command Center"
           className={cn(
-            'flex items-center border-b border-[var(--sidebar-border)]',
-            'flex-shrink-0 h-24', // increased height
-            effectiveIsCollapsed ? 'justify-center px-0' : 'px-6 gap-4' // increased padding
+            'group flex items-center border-b border-[var(--sidebar-border)]',
+            'flex-shrink-0 h-24 cursor-pointer',
+            effectiveIsCollapsed ? 'justify-center px-0' : 'px-6 gap-4'
           )}
         >
           {/* Shield Logo Mark */}
@@ -182,7 +183,7 @@ export function Sidebar({
                 alt="Optimus" 
                 width={36}
                 height={36}
-                className="w-full h-full object-cover mix-blend-screen" 
+                className="w-full h-full object-cover mix-blend-screen transition-transform duration-300 ease-in-out group-hover:scale-[1.03]" 
               />
             </div>
             {/* Active pulse dot */}
@@ -200,7 +201,7 @@ export function Sidebar({
                 className="flex flex-col overflow-hidden"
               >
                 <span
-                  className="font-orbitron text-sm font-bold tracking-widest text-[var(--color-text-primary)] uppercase leading-none"
+                  className="font-orbitron text-sm font-bold tracking-widest text-[var(--color-text-primary)] uppercase leading-none group-hover:text-[var(--color-accent-primary)] group-hover:drop-shadow-[0_0_8px_rgba(118,192,67,0.4)] transition-all duration-300"
                   style={{ fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)' }}
                 >
                   OPTIMUS
@@ -211,11 +212,11 @@ export function Sidebar({
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </Link>
 
         {/* ── Navigation Items ──────────────────────────────── */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-4 px-2">
-          {!isFocusMode && NAV_ITEMS.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const isActive = item.href === '/'
               ? pathname === '/'
               : pathname.startsWith(item.href)
@@ -289,8 +290,7 @@ export function Sidebar({
         </nav>
 
         {/* ── Unified Footer ──────────────────────── */}
-        {!isFocusMode && (
-          <div className={cn(
+        <div className={cn(
             "flex flex-col border-t border-[var(--sidebar-border)] transition-all duration-300 ease-in-out flex-shrink-0",
             effectiveIsCollapsed ? "p-4 items-center gap-4" : "p-6 gap-6"
           )}>
@@ -362,13 +362,11 @@ export function Sidebar({
               )}
             </AnimatePresence>
 
-            {/* Theme Toggle & Collapse Button */}
+            {/* Collapse Button */}
             <div className={cn(
               "flex flex-col gap-4 transition-all duration-300 ease-in-out w-full",
               effectiveIsCollapsed ? "items-center" : ""
             )}>
-              <ThemeToggle collapsed={effectiveIsCollapsed} />
-              
               <button
                 id="sidebar-collapse-btn"
                 onClick={onToggle}
@@ -394,7 +392,6 @@ export function Sidebar({
               </button>
             </div>
           </div>
-        )}
       </motion.aside>
     </>
   )

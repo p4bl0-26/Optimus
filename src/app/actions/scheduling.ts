@@ -6,7 +6,9 @@ import { supabase } from '@/lib/db/supabase';
 import { agentActivityRepo, interventionRepo } from '@/lib/repositories';
 import { revalidatePath } from 'next/cache';
 
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
+import { getActiveUserId } from '@/lib/auth';
+
+// Replaced (await getActiveUserId() || '') with activeUserId logic
 const CALENDAR_REDIRECT_URI = process.env.GOOGLE_CALENDAR_REDIRECT_URI || 'https://optimus-gray.vercel.app/api/integrations/calendar/callback';
 
 export async function resolveConflictAction(eventId: string, newStartTime: string) {
@@ -14,7 +16,7 @@ export async function resolveConflictAction(eventId: string, newStartTime: strin
     const { data: integration, error: integrationError } = await supabase
       .from('integrations')
       .select('access_token, refresh_token')
-      .eq('user_id', DEMO_USER_ID)
+      .eq('user_id', (await getActiveUserId() || ''))
       .eq('provider', 'calendar')
       .single();
 
@@ -64,7 +66,7 @@ export async function resolveConflictAction(eventId: string, newStartTime: strin
 
     // Log Activity
     await agentActivityRepo.create({
-      user_id: DEMO_USER_ID,
+      user_id: (await getActiveUserId() || ''),
       agent_name: 'calendar_agent',
       action: `Resolved conflict for event ${eventId}. Rescheduled to ${startDateTime.toLocaleString()}`,
       obligation_id: eventId,
@@ -73,7 +75,7 @@ export async function resolveConflictAction(eventId: string, newStartTime: strin
 
     // Find and resolve the intervention
     const interventions = await interventionRepo.findAll({
-      user_id: DEMO_USER_ID,
+      user_id: (await getActiveUserId() || ''),
       obligation_id: eventId,
       status: 'pending'
     });

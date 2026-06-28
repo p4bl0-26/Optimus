@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { SectionContainer } from '@/components/layout/SectionContainer'
-import { Settings, Link2, Bell, Palette, User } from 'lucide-react'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
+import { Settings, Link2, Bell, Palette, User, CheckCircle2, XCircle } from 'lucide-react'
+import { supabase } from '@/lib/db/supabase'
+import { getActiveUserId } from '@/lib/auth'
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -23,7 +23,7 @@ function SettingsSection({
   color?: string
 }) {
   return (
-    <div className="intel-card p-5">
+    <div className="intel-card p-5 border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-elevated)]">
       <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[var(--color-border)]">
         <div
           className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -32,7 +32,7 @@ function SettingsSection({
           <Icon size={15} strokeWidth={1.5} style={{ color }} />
         </div>
         <div>
-          <p className="text-[12px] font-bold text-[var(--color-text-primary)]">{title}</p>
+          <p className="text-[12px] font-bold text-[var(--color-text-primary)] uppercase tracking-widest">{title}</p>
           <p className="text-[10px] text-[var(--color-text-muted)]">{description}</p>
         </div>
       </div>
@@ -41,108 +41,178 @@ function SettingsSection({
   )
 }
 
-function SettingsRow({ label, value }: { label: string; value?: string }) {
+function SettingsRow({ label, value, children }: { label: string; value?: string; children?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[var(--color-border-subtle)] last:border-0">
-      <span className="text-[12px] text-[var(--color-text-secondary)]">{label}</span>
+    <div className="flex items-center justify-between py-3 border-b border-[var(--color-border-subtle)] last:border-0">
+      <span className="text-[12px] font-medium text-[var(--color-text-secondary)]">{label}</span>
       {value && (
-        <span className="text-[11px] text-[var(--color-text-muted)]">{value}</span>
+        <span className="text-[11px] font-mono font-bold tracking-widest text-[var(--color-text-muted)] uppercase">{value}</span>
       )}
+      {children}
     </div>
   )
 }
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const userId = await getActiveUserId()
+  let profile = { displayName: 'Operator', email: 'Unknown', timezone: 'UTC', language: 'English' }
+  let dbIntegrations: any[] = []
+
+  if (userId) {
+    // 1. Fetch user metadata
+    const { data: { user } } = await supabase.auth.admin.getUserById(userId).catch(() => ({ data: { user: null } }))
+    
+    // Fallback to active session if admin fails (which it might in client mode, but this is a server component)
+    // Actually, `supabase.auth.getSession()` is safer for the active user.
+    const { data: { session } } = await supabase.auth.getSession()
+    const activeUser = session?.user
+
+    if (activeUser) {
+      const metadata = activeUser.user_metadata
+      const fullName = metadata?.full_name || metadata?.name || ''
+      profile.displayName = metadata?.optimus_display_name || fullName.split(' ')[0] || 'Operator'
+      profile.email = activeUser.email || 'abc@gmail.com'
+      profile.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata'
+      profile.language = 'English'
+    }
+
+    // 2. Fetch Integrations
+    const { data: intData } = await supabase
+      .from('integrations')
+      .select('provider')
+      .eq('user_id', userId)
+
+    dbIntegrations = intData || []
+  }
+
+  const isConnected = (provider: string) => dbIntegrations.some(i => i.provider === provider)
+
+  const providers = [
+    { id: 'gmail', name: 'GMAIL', comingSoon: false },
+    { id: 'calendar', name: 'GOOGLE CALENDAR', comingSoon: false },
+    { id: 'classroom', name: 'GOOGLE CLASSROOM', comingSoon: false },
+    { id: 'whatsapp', name: 'WHATSAPP', comingSoon: true }
+  ]
+
   return (
     <PageContainer id="settings-page">
       {/* Page Header */}
-      <div className="mb-6">
+      <div className="mb-8">
         <h1
-          className="text-lg font-bold text-[var(--color-text-primary)] mb-0.5"
+          className="text-2xl font-bold text-[var(--color-text-primary)] mb-1 uppercase tracking-widest"
           style={{ fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)' }}
         >
-          Settings
+          System Settings
         </h1>
-        <p className="text-[13px] text-[var(--color-text-muted)]">
+        <p className="text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-widest">
           Manage your OPTIMUS preferences and integrations
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Appearance */}
-        <SettingsSection
-          icon={Palette}
-          title="Appearance"
-          description="Theme and display preferences"
-          color="var(--color-accent-primary)"
-        >
-          <div className="space-y-3">
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <p className="text-[12px] font-medium text-[var(--color-text-primary)]">Theme</p>
-                <p className="text-[10px] text-[var(--color-text-muted)]">Dark or light command center</p>
-              </div>
-              <ThemeToggle />
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="space-y-6">
+          {/* Profile */}
+          <SettingsSection
+            icon={User}
+            title="Identity Profile"
+            description="Your identity and personal parameters"
+            color="var(--color-accent-secondary)"
+          >
+            <div className="space-y-1">
+              <SettingsRow label="Display Name" value={profile.displayName} />
+              <SettingsRow label="Email Address" value={profile.email} />
+              <SettingsRow label="Timezone" value={profile.timezone} />
+              <SettingsRow label="Language" value={profile.language} />
             </div>
-            <SettingsRow label="Sidebar default state" value="Expanded" />
-            <SettingsRow label="Compact mode" />
-            <SettingsRow label="Matrix background" value="Subtle (default)" />
-          </div>
-        </SettingsSection>
+          </SettingsSection>
 
-        {/* Profile */}
-        <SettingsSection
-          icon={User}
-          title="Profile"
-          description="Your identity and preferences"
-          color="var(--color-accent-secondary)"
-        >
-          <div className="space-y-0">
-            <SettingsRow label="Display name" />
-            <SettingsRow label="Email" />
-            <SettingsRow label="Timezone" />
-            <SettingsRow label="Language" value="English" />
-          </div>
-        </SettingsSection>
-
-        {/* Integrations */}
-        <SettingsSection
-          icon={Link2}
-          title="Integrations"
-          description="Connect your sources to OPTIMUS"
-          color="var(--color-risk-monitor)"
-        >
-          {['Gmail', 'Google Calendar', 'Google Classroom', 'WhatsApp'].map((name) => (
-            <div
-              key={name}
-              className="flex items-center justify-between py-2 border-b border-[var(--color-border-subtle)] last:border-0"
-            >
-              <span className="text-[12px] text-[var(--color-text-secondary)]">{name}</span>
+          {/* Appearance */}
+          <SettingsSection
+            icon={Palette}
+            title="Appearance"
+            description="Visual engine preferences"
+            color="var(--color-accent-primary)"
+          >
+            <div className="space-y-1">
+              <SettingsRow label="Theme" value="OPTIMUS Dark (Default)" />
+              <SettingsRow label="Sidebar default state" value="Expanded" />
             </div>
-          ))}
-        </SettingsSection>
+          </SettingsSection>
+        </div>
 
-        {/* Notifications */}
-        <SettingsSection
-          icon={Bell}
-          title="Notifications"
-          description="Intervention and alert settings"
-          color="var(--color-risk-critical)"
-        >
-          <div className="space-y-0">
-            <SettingsRow label="Morning briefing" />
-            <SettingsRow label="Evening briefing" />
-            <SettingsRow label="Critical risk alerts" />
-            <SettingsRow label="WhatsApp escalation" />
-            <SettingsRow label="Risk threshold (critical)" value="86%" />
-          </div>
-        </SettingsSection>
-      </div>
+        <div className="space-y-6">
+          {/* Integrations */}
+          <SettingsSection
+            icon={Link2}
+            title="Intelligence Sources"
+            description="Active data pipelines"
+            color="var(--color-risk-monitor)"
+          >
+            <div className="space-y-2">
+              {providers.map(p => {
+                const connected = isConnected(p.id)
+                return (
+                  <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-[var(--color-border-subtle)] last:border-0 gap-3">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <p className="text-[12px] font-bold text-[var(--color-text-primary)] uppercase tracking-widest">{p.name}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          {p.comingSoon ? (
+                            <span className="text-[9px] font-bold tracking-widest uppercase bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded text-[var(--color-text-muted)]">COMING SOON</span>
+                          ) : connected ? (
+                            <>
+                              <CheckCircle2 size={10} className="text-[var(--color-accent-primary)]" />
+                              <span className="text-[9px] font-bold tracking-widest uppercase text-[var(--color-accent-primary)]">CONNECTED</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle size={10} className="text-[var(--color-risk-critical)]" />
+                              <span className="text-[9px] font-bold tracking-widest uppercase text-[var(--color-risk-critical)]">NOT CONNECTED</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {!p.comingSoon && (
+                      <div>
+                        {connected ? (
+                          <a 
+                            href={`/api/integrations/${p.id}/disconnect`}
+                            className="inline-flex h-8 items-center justify-center px-4 rounded-md border border-[var(--color-risk-critical)]/30 text-[9px] font-bold tracking-widest text-[var(--color-risk-critical)] uppercase hover:bg-[var(--color-risk-critical)] hover:text-[var(--color-text-inverse)] transition-colors"
+                          >
+                            DISCONNECT
+                          </a>
+                        ) : (
+                          <a 
+                            href={`/api/integrations/${p.id}/connect`}
+                            className="inline-flex h-8 items-center justify-center px-4 rounded-md bg-[var(--color-accent-primary)]/10 border border-[var(--color-accent-primary)]/30 text-[9px] font-bold tracking-widest text-[var(--color-accent-primary)] uppercase hover:bg-[var(--color-accent-primary)] hover:text-[var(--color-text-inverse)] transition-colors"
+                          >
+                            CONNECT
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </SettingsSection>
 
-      {/* Version badge */}
-      <div className="mt-6 flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
-        <Settings size={12} strokeWidth={1.5} />
-        <span>OPTIMUS Core — Build v0.1.0</span>
+          {/* Notifications */}
+          <SettingsSection
+            icon={Bell}
+            title="Notification Engine"
+            description="Intervention and alert parameters"
+            color="var(--color-risk-critical)"
+          >
+            <div className="space-y-1">
+              <SettingsRow label="Critical Risk Alerts" value="Active" />
+              <SettingsRow label="Morning Briefing" value="08:00 Local" />
+              <SettingsRow label="Evening Briefing" value="20:00 Local" />
+            </div>
+          </SettingsSection>
+        </div>
       </div>
     </PageContainer>
   )

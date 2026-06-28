@@ -25,7 +25,9 @@ import {
 import { processObligation } from '../intelligence';
 import { Obligation as IntelObligation, ImportanceLevel } from '@/types';
 
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000000';
+import { getActiveUserId } from '@/lib/auth';
+
+// Replaced (await getActiveUserId() || '') with activeUserId logic
 const CALENDAR_REDIRECT_URI =
   process.env.GOOGLE_CALENDAR_REDIRECT_URI ||
   'https://optimus-gray.vercel.app/api/integrations/calendar/callback';
@@ -110,7 +112,7 @@ async function runConflictIntelligence(events: calendar_v3.Schema$Event[]) {
       
       if (nextStart < currentEnd) {
         await interventionRepo.create({
-          user_id: DEMO_USER_ID,
+          user_id: (await getActiveUserId() || ''),
           obligation_id: current.id || 'system-conflict', // Ideally link to obligation id if known, but this is a broad conflict
           type: 'Schedule Conflict Detected',
           severity: 'Critical',
@@ -136,7 +138,7 @@ async function runConflictIntelligence(events: calendar_v3.Schema$Event[]) {
   for (const [date, eventsOnDay] of Object.entries(deadlinesByDay)) {
     if (eventsOnDay.length > 1) {
       await interventionRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: (await getActiveUserId() || ''),
         obligation_id: 'system-conflict',
         type: 'Deadline Cluster Detected',
         severity: 'High',
@@ -164,7 +166,7 @@ async function runConflictIntelligence(events: calendar_v3.Schema$Event[]) {
       const twoHoursMs = 2 * 60 * 60 * 1000;
       if (freeTimeBefore > 0 && freeTimeBefore < twoHoursMs) {
         await interventionRepo.create({
-          user_id: DEMO_USER_ID,
+          user_id: (await getActiveUserId() || ''),
           obligation_id: event.id || 'system-conflict',
           type: 'Insufficient Preparation Window',
           severity: 'High',
@@ -187,7 +189,7 @@ export async function runCalendarDiscoveryAgent() {
   const { data: integration, error: integrationError } = await supabase
     .from('integrations')
     .select('access_token, refresh_token')
-    .eq('user_id', DEMO_USER_ID)
+    .eq('user_id', (await getActiveUserId() || ''))
     .eq('provider', 'calendar')
     .single();
 
@@ -271,7 +273,7 @@ export async function runCalendarDiscoveryAgent() {
 
       // Create DB obligation
       const dbObligation = await obligationRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: (await getActiveUserId() || ''),
         title: event.summary ?? 'Untitled Event',
         description: event.description ?? event.summary ?? 'Untitled Event',
         source: 'calendar',
@@ -294,7 +296,7 @@ export async function runCalendarDiscoveryAgent() {
       const decision = processObligation(intelObligation);
 
       await riskProfileRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: (await getActiveUserId() || ''),
         obligation_id: dbObligation.id,
         risk_score: decision.risk.score,
         risk_band: decision.risk.band,
@@ -317,7 +319,7 @@ export async function runCalendarDiscoveryAgent() {
       });
 
       await briefingRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: (await getActiveUserId() || ''),
         briefing_type: 'discovery',
         content: {
           title: 'Calendar Obligation Discovered',
@@ -330,7 +332,7 @@ export async function runCalendarDiscoveryAgent() {
       if (decision.risk.band === 'Critical' || decision.risk.band === 'High Risk') {
         const immediateAction = decision.rescuePlan.actions.today[0] ?? 'Begin preparation today.';
         await interventionRepo.create({
-          user_id: DEMO_USER_ID,
+          user_id: (await getActiveUserId() || ''),
           obligation_id: dbObligation.id,
           type: 'risk_alert',
           severity: decision.risk.band === 'Critical' ? 'critical' : 'high',
@@ -340,7 +342,7 @@ export async function runCalendarDiscoveryAgent() {
       }
 
       await agentActivityRepo.create({
-        user_id: DEMO_USER_ID,
+        user_id: (await getActiveUserId() || ''),
         agent_name: 'CALENDAR AGENT',
         action: `Discovered and processed event: ${dbObligation.title}`,
         obligation_id: dbObligation.id,

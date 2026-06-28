@@ -14,7 +14,7 @@ import { ResponsibilityMap } from '@/components/dashboard/ResponsibilityMap'
 import { getDynamicGreeting, getGreetingPeriod, formatLocalTime, formatLocalDate } from '@/lib/utils/greeting'
 import { isJudgeMode } from '@/lib/demo/judgeSession'
 import { supabase } from '@/lib/db/supabase'
-import { DisplayNameModal } from '@/components/auth/DisplayNameModal'
+import { OnboardingModal } from '@/components/auth/OnboardingModal'
 
 
 // ─── Stat Card ────────────────────────────────────────────────
@@ -97,7 +97,7 @@ export default function CommandCenterPage() {
       checkName(session)
     });
 
-    // Listen for custom event from DisplayNameModal
+    // Listen for custom event from OnboardingModal
     const handleDisplayNameUpdate = () => {
       supabase.auth.getSession().then(({ data: { session } }) => checkName(session))
     }
@@ -178,7 +178,7 @@ export default function CommandCenterPage() {
 
   return (
     <PageContainer id="command-center-page">
-      {!judgeActive && <DisplayNameModal onComplete={() => {}} />}
+      {!judgeActive && <OnboardingModal onComplete={() => window.location.reload()} />}
       
       {/* ── Header: Animated Greeting ───────────────────────── */}
       <div className="mb-8 flex justify-between items-start gap-8">
