@@ -13,6 +13,7 @@ import { ResolveConflictButton } from '@/components/intelligence/ResolveConflict
 import { ResponsibilityMap } from '@/components/dashboard/ResponsibilityMap'
 import { getDynamicGreeting, getGreetingPeriod, formatLocalTime, formatLocalDate } from '@/lib/utils/greeting'
 import { isJudgeMode } from '@/lib/demo/judgeSession'
+import { supabase } from '@/lib/db/supabase'
 
 
 // ─── Stat Card ────────────────────────────────────────────────
@@ -71,6 +72,35 @@ function GreetingIcon({ period, className }: { period: string; className?: strin
 export default function CommandCenterPage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [judgeActive, setJudgeActive] = useState(false);
+  const [firstName, setFirstName] = useState<string>('OPERATOR');
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.user_metadata?.full_name) {
+        const name = session.user.user_metadata.full_name.split(' ')[0];
+        setFirstName(name.toUpperCase());
+      } else if (session?.user?.user_metadata?.name) {
+        const name = session.user.user_metadata.name.split(' ')[0];
+        setFirstName(name.toUpperCase());
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      if (session?.user?.user_metadata?.full_name) {
+        const name = session.user.user_metadata.full_name.split(' ')[0];
+        setFirstName(name.toUpperCase());
+      } else if (session?.user?.user_metadata?.name) {
+        const name = session.user.user_metadata.name.split(' ')[0];
+        setFirstName(name.toUpperCase());
+      } else {
+        setFirstName('OPERATOR');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setJudgeActive(isJudgeMode()), 0);
@@ -162,7 +192,7 @@ export default function CommandCenterPage() {
               <h1
                 className="text-[clamp(24px,3vw,36px)] font-bold text-[var(--color-text-primary)] font-orbitron uppercase tracking-wide leading-none"
               >
-                {getDynamicGreeting(currentTime)}, HIMANK
+                {getDynamicGreeting(currentTime)}, {judgeActive ? 'JUDGE' : firstName}
               </h1>
             </motion.div>
           </AnimatePresence>

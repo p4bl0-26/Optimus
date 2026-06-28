@@ -16,7 +16,8 @@ export async function generateChiefOfStaffBriefing(
   obligations: Obligation[],
   riskProfiles: RiskProfile[],
   interventions: Intervention[],
-  events: AgentActivity[] // or calendar events if passed differently
+  events: AgentActivity[], // or calendar events if passed differently
+  userName: string = 'Operator'
 ): Promise<ExecutiveBriefing> {
   // 1. Data Aggregation & Sorting
   const activeObligations = obligations.filter(o => o.status === 'pending');
@@ -48,7 +49,8 @@ export async function generateChiefOfStaffBriefing(
     highestRiskObligation,
     highestRiskProfile,
     overloadedDays,
-    strategicRecommendations
+    strategicRecommendations,
+    userName
   );
 
   // 6. Evening Briefing Synthesis
@@ -236,9 +238,10 @@ function generateMorningBriefing(
   highestRiskObligation: Obligation | null | undefined,
   highestRiskProfile: RiskProfile | undefined,
   overloadedDays: string[],
-  recommendations: StrategicRecommendation[]
+  recommendations: StrategicRecommendation[],
+  userName: string
 ): string {
-  let briefing = `Good morning, Himank.\n\n`;
+  let briefing = `Good morning, ${userName || 'Operator'}.\n\n`;
   briefing += `You have ${activeCount} active commitments.\n\n`;
 
   if (highestRiskObligation && highestRiskProfile) {

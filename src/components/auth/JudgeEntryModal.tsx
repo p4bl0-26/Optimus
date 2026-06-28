@@ -2,16 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, ArrowRight, User } from 'lucide-react';
+import { Shield, ArrowRight, User, Loader2, AlertTriangle } from 'lucide-react';
 import { startJudgeSession, isJudgeMode } from '@/lib/demo/judgeSession';
+import { supabase } from '@/lib/db/supabase';
 
 interface JudgeEntryModalProps {
-  onLogin: () => void;
   onEnterJudgeMode: () => void;
 }
 
-export function JudgeEntryModal({ onLogin, onEnterJudgeMode }: JudgeEntryModalProps) {
+export function JudgeEntryModal({ onEnterJudgeMode }: JudgeEntryModalProps) {
   const [show, setShow] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [authError, setAuthError] = useState(false);
 
   // Example: Show after a short delay (post splash animation)
   useEffect(() => {
@@ -36,6 +38,24 @@ export function JudgeEntryModal({ onLogin, onEnterJudgeMode }: JudgeEntryModalPr
   }, [show]);
 
   if (!show) return null;
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsAuthenticating(true);
+      setAuthError(false);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      if (error) throw error;
+    } catch (e) {
+      console.error("Google Auth Error:", e);
+      setAuthError(true);
+      setIsAuthenticating(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -66,20 +86,29 @@ export function JudgeEntryModal({ onLogin, onEnterJudgeMode }: JudgeEntryModalPr
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
           {/* Login Option */}
           <button
-            onClick={onLogin}
-            className="intel-card group p-8 text-left bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-elevated)] border border-[var(--color-border)] hover:border-[var(--color-text-primary)] transition-all duration-300 flex flex-col items-start h-full"
+            onClick={handleGoogleLogin}
+            disabled={isAuthenticating}
+            className="intel-card group p-8 text-left bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-elevated)] border border-[var(--color-border)] hover:border-[var(--color-text-primary)] transition-all duration-300 flex flex-col items-start h-full disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Login to personal workspace"
           >
             <div className="w-10 h-10 rounded bg-[var(--color-bg-elevated)] flex items-center justify-center mb-6 group-hover:bg-[var(--color-text-primary)] group-hover:text-[var(--color-bg-primary)] transition-colors">
               <User size={18} />
             </div>
-            <h2 className="text-xl font-bold font-orbitron text-[var(--color-text-primary)] mb-3 uppercase tracking-wider">
-              [ LOGIN ]
+            <h2 className="text-xl font-bold font-orbitron text-[var(--color-text-primary)] mb-3 uppercase tracking-wider flex items-center gap-2">
+              [ LOGIN ] {isAuthenticating && <Loader2 size={16} className="animate-spin text-[var(--color-text-muted)]" />}
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] mb-4 flex-grow leading-relaxed">
               Continue to your personal workspace.
               <br /><br />
-              Authentication providers are determined by deployment configuration.
+              {authError ? (
+                <span className="text-[var(--color-risk-critical)] flex items-center gap-2">
+                  <AlertTriangle size={14} />
+                  GOOGLE AUTHENTICATION UNAVAILABLE<br/>
+                  Please use Judge Mode for demonstration purposes.
+                </span>
+              ) : (
+                "Authentication providers are determined by deployment configuration."
+              )}
             </p>
             <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-text-muted)] group-hover:text-[var(--color-text-primary)] transition-colors">
               PROCEED <ArrowRight size={14} />
@@ -89,10 +118,12 @@ export function JudgeEntryModal({ onLogin, onEnterJudgeMode }: JudgeEntryModalPr
           {/* Judge Mode Option */}
           <button
             onClick={() => {
+              if (isAuthenticating) return;
               startJudgeSession('manual');
               onEnterJudgeMode();
             }}
-            className="intel-card group p-8 text-left bg-[var(--color-accent-glow)] border border-[var(--color-accent-primary)]/40 hover:border-[var(--color-accent-primary)] hover:shadow-[0_0_48px_rgba(118,192,67,0.15)] transition-all duration-300 flex flex-col items-start h-full"
+            disabled={isAuthenticating}
+            className="intel-card group p-8 text-left bg-[var(--color-accent-glow)] border border-[var(--color-accent-primary)]/40 hover:border-[var(--color-accent-primary)] hover:shadow-[0_0_48px_rgba(118,192,67,0.15)] transition-all duration-300 flex flex-col items-start h-full disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Enter Judge Mode"
           >
             <div className="w-10 h-10 rounded bg-[var(--color-accent-primary)]/10 flex items-center justify-center mb-6 group-hover:bg-[var(--color-accent-primary)] group-hover:text-[var(--color-bg-primary)] text-[var(--color-accent-primary)] transition-colors">
