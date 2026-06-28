@@ -60,13 +60,16 @@ export function AccountDropdown() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem("optimus_auth");
     localStorage.removeItem("optimus_judge");
     sessionStorage.clear();
     
-    window.history.replaceState({}, "", window.location.pathname);
-    
+    window.history.replaceState({}, "", "/");
     router.replace('/');
-    window.location.reload();
+    
+    setTimeout(() => {
+      window.location.reload();
+    }, 50);
   };
 
   return (
@@ -94,7 +97,7 @@ export function AccountDropdown() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute overflow-hidden flex flex-col w-[calc(100vw-32px)] md:w-[280px] lg:w-[300px]"
+            className="absolute overflow-hidden flex flex-col w-[320px]"
             style={{
               top: 'calc(100% + 16px)',
               right: '12px',
@@ -109,10 +112,10 @@ export function AccountDropdown() {
           >
             <div style={{ paddingTop: '24px', paddingBottom: '20px', paddingInline: '24px' }}>
               <div style={{ marginBottom: '24px' }} className="border-b border-[var(--color-border)] pb-6 flex flex-col items-center">
-                <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase text-center">
+                <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase text-center w-full truncate px-2">
                   {user?.user_metadata?.full_name || 'Operator'}
                 </p>
-                <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider uppercase text-center" style={{ marginTop: '16px' }}>
+                <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider uppercase text-center mt-4">
                   AI Chief of Staff Operator
                 </p>
               </div>

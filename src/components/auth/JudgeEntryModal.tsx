@@ -46,7 +46,13 @@ export function JudgeEntryModal({ onEnterJudgeMode }: JudgeEntryModalProps) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin
+          redirectTo:
+            window.location.hostname === "localhost"
+              ? "http://localhost:3000/auth/callback"
+              : "https://optimus-gray.vercel.app/auth/callback",
+          queryParams: {
+            prompt: "select_account"
+          }
         }
       });
       if (error) throw error;

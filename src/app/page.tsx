@@ -419,7 +419,7 @@ export default function CommandCenterPage() {
       </div>
 
       {/* ─── RESPONSIBILITY MATRIX HERO ────────────────────────── */}
-      <div id="responsibility-matrix" className="mb-8">
+      <div id="responsibility-map" className="mb-8">
         <ResponsibilityMap data={combinedData} />
       </div>
 

@@ -1,6 +1,6 @@
 export const JUDGE_TARGETS: Record<string, string> = {
   executiveBriefing: "#executive-briefing",
-  responsibilityMatrix: "#responsibility-matrix",
+  responsibilityMap: "#responsibility-map",
   futureOutcomes: "#future-outcomes",
   askChief: "#ask-chief",
   focusMode: "#focus-mode",

@@ -7,10 +7,13 @@
 // Matches the Visual Reference Bible layout exactly.
 // ============================================================
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
+import { supabase } from '@/lib/db/supabase'
+import { isJudgeMode, exitJudgeSession } from '@/lib/demo/judgeSession'
 import {
   LayoutDashboard,
   Target,
@@ -65,7 +68,57 @@ export function Sidebar({
   onMobileClose,
 }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const isFocusMode = pathname === '/focus'
+
+  const [judgeMode, setJudgeMode] = useState(false)
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  useEffect(() => {
+    const t = setTimeout(() => setJudgeMode(isJudgeMode()), 0)
+    const handleModeChange = () => setJudgeMode(isJudgeMode())
+    window.addEventListener('judge-mode-changed', handleModeChange)
+    return () => {
+      clearTimeout(t)
+      window.removeEventListener('judge-mode-changed', handleModeChange)
+    }
+  }, [])
+
+  const handleToggleJudgeMode = () => {
+    if (judgeMode) {
+      exitJudgeSession()
+    } else {
+      window.dispatchEvent(new Event('start-judge-tour'))
+    }
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    localStorage.removeItem("optimus_auth")
+    localStorage.removeItem("optimus_judge")
+    sessionStorage.clear()
+    
+    window.history.replaceState({}, "", "/")
+    router.replace('/')
+    
+    setTimeout(() => {
+      window.location.reload()
+    }, 50)
+  }
 
   // Force collapse in focus mode
   const effectiveIsCollapsed = isFocusMode ? true : isCollapsed
@@ -235,7 +288,7 @@ export function Sidebar({
           })}
         </nav>
 
-        {/* ── AI Chief of Staff Status ──────────────────────── */}
+        {/* ── User Profile & Account Controls ──────────────────────── */}
         <AnimatePresence initial={false}>
           {!effectiveIsCollapsed && !isFocusMode && (
             <motion.div
@@ -243,34 +296,53 @@ export function Sidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="mx-2 mb-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-3"
+              className="mx-4 mb-2 flex flex-col gap-4 p-6 rounded-2xl border border-[rgba(118,192,67,0.15)] bg-[rgba(9,9,9,0.96)] backdrop-blur-[24px]"
             >
-              <p className="text-[9px] font-bold tracking-widest text-[var(--color-accent-primary)] uppercase mb-2">
-                AI Chief of Staff
-              </p>
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[var(--color-accent-glow)] border border-[var(--color-accent-primary)]/30 flex items-center justify-center flex-shrink-0">
-                  <Bot size={13} className="text-[var(--color-accent-primary)]" strokeWidth={1.5} />
+              <div className="flex items-center gap-3 border-b border-[var(--sidebar-border)] pb-4">
+                <div className="w-10 h-10 rounded-full bg-[var(--color-bg-elevated)] border border-[var(--sidebar-border)] flex items-center justify-center flex-shrink-0 text-lg font-orbitron font-bold text-[var(--color-text-primary)] uppercase">
+                  {user?.user_metadata?.full_name?.charAt(0) || 'O'}
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-semibold text-[var(--color-text-primary)] truncate">OPTIMUS</p>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="status-dot w-1.5 h-1.5" />
-                    <span className="text-[10px] text-[var(--color-text-muted)]">Always working for you</span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase truncate">
+                    {user?.user_metadata?.full_name || 'Operator'}
+                  </p>
+                  <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider uppercase mt-1">
+                    AI Chief of Staff Operator
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-risk-safe)] animate-pulse" />
+                    <span className="text-[10px] text-[var(--color-risk-safe)] font-mono uppercase tracking-wider">Operational</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleToggleJudgeMode}
+                  className="w-full h-12 rounded-lg border border-[var(--sidebar-border)] bg-[var(--color-bg-elevated)] text-[11px] font-bold tracking-widest text-[var(--color-text-primary)] uppercase hover:-translate-y-[1px] hover:border-[var(--color-border-focus)] transition-all flex items-center justify-center"
+                >
+                  {judgeMode ? 'EXIT JUDGE MODE' : 'ENTER JUDGE MODE'}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full h-12 rounded-lg border border-[var(--color-risk-critical)]/30 bg-[var(--color-risk-critical-bg)] text-[11px] font-bold tracking-widest text-[var(--color-risk-critical)] uppercase hover:-translate-y-[1px] hover:bg-[var(--color-risk-critical)] hover:text-[var(--color-text-inverse)] transition-all flex items-center justify-center"
+                >
+                  LOGOUT
+                </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Collapsed AI icon */}
+        {/* Collapsed User icon */}
         {effectiveIsCollapsed && !isFocusMode && (
           <div className="mx-auto mb-2 flex flex-col items-center gap-1">
-            <div className="w-9 h-9 rounded-lg bg-[var(--color-accent-glow)] border border-[var(--color-accent-primary)]/30 flex items-center justify-center">
-              <Bot size={15} className="text-[var(--color-accent-primary)]" strokeWidth={1.5} />
+            <div className="w-9 h-9 rounded-lg border border-[var(--sidebar-border)] bg-[var(--color-bg-elevated)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-bg-surface)] transition-colors" onClick={() => onToggle()}>
+              <span className="text-sm font-bold text-[var(--color-text-primary)] font-orbitron">
+                {user?.user_metadata?.full_name?.charAt(0) || 'O'}
+              </span>
             </div>
-            <span className="status-dot" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-risk-safe)]" />
           </div>
         )}
 

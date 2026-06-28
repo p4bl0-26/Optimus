@@ -30,7 +30,17 @@ export function StartupWrapper({ children }: { children: React.ReactNode }) {
   const checkAuth = async () => {
     if (typeof window === 'undefined') return;
     
-    // 1 & 2: Judge Mode check (URL param handled above, this handles local storage)
+    // Check real session first
+    const { data: { session } } = await supabase.auth.getSession();
+    const hasAuthToken = !!localStorage.getItem("optimus_auth");
+
+    if (session || hasAuthToken) {
+      setShowAuthGate(false);
+      setAuthLoading(false);
+      return;
+    }
+
+    // Then check Judge Mode
     const hasJudge = !!localStorage.getItem("optimus_judge");
     const isJudgeUrl = new URLSearchParams(window.location.search).get("mode") === "judge";
     
@@ -40,14 +50,8 @@ export function StartupWrapper({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // 3: Supabase session
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-      setShowAuthGate(false);
-    } else {
-      setShowAuthGate(true);
-    }
+    // Otherwise show Auth Gate
+    setShowAuthGate(true);
     setAuthLoading(false);
   };
 

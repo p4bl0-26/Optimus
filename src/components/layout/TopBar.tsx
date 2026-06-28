@@ -42,12 +42,13 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           'py-8 px-4 md:px-6',
           'bg-[var(--topbar-bg)] border-b border-[var(--topbar-border)]',
           'backdrop-blur-[var(--topbar-backdrop)]',
+          'flex-wrap',
           'flex-shrink-0',
           className
         )}
       >
         {/* Left: Mobile menu + Page Title */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3" style={{ flex: '1 1 auto', minWidth: '0' }}>
           {/* Mobile hamburger */}
           <button
             id="mobile-menu-btn"
@@ -71,16 +72,22 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
-            className="min-w-0"
+            className="flex flex-col"
+            style={{ flex: '1 1 auto', minWidth: '320px' }}
           >
             <div className="flex items-center gap-2 mb-0.5">
               <h1
-                className="text-[44px] tracking-wider font-semibold text-[var(--color-text-primary)] truncate"
-                style={{ fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)' }}
+                className="font-bold text-[var(--color-text-primary)] uppercase"
+                style={{ 
+                  fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)',
+                  fontSize: 'clamp(36px, 4vw, 64px)', // Desktop 64, laptop 56, tablet 48, mobile 36 approx
+                  letterSpacing: '0.08em',
+                  lineHeight: '1.0'
+                }}
               >
                 {meta.title}
               </h1>
-              <span className="status-dot w-1.5 h-1.5 opacity-60" />
+              <span className="status-dot w-2 h-2 opacity-60 flex-shrink-0" />
             </div>
             <p className="text-[13px] text-[var(--color-text-muted)] truncate hidden sm:block opacity-[0.65]">
               {meta.description}
@@ -88,8 +95,8 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           </motion.div>
         </div>
 
-        {/* Right: Demo Controls + Ask Chief + Notifications + Avatar */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Right: Demo Controls + Ask Chief + Notifications */}
+        <div className="flex items-center gap-2 flex-wrap justify-end shrink-0">
 
           <button
             id="start-demo-btn"
@@ -164,11 +171,6 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
             </button>
           )}
 
-          {/* Divider */}
-          <div className="w-px h-5 bg-[var(--color-border)] hidden sm:block" />
-
-          {/* User avatar / Account Dropdown */}
-          <AccountDropdown />
         </div>
       </header>
 

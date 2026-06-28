@@ -32,21 +32,8 @@ export interface TourStep {
 
 export const TOUR_STEPS: TourStep[] = [
   {
-    id: 'executiveBriefing',
-    step: 1,
-    title: 'Executive Briefing',
-    badges: ['CORE', 'AUTONOMOUS'],
-    description: 'OPTIMUS continuously analyzes obligations and surfaces the highest-priority actions.',
-    whyItMatters: 'Most users fail because they cannot identify what deserves attention first.',
-    technicalHighlights: ['Risk Engine', 'Chief of Staff Engine', 'Future Outcome Simulation'],
-    realWorldImpact: 'Users reduce decision fatigue and execute faster.',
-    narrationText: 'Welcome to OPTIMUS. Your morning begins here. The Chief of Staff Engine deterministically synthesizes all your obligations into a concise executive briefing, identifying exactly what requires your attention today to prevent failure cascades.',
-    estimatedSeconds: 30,
-    targetId: 'executiveBriefing',
-  },
-  {
     id: 'responsibilityMap',
-    step: 2,
+    step: 1,
     title: 'Responsibility Map',
     badges: ['CORE', 'AI-POWERED'],
     description: 'A live graph visualization of all active obligations and their current risk bands.',
@@ -56,6 +43,19 @@ export const TOUR_STEPS: TourStep[] = [
     narrationText: 'This is the Responsibility Map. Instead of a flat to-do list, OPTIMUS visualizes your obligations as a living network. Items glowing red require immediate strategic management. Click any node to drill into its full intelligence profile.',
     estimatedSeconds: 30,
     targetId: 'responsibilityMap',
+  },
+  {
+    id: 'executiveBriefing',
+    step: 2,
+    title: 'Executive Briefing',
+    badges: ['CORE', 'AUTONOMOUS'],
+    description: 'OPTIMUS continuously analyzes obligations and surfaces the highest-priority actions.',
+    whyItMatters: 'Most users fail because they cannot identify what deserves attention first.',
+    technicalHighlights: ['Risk Engine', 'Chief of Staff Engine', 'Future Outcome Simulation'],
+    realWorldImpact: 'Users reduce decision fatigue and execute faster.',
+    narrationText: 'Welcome to OPTIMUS. Your morning begins here. The Chief of Staff Engine deterministically synthesizes all your obligations into a concise executive briefing, identifying exactly what requires your attention today to prevent failure cascades.',
+    estimatedSeconds: 30,
+    targetId: 'executiveBriefing',
   },
   {
     id: 'futureOutcomes',
@@ -371,6 +371,7 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
               left: spotlight.bounds.left,
               width: spotlight.bounds.width,
               height: spotlight.bounds.height,
+              scale: 1.015,
             }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className="fixed z-[90] pointer-events-none rounded-xl"

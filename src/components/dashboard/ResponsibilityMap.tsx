@@ -236,8 +236,8 @@ export function ResponsibilityMap({ data }: ResponsibilityMapProps) {
 
   return (
     <div
-      id="responsibilityMap"
-      className="w-full mx-auto flex flex-col relative overflow-hidden rounded-2xl border border-[rgba(118,192,67,0.15)] shadow-2xl bg-[var(--color-bg-primary)] min-h-[700px] md:min-h-[900px] max-w-[1800px]"
+      className="w-full flex flex-col relative overflow-hidden rounded-2xl border border-[rgba(118,192,67,0.15)] shadow-2xl bg-[var(--color-bg-primary)] min-h-[700px] lg:min-h-[850px] max-w-[1600px]"
+      style={{ margin: '0 auto' }}
     >
       {/* ── Background matrix grid ───────────────────────────── */}
       <div
@@ -256,7 +256,7 @@ export function ResponsibilityMap({ data }: ResponsibilityMapProps) {
       />
 
       {/* ── Header ───────────────────────────────────────────── */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-start justify-between p-8 pointer-events-none">
+      <div className="flex items-start justify-between p-8 pb-0">
         {/* Title block */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3 flex-wrap">
@@ -282,7 +282,7 @@ export function ResponsibilityMap({ data }: ResponsibilityMapProps) {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-2 pointer-events-auto flex-wrap justify-end">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           <button
             onClick={() => setCenterKey(k => k + 1)}
             className={cn(btnBase, btnInactive)}
@@ -331,9 +331,9 @@ export function ResponsibilityMap({ data }: ResponsibilityMapProps) {
       <div
         key={centerKey}
         className="flex-1 flex items-center justify-center relative z-10"
-        style={{ paddingTop: '120px', paddingBottom: '80px', minHeight: '700px' }}
+        style={{ paddingTop: '80px', paddingBottom: '80px' }}
       >
-        <div className="relative" style={{ width: '100%', maxWidth: `${baseRadius * 2 + 400}px`, height: `${baseRadius * 2 + 200}px`, margin: '0 auto' }}>
+        <div className="relative" style={{ width: '100%', maxWidth: `${baseRadius * 2 + 400}px`, height: `${baseRadius * 2 + 200}px`, margin: '0 auto', transform: 'translateY(40px)' }}>
 
           {/* ── Cluster Labels (outer ring) ─────────────────── */}
           <AnimatePresence>
