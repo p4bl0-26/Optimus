@@ -38,19 +38,7 @@ export function computeSpotlight(selector: string | null, padding: number = 8): 
     return { activeTarget: null, bounds: null, arrowPosition: null };
   }
 
-  // Determine if scroll is needed
-  const rect = el.getBoundingClientRect();
-  const isInViewport = 
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth);
-
-  if (!isInViewport) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-  }
-
-  // Re-read rect (if scroll happens, the react component should use a requestAnimationFrame or scroll listener to re-compute)
+  // Read rect (scrolling handled by orchestrator)
   const currentRect = el.getBoundingClientRect();
   
   const bounds: SpotlightBounds = {

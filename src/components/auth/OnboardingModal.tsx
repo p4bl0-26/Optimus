@@ -7,16 +7,34 @@ import { User, Mail, Calendar as CalendarIcon, BookOpen, MessageSquare, CheckCir
 import { cn } from '@/lib/utils'
 
 interface OnboardingModalProps {
-  onComplete: () => void
+  onComplete: () => void;
+  initialStep?: 1 | 2;
 }
 
-export function OnboardingModal({ onComplete }: OnboardingModalProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [step, setStep] = useState<1 | 2>(1)
+export function OnboardingModal({ onComplete, initialStep = 1 }: OnboardingModalProps) {
+  const [step, setStep] = useState<1 | 2>(initialStep)
   
   // Step 1 State
   const [displayName, setDisplayName] = useState('')
-  const [defaultName, setDefaultName] = useState('')
+  const [defaultName, setDefaultName] = useState('Operator')
+  
+  useEffect(() => {
+    // Pre-fill default name if possible
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.user_metadata) {
+        const metadata = session.user.user_metadata;
+        const fullName = metadata.full_name || metadata.name || '';
+        const firstName = fullName.split(' ')[0] || 'Operator';
+        setDefaultName(firstName);
+        if (!displayName) {
+          setDisplayName(firstName);
+        }
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+
   
   // Step 2 State
   const [selectedIntegrations, setSelectedIntegrations] = useState<Record<string, boolean>>({
@@ -26,47 +44,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     whatsapp: false
   })
 
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        setLoading(false)
-        return
-      }
-
-      const metadata = session.user.user_metadata
-      
-      if (metadata?.optimus_onboarding_complete) {
-        // Already fully onboarded
-        setLoading(false)
-        onComplete()
-        return
-      }
-
-      // Needs setup
-      const fullName = metadata?.full_name || metadata?.name || ''
-      const firstName = fullName.split(' ')[0] || 'Operator'
-      
-      setDefaultName(firstName)
-      if (metadata?.optimus_display_name) {
-        setDisplayName(metadata.optimus_display_name)
-        setStep(2) // Jump to step 2 if identity is already set
-      } else {
-        setDisplayName(firstName)
-        setStep(1)
-      }
-      
-      setIsOpen(true)
-      setLoading(false)
-    }
-
-    checkUser()
-  }, [onComplete])
 
   const handleSaveIdentity = async (nameToSave: string) => {
     const trimmed = nameToSave.trim()
@@ -116,13 +94,12 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
           // For now, we'll redirect to the first selected one.
           const firstIntegration = toConnect[0]
           if (firstIntegration !== 'whatsapp') { // whatsapp is disabled
-             window.location.href = `/api/integrations/${firstIntegration}/connect`
+             window.location.assign(`/api/integrations/${firstIntegration}/connect`);
              return // Do not call onComplete here, user is redirecting
           }
         }
       }
 
-      setIsOpen(false)
       setTimeout(onComplete, 300)
     } catch (err) {
       setError('Failed to complete setup.')
@@ -135,7 +112,8 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     setSelectedIntegrations(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
-  if (loading || !isOpen) return null
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   return (
     <AnimatePresence>

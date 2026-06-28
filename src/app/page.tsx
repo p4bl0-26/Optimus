@@ -14,7 +14,6 @@ import { ResponsibilityMap } from '@/components/dashboard/ResponsibilityMap'
 import { getDynamicGreeting, getGreetingPeriod, formatLocalTime, formatLocalDate } from '@/lib/utils/greeting'
 import { isJudgeMode } from '@/lib/demo/judgeSession'
 import { supabase } from '@/lib/db/supabase'
-import { OnboardingModal } from '@/components/auth/OnboardingModal'
 
 
 // ─── Stat Card ────────────────────────────────────────────────
@@ -131,6 +130,12 @@ export default function CommandCenterPage() {
     })).sort((a, b) => b.risk_score - a.risk_score)
   }, [obligations, riskProfiles])
 
+  useEffect(() => {
+    if (judgeActive) {
+      console.log("[JUDGE] DASHBOARD MOUNTED");
+    }
+  }, [judgeActive]);
+
   if (loading) {
     return (
       <PageContainer id="command-center-loading">
@@ -178,7 +183,7 @@ export default function CommandCenterPage() {
 
   return (
     <PageContainer id="command-center-page">
-      {!judgeActive && <OnboardingModal onComplete={() => window.location.reload()} />}
+
       
       {/* ── Header: Animated Greeting ───────────────────────── */}
       <div className="mb-8 flex justify-between items-start gap-8">

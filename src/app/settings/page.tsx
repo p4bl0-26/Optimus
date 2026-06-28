@@ -55,7 +55,7 @@ function SettingsRow({ label, value, children }: { label: string; value?: string
 
 export default async function SettingsPage() {
   const userId = await getActiveUserId()
-  let profile = { displayName: 'Operator', email: 'Unknown', timezone: 'UTC', language: 'English' }
+  const profile = { displayName: 'Operator', email: 'Unknown', timezone: 'UTC', language: 'English' }
   let dbIntegrations: any[] = []
 
   if (userId) {

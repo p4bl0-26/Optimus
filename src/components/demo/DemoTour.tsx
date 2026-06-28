@@ -2,11 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, X, Pause, Play, CheckCircle, SkipForward, Maximize, FastForward } from 'lucide-react';
+import { ChevronRight, ChevronLeft, X, Pause, Play, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JUDGE_TARGETS } from '@/constants/judgeTargets';
 import { computeSpotlight, SpotlightState } from '@/lib/demo/spotlightEngine';
-import { isJudgeMode } from '@/lib/demo/judgeSession';
 import {
   recordTourStart,
   recordStepView,
@@ -34,13 +33,13 @@ export const TOUR_STEPS: TourStep[] = [
   {
     id: 'responsibilityMap',
     step: 1,
-    title: 'Responsibility Map',
+    title: 'Responsibility Matrix',
     badges: ['CORE', 'AI-POWERED'],
     description: 'A live graph visualization of all active obligations and their current risk bands.',
     whyItMatters: 'Flat lists hide relationships. A network map instantly reveals systemic overloads.',
     technicalHighlights: ['Live Risk Scoring (0-100)', 'Network Graph Rendering', 'Pulsing Critical Indicators'],
     realWorldImpact: 'Visual identification of critical tasks drops from minutes to milliseconds.',
-    narrationText: 'This is the Responsibility Map. Instead of a flat to-do list, OPTIMUS visualizes your obligations as a living network. Items glowing red require immediate strategic management. Click any node to drill into its full intelligence profile.',
+    narrationText: 'This is the Responsibility Matrix. Instead of a flat to-do list, OPTIMUS visualizes your obligations as a living network. Items glowing red require immediate strategic management. Click any node to drill into its full intelligence profile.',
     estimatedSeconds: 30,
     targetId: 'responsibilityMap',
   },
@@ -58,21 +57,8 @@ export const TOUR_STEPS: TourStep[] = [
     targetId: 'executiveBriefing',
   },
   {
-    id: 'futureOutcomes',
-    step: 3,
-    title: 'Future Outcomes Engine',
-    badges: ['CORE', 'NEW'],
-    description: 'Simulates the probable outcomes of your current operational trajectory.',
-    whyItMatters: 'Intervention is only possible if you can see the crash before it happens.',
-    technicalHighlights: ['Predictive Intelligence', 'Success Probability Math', 'Rescue Plan Generation'],
-    realWorldImpact: 'Transforms reactive scrambling into proactive strategic execution.',
-    narrationText: 'The Future Outcomes Engine runs continuous simulations on your highest risk targets. It computes success probabilities for three distinct paths: Recommended, Current, and Danger, allowing you to alter your trajectory before a deadline is missed.',
-    estimatedSeconds: 30,
-    targetId: 'futureOutcomes',
-  },
-  {
     id: 'askChief',
-    step: 4,
+    step: 3,
     title: 'Ask Chief',
     badges: ['AI-POWERED'],
     description: 'Conversational intelligence layer with full system context injected into the prompt.',
@@ -84,17 +70,30 @@ export const TOUR_STEPS: TourStep[] = [
     targetId: 'askChief',
   },
   {
-    id: 'focusMode',
-    step: 5,
-    title: 'Focus Mode',
-    badges: ['CORE'],
-    description: 'A dedicated execution environment designed to eliminate cognitive friction.',
-    whyItMatters: 'Context switching is the enemy of deep work. Focus mode locks you in.',
-    technicalHighlights: ['Pomodoro Enforcement', 'Distraction Blocking', 'Audio/Visual Cues'],
-    realWorldImpact: 'Measurable increases in deep work sessions and task completion rates.',
-    narrationText: 'When it is time to execute, OPTIMUS provides Focus Mode. This immersive environment strips away all distractions, enforces deep work intervals, and provides the exact resources needed for the task at hand. It manages execution, not just tasks.',
+    id: 'futureOutcomes',
+    step: 4,
+    title: 'Future Outcomes Engine',
+    badges: ['CORE', 'NEW'],
+    description: 'Simulates the probable outcomes of your current operational trajectory.',
+    whyItMatters: 'Intervention is only possible if you can see the crash before it happens.',
+    technicalHighlights: ['Predictive Intelligence', 'Success Probability Math', 'Rescue Plan Generation'],
+    realWorldImpact: 'Transforms reactive scrambling into proactive strategic execution.',
+    narrationText: 'The Future Outcomes Engine runs continuous simulations on your highest risk targets. It computes success probabilities for three distinct paths: Recommended, Current, and Danger, allowing you to alter your trajectory before a deadline is missed.',
     estimatedSeconds: 30,
-    targetId: 'focusMode',
+    targetId: 'futureOutcomes',
+  },
+  {
+    id: 'workAccelerator',
+    step: 5,
+    title: 'Work Accelerator',
+    badges: ['AI-POWERED', 'NEW'],
+    description: 'AI agents that draft emails, structure documents, and do the heavy lifting.',
+    whyItMatters: 'Starting from a blank page is the highest barrier to execution.',
+    technicalHighlights: ['Generative AI Integration', 'Contextual Drafting', 'One-Click Refinement'],
+    realWorldImpact: 'Reduces time-to-first-draft by 90%, accelerating overall execution.',
+    narrationText: 'To overcome the blank page syndrome, the Work Accelerator leverages AI to generate first drafts of emails, reports, or research summaries. It gets you 80 percent of the way there instantly, leaving only the final strategic review to you.',
+    estimatedSeconds: 30,
+    targetId: 'workAccelerator',
   },
   {
     id: 'scheduler',
@@ -110,34 +109,21 @@ export const TOUR_STEPS: TourStep[] = [
     targetId: 'scheduler',
   },
   {
-    id: 'workAccelerator',
+    id: 'reports',
     step: 7,
-    title: 'Work Accelerator',
-    badges: ['AI-POWERED', 'NEW'],
-    description: 'AI agents that draft emails, structure documents, and do the heavy lifting.',
-    whyItMatters: 'Starting from a blank page is the highest barrier to execution.',
-    technicalHighlights: ['Generative AI Integration', 'Contextual Drafting', 'One-Click Refinement'],
-    realWorldImpact: 'Reduces time-to-first-draft by 90%, accelerating overall execution.',
-    narrationText: 'To overcome the blank page syndrome, the Work Accelerator leverages AI to generate first drafts of emails, reports, or research summaries. It gets you 80 percent of the way there instantly, leaving only the final strategic review to you.',
+    title: 'Executive Reports',
+    badges: ['CORE'],
+    description: 'A deterministic summary of your week’s performance, wins, and misses.',
+    whyItMatters: 'You cannot improve what you do not measure.',
+    technicalHighlights: ['Historical Analytics', 'Trend Detection', 'Automated Synthesis'],
+    realWorldImpact: 'Creates a tight feedback loop for continuous personal improvement.',
+    narrationText: 'Finally, at the end of the week, OPTIMUS generates a comprehensive Executive Report. It analyzes your completed tasks, highlights your wins, identifies systemic misses, and provides actionable insights to improve your execution for the week ahead.',
     estimatedSeconds: 30,
-    targetId: 'workAccelerator',
-  },
-  {
-    id: 'formAssistant',
-    step: 8,
-    title: 'Form Assistant',
-    badges: ['AUTONOMOUS'],
-    description: 'Automatically fills out tedious forms based on your stored memory and context.',
-    whyItMatters: 'Administrative overhead drains executive energy.',
-    technicalHighlights: ['Memory Engine Extraction', 'Smart Field Mapping', 'Human Approval Layer'],
-    realWorldImpact: 'Eliminates repetitive data entry, preserving focus for high-leverage work.',
-    narrationText: 'Administrative overhead is the enemy of focus. The Autonomous Form Assistant extracts context from your memory engine and automatically populates tedious forms, requiring only a single click for your final human approval.',
-    estimatedSeconds: 30,
-    targetId: 'formAssistant',
+    targetId: 'reports',
   },
   {
     id: 'accountability',
-    step: 9,
+    step: 8,
     title: 'Accountability Layer',
     badges: ['CORE', 'NEW'],
     description: 'Dynamic Action Center that surfaces critical interventions before they become failures.',
@@ -149,17 +135,30 @@ export const TOUR_STEPS: TourStep[] = [
     targetId: 'accountability',
   },
   {
-    id: 'reports',
-    step: 10,
-    title: 'Weekly Executive Reports',
-    badges: ['CORE'],
-    description: 'A deterministic summary of your week’s performance, wins, and misses.',
-    whyItMatters: 'You cannot improve what you do not measure.',
-    technicalHighlights: ['Historical Analytics', 'Trend Detection', 'Automated Synthesis'],
-    realWorldImpact: 'Creates a tight feedback loop for continuous personal improvement.',
-    narrationText: 'Finally, at the end of the week, OPTIMUS generates a comprehensive Executive Report. It analyzes your completed tasks, highlights your wins, identifies systemic misses, and provides actionable insights to improve your execution for the week ahead.',
+    id: 'formAssistant',
+    step: 9,
+    title: 'Form Assistant',
+    badges: ['AUTONOMOUS'],
+    description: 'Automatically prepares tedious forms based on your stored memory and context.',
+    whyItMatters: 'Administrative overhead drains executive energy.',
+    technicalHighlights: ['Memory Engine Extraction', 'Smart Field Mapping', 'Human Approval Layer'],
+    realWorldImpact: 'Eliminates repetitive data entry, preserving focus for high-leverage work.',
+    narrationText: 'OPTIMUS automatically prepares administrative workflows, validates requirements, and gathers supporting evidence. Human operators no longer fill forms—they simply review and approve AI-generated work.',
     estimatedSeconds: 30,
-    targetId: 'reports',
+    targetId: 'formAssistant',
+  },
+  {
+    id: 'architecture',
+    step: 10,
+    title: 'Judge Architecture Overlay',
+    badges: ['SYSTEM'],
+    description: 'A structural visualization of OPTIMUS.',
+    whyItMatters: 'Demonstrates the robust, multi-agent AI system beneath the UI.',
+    technicalHighlights: ['Node.js Backend', 'Supabase Realtime', 'Gemini Multi-Agent Orchestration'],
+    realWorldImpact: 'Showcases enterprise-grade engineering.',
+    narrationText: 'What you have seen is not just a dashboard. It is an autonomous executive operating system powered by a multi-agent AI architecture. OPTIMUS executes. Humans supervise.',
+    estimatedSeconds: 30,
+    targetId: null, // this will trigger onOpenArchitecture
   }
 ];
 
@@ -177,34 +176,41 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
   const [autoPlay, setAutoPlay] = useState(false);
   const [aiNarration, setAiNarration] = useState(false);
   const [stepStartTime, setStepStartTime] = useState(() => Date.now());
+  const [isTransitioning, setIsTransitioning] = useState(false);
   
   const step = TOUR_STEPS[currentStep];
   const isLast = currentStep === TOUR_STEPS.length - 1;
   const isFirst = currentStep === 0;
 
-  // Total time remaining calculation
   const estimatedTimeRemaining = Math.ceil(
     TOUR_STEPS.slice(currentStep).reduce((acc, s) => acc + s.estimatedSeconds, 0) / 60
   );
 
-
-  // Initial setup & analytics
   useEffect(() => {
     if (isOpen) {
+      console.log("[JUDGE] TOUR INITIALIZED");
       recordTourStart();
       const t = setTimeout(() => setStepStartTime(Date.now()), 0);
       return () => clearTimeout(t);
     }
   }, [isOpen]);
 
-  // Spotlight effect updates
   useEffect(() => {
     if (!isOpen) return;
 
-    const updateSpotlight = () => {
+    let isMounted = true;
+
+    const updateSpotlight = async () => {
+      // Clear previous transform
       if (spotlight.activeTarget) {
         const prevEl = document.querySelector(spotlight.activeTarget) as HTMLElement;
         if (prevEl) prevEl.style.transform = '';
+      }
+
+      if (step.id === 'architecture') {
+        onOpenArchitecture();
+        setSpotlight({ activeTarget: null, bounds: null, arrowPosition: null });
+        return;
       }
 
       if (step.targetId && JUDGE_TARGETS[step.targetId]) {
@@ -212,9 +218,17 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
         const el = document.querySelector(selector) as HTMLElement;
         
         if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          el.style.transition = 'transform 0.3s ease';
-          el.style.transform = 'scale(1.015)';
+          // 1. Scroll it strictly into center
+          el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+          
+          // Wait for scroll to potentially settle
+          await new Promise(r => setTimeout(r, 400));
+          if (!isMounted) return;
+
+          // 2. Apply scale
+          el.style.transition = 'all 600ms cubic-bezier(0.22,1,0.36,1)';
+          el.style.transform = 'scale(1.03)';
+          
           const state = computeSpotlight(selector, 12);
           setSpotlight(state);
         } else {
@@ -227,32 +241,32 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
       }
     };
 
-    updateSpotlight();
+    requestAnimationFrame(() => {
+      updateSpotlight();
+    });
 
-    // Recompute on resize or scroll
     window.addEventListener('resize', updateSpotlight);
-    window.addEventListener('scroll', updateSpotlight, { passive: true });
     
-    // Fallback timer just in case DOM takes a moment
-    const t = setTimeout(updateSpotlight, 100);
-
     return () => {
+      isMounted = false;
       if (spotlight.activeTarget) {
         const prevEl = document.querySelector(spotlight.activeTarget) as HTMLElement;
         if (prevEl) prevEl.style.transform = '';
       }
       window.removeEventListener('resize', updateSpotlight);
-      window.removeEventListener('scroll', updateSpotlight);
-      clearTimeout(t);
     };
-  }, [isOpen, step, spotlight.activeTarget]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, step]); // Do not include spotlight.activeTarget here to avoid infinite loops
 
   const handleComplete = useCallback(() => {
     recordTourCompletion();
     onTourComplete();
   }, [onTourComplete]);
 
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    
     const timeSpent = (Date.now() - stepStartTime) / 1000;
     recordStepView(step.id, timeSpent);
     
@@ -262,41 +276,46 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
       setCurrentStep(s => s + 1);
       setStepStartTime(Date.now());
     }
-  }, [isLast, handleComplete, step.id, stepStartTime]);
+    
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 700);
+  }, [isLast, handleComplete, step.id, stepStartTime, isTransitioning]);
 
-  // Auto-play timer
   useEffect(() => {
     if (!isOpen || !autoPlay) return;
-    
-    // 15-20 seconds per step -> let's use 18 seconds
     const timer = setInterval(() => {
       handleNext();
     }, 18000);
-    
     return () => clearInterval(timer);
   }, [isOpen, autoPlay, handleNext]);
 
   const handlePrev = useCallback(() => {
-    if (!isFirst) {
+    if (!isFirst && !isTransitioning) {
+      setIsTransitioning(true);
       setCurrentStep(s => s - 1);
       setStepStartTime(Date.now());
+      setTimeout(() => setIsTransitioning(false), 700);
     }
-  }, [isFirst]);
+  }, [isFirst, isTransitioning]);
 
   const handleSkip = useCallback(() => {
+    if (isTransitioning) return;
     recordFeatureSkipped(step.id);
     handleNext();
-  }, [step.id, handleNext]);
+  }, [step.id, handleNext, isTransitioning]);
 
-  // Keyboard navigation & External Events
   useEffect(() => {
     if (!isOpen) return;
 
     const handleSkipTo = (e: Event) => {
       const customEvent = e as CustomEvent;
       if (customEvent.detail && typeof customEvent.detail.step === 'number') {
+        if (isTransitioning) return;
+        setIsTransitioning(true);
         setCurrentStep(customEvent.detail.step);
         setStepStartTime(Date.now());
+        setTimeout(() => setIsTransitioning(false), 700);
       }
     };
     window.addEventListener('judge-skip-to', handleSkipTo);
@@ -332,8 +351,7 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
       window.removeEventListener('keydown', handler);
       window.removeEventListener('judge-skip-to', handleSkipTo);
     };
-  }, [isOpen, currentStep, handleNext, handlePrev, isLast, handleComplete, onClose]);
-
+  }, [isOpen, currentStep, handleNext, handlePrev, isLast, handleComplete, onClose, isTransitioning]);
 
   if (!isOpen) return null;
 
@@ -341,10 +359,11 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
     <>
       {/* ─── SPOTLIGHT OVERLAYS ────────────────────────────────────────────── */}
       <div 
-        className="fixed inset-0 z-[100] pointer-events-none transition-all duration-250 ease-in-out"
+        className="fixed inset-0 z-[100] pointer-events-auto"
         style={{
-          backgroundColor: 'rgba(0,0,0,0.20)',
-          backdropFilter: 'blur(6px)',
+          backgroundColor: 'rgba(0,0,0,0.90)',
+          backdropFilter: 'blur(8px)',
+          transition: 'all 600ms cubic-bezier(0.22,1,0.36,1)',
           clipPath: spotlight.bounds ? `polygon(
             0% 0%, 0% 100%, 
             ${spotlight.bounds.left}px 100%, 
@@ -358,12 +377,11 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
         }}
       />
 
-      {/* Target Highlight Effect (Visual duplicate over the hole) */}
+      {/* Target Highlight Effect */}
       <AnimatePresence>
         {spotlight.bounds && (
           <motion.div
             key="target-highlight"
-            layout
             initial={{ opacity: 0 }}
             animate={{ 
               opacity: 1,
@@ -371,15 +389,11 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
               left: spotlight.bounds.left,
               width: spotlight.bounds.width,
               height: spotlight.bounds.height,
-              scale: 1.015,
             }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="fixed z-[90] pointer-events-none rounded-xl"
             style={{
-              boxShadow: '0 0 48px rgba(118,192,67,0.15)',
-              // Scale and brightness cannot be applied here directly to the original element, 
-              // but we create the aesthetic of a highlight ring.
-              border: '2px solid rgba(118,192,67,0.4)',
+              boxShadow: '0 0 0 2px rgba(118,192,67,0.8), 0 0 32px rgba(118,192,67,0.35), 0 0 96px rgba(118,192,67,0.15)',
             }}
           />
         )}
@@ -393,14 +407,11 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
           initial={{ opacity: 0, scale: 0.94, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: -8 }}
-          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
             'pointer-events-auto w-full max-w-2xl flex flex-col max-h-[90vh]',
             'bg-[var(--color-bg-base)] border border-[var(--color-border)]',
-            'rounded-2xl shadow-2xl overflow-hidden',
-            // Position dynamically if desktop, otherwise center (handled by flex container mostly, but we can override)
-            // For true positioning near arrows, we'd use absolute coordinates. For simplicity and robustness on all screens, centered or bottom is safest.
-            spotlight.arrowPosition?.placement === 'center' ? 'relative' : 'relative'
+            'rounded-2xl shadow-2xl overflow-hidden relative'
           )}
           role="dialog"
           aria-labelledby="tour-step-title"
@@ -412,7 +423,7 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
               className="h-full bg-[var(--color-accent-primary)]"
               initial={{ width: 0 }}
               animate={{ width: `${((currentStep + 1) / TOUR_STEPS.length) * 100}%` }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             />
           </div>
 
@@ -446,7 +457,6 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
 
           {/* Scrollable Body */}
           <div className="px-6 py-6 overflow-y-auto flex-1 custom-scrollbar">
-            {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-6">
               {step.badges.map(b => (
                 <span key={b} className="px-2 py-1 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-[10px] font-bold text-[var(--color-text-primary)] tracking-widest uppercase">
@@ -464,7 +474,7 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
                   exit={{ opacity: 0, height: 0 }}
                   className="mb-6 p-4 rounded-lg bg-[var(--color-bg-secondary)] border-l-2 border-[var(--color-accent-primary)]"
                 >
-                  <p className="text-xs font-bold text-[var(--color-accent-primary)] mb-2 uppercase tracking-widest">
+                  <p className="text-xs font-bold text-[var(--color-accent-primary)] mb-2 uppercase tracking-widest font-orbitron">
                     AI NARRATION
                   </p>
                   <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed italic">
@@ -476,21 +486,21 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
 
             <div className="space-y-6">
               <div>
-                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-2">Description</p>
+                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-2 font-orbitron">Description</p>
                 <p id="tour-step-desc" className="text-sm md:text-base text-[var(--color-text-primary)] leading-relaxed">
                   {step.description}
                 </p>
               </div>
               
               <div>
-                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-2">Why This Matters</p>
+                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-2 font-orbitron">Why This Matters</p>
                 <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
                   {step.whyItMatters}
                 </p>
               </div>
 
               <div>
-                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-2">Technical Highlights</p>
+                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-2 font-orbitron">Technical Highlights</p>
                 <ul className="space-y-2">
                   {step.technicalHighlights.map(th => (
                     <li key={th} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
@@ -502,7 +512,7 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
               </div>
 
               <div>
-                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-2">Real-World Impact</p>
+                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-2 font-orbitron">Real-World Impact</p>
                 <div className="p-3 bg-[var(--color-accent-glow)] rounded border border-[var(--color-accent-primary)]/20">
                   <p className="text-sm font-medium text-[var(--color-text-primary)]">
                     {step.realWorldImpact}
@@ -514,13 +524,14 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
 
           {/* Footer Nav */}
           <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-[var(--color-border)] gap-4 bg-[var(--color-bg-surface)]">
-            {/* Toggles */}
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <button
                 onClick={() => setAutoPlay(!autoPlay)}
+                disabled={isTransitioning}
                 className={cn(
-                  "flex items-center justify-center gap-2 px-3 py-2 rounded text-xs font-bold transition-all w-full sm:w-auto",
-                  autoPlay ? "bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] border border-[var(--color-accent-primary)]/30" : "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+                  "flex items-center justify-center gap-2 px-3 py-2 rounded text-xs font-bold transition-all w-full sm:w-auto font-orbitron tracking-widest",
+                  autoPlay ? "bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] border border-[var(--color-accent-primary)]/30" : "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]",
+                  isTransitioning && "opacity-50 cursor-not-allowed"
                 )}
               >
                 {autoPlay ? <Pause size={14} /> : <Play size={14} />}
@@ -529,20 +540,21 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
 
               <button
                 onClick={() => setAiNarration(!aiNarration)}
+                disabled={isTransitioning}
                 className={cn(
-                  "flex items-center justify-center px-3 py-2 rounded text-xs font-bold transition-all w-full sm:w-auto",
-                  aiNarration ? "bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] border border-[var(--color-accent-primary)]/30" : "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+                  "flex items-center justify-center px-3 py-2 rounded text-xs font-bold transition-all w-full sm:w-auto font-orbitron tracking-widest",
+                  aiNarration ? "bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] border border-[var(--color-accent-primary)]/30" : "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]",
+                  isTransitioning && "opacity-50 cursor-not-allowed"
                 )}
               >
                 ENABLE AI NARRATION
               </button>
             </div>
 
-            {/* Pagination Controls */}
             <div className="flex items-center justify-between w-full sm:w-auto gap-2">
               <button
                 onClick={handlePrev}
-                disabled={isFirst}
+                disabled={isFirst || isTransitioning}
                 className="flex items-center justify-center w-10 h-10 rounded bg-[var(--color-bg-elevated)] disabled:opacity-50 hover:bg-[var(--color-border)] transition-colors"
                 aria-label="Previous step"
               >
@@ -551,18 +563,20 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
 
               <button
                 onClick={handleSkip}
-                className="px-4 py-2 text-xs font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] uppercase tracking-wider"
+                disabled={isTransitioning}
+                className="px-4 py-2 text-xs font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] uppercase tracking-wider font-orbitron disabled:opacity-50"
               >
                 Skip
               </button>
 
               <button
                 onClick={handleNext}
+                disabled={isTransitioning}
                 className={cn(
-                  'flex items-center gap-2 h-10 px-6 rounded text-xs font-bold uppercase tracking-wider transition-all',
+                  'flex items-center gap-2 h-10 px-6 rounded text-xs font-bold uppercase tracking-wider transition-all font-orbitron disabled:opacity-50',
                   isLast
-                    ? 'bg-[var(--color-risk-safe)] text-white hover:opacity-90'
-                    : 'bg-[var(--color-text-primary)] text-[var(--color-bg-base)] hover:opacity-90'
+                    ? 'bg-[var(--color-risk-safe)] text-white hover:opacity-90 shadow-[0_0_15px_rgba(118,192,67,0.3)]'
+                    : 'bg-[var(--color-text-primary)] text-[var(--color-bg-base)] hover:opacity-90 shadow-[0_0_15px_rgba(255,255,255,0.2)]'
                 )}
               >
                 {isLast ? (
