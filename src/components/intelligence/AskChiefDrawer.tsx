@@ -149,7 +149,7 @@ export function AskChiefDrawer({ isOpen, onClose }: AskChiefDrawerProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/50 backdrop-blur-[12px] z-40"
             onClick={onClose}
           />
 
@@ -164,7 +164,7 @@ export function AskChiefDrawer({ isOpen, onClose }: AskChiefDrawerProps) {
               'fixed top-0 right-0 h-full z-50',
               'w-full sm:w-[420px] lg:w-[460px]',
               'flex flex-col',
-              'bg-[var(--color-bg-base)] border-l border-[var(--color-border)]',
+              'bg-[var(--color-bg-primary)] border-l border-[var(--color-border)]',
               'shadow-2xl'
             )}
           >

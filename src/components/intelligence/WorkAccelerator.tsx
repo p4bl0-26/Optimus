@@ -74,7 +74,7 @@ function FormReviewPanel({ draft, onClose }: { draft: FormDraft; onClose: () => 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
-      className="intel-card overflow-hidden border border-[var(--color-accent-primary)]/40"
+      className="intel-card overflow-hidden border-none shadow-[var(--shadow-hover)] bg-[var(--color-bg-secondary)]"
     >
       {/* Header */}
       <div className="p-4 bg-[var(--color-accent-glow)] border-b border-[var(--color-accent-primary)]/30 flex items-center justify-between">
@@ -229,7 +229,7 @@ function AccelerationPanel({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="intel-card overflow-hidden"
+      className="intel-card overflow-hidden bg-[var(--color-bg-secondary)] border border-[var(--color-border-subtle)]"
     >
       {/* Header Stats */}
       <div className="p-4 bg-[var(--color-bg-secondary)] border-b border-[var(--color-border)] grid grid-cols-3 gap-4">
@@ -479,7 +479,7 @@ export function WorkAccelerator({ obligationId, obligationType, obligationTitle 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="intel-card p-4 border-l-2 border-l-[var(--color-accent-primary)]">
+      <div className="intel-card p-5 bg-[var(--color-bg-secondary)] border-l-2 border-l-[var(--color-accent-primary)] border-t-0 border-r-0 border-b-0 shadow-[var(--shadow-hover)]">
         <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--color-accent-primary)] mb-1 flex items-center gap-1.5">
           <Zap size={11} /> AI Work Accelerator
         </p>
@@ -589,7 +589,7 @@ export function WorkAccelerator({ obligationId, obligationType, obligationTitle 
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="intel-card p-4 border border-[var(--color-risk-critical)]/40 bg-[var(--color-risk-critical-bg)] flex items-start gap-2"
+            className="intel-card p-4 bg-[var(--color-risk-critical-bg)] flex items-start gap-2 border-none"
           >
             <AlertTriangle size={14} className="text-[var(--color-risk-critical)] mt-0.5 flex-shrink-0" />
             <p className="text-xs text-[var(--color-risk-critical)]">{error}</p>

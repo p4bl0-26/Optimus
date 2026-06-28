@@ -111,8 +111,8 @@ export function Sidebar({
         <div
           className={cn(
             'flex items-center border-b border-[var(--sidebar-border)]',
-            'flex-shrink-0 h-16',
-            effectiveIsCollapsed ? 'justify-center px-0' : 'px-4 gap-3'
+            'flex-shrink-0 h-24', // increased height
+            effectiveIsCollapsed ? 'justify-center px-0' : 'px-6 gap-4' // increased padding
           )}
         >
           {/* Shield Logo Mark */}
@@ -161,7 +161,7 @@ export function Sidebar({
         </div>
 
         {/* ── Navigation Items ──────────────────────────────── */}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 space-y-0.5 px-2">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-4 px-2">
           {!isFocusMode && NAV_ITEMS.map((item) => {
             const isActive = item.href === '/'
               ? pathname === '/'
@@ -177,10 +177,10 @@ export function Sidebar({
                   'relative flex items-center rounded-lg',
                   'transition-all duration-150 group',
                   'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-accent-primary)]',
-                  effectiveIsCollapsed ? 'h-9 w-9 mx-auto justify-center' : 'h-9 px-3 gap-3',
+                  effectiveIsCollapsed ? 'h-12 w-12 mx-auto justify-center' : 'h-12 px-4 gap-4',
                   isActive
-                    ? 'bg-[var(--color-accent-glow)] text-[var(--color-accent-primary)] border border-[var(--color-accent-primary)]/20'
-                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)]'
+                    ? 'bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] shadow-[var(--shadow-hover)] border border-transparent'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] border border-transparent'
                 )}
                 title={effectiveIsCollapsed ? item.label : undefined}
                 aria-current={isActive ? 'page' : undefined}
@@ -189,7 +189,7 @@ export function Sidebar({
                 {isActive && (
                   <motion.span
                     layoutId="nav-active-indicator"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r bg-[var(--color-accent-primary)]"
+                    className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--color-accent-primary)] rounded-l-md"
                   />
                 )}
 
@@ -271,7 +271,7 @@ export function Sidebar({
         {/* ── Theme Toggle & Collapse Button ────────────────── */}
         <div
           className={cn(
-            'border-t border-[var(--sidebar-border)] p-2 space-y-2 flex-shrink-0'
+            'border-t border-[var(--sidebar-border)] p-4 space-y-5 flex-shrink-0'
           )}
         >
           {!isFocusMode && <ThemeToggle collapsed={effectiveIsCollapsed} />}

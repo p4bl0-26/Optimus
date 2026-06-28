@@ -41,28 +41,32 @@ async function checkGemini(): Promise<ServiceHealth> {
 }
 
 // ─── Status Indicator ─────────────────────────────────────────
-function StatusRow({ service }: { service: ServiceHealth }) {
+function StatusRow({ service, index }: { service: ServiceHealth, index: number }) {
   const isOnline = service.status === 'online'
   const isDegraded = service.status === 'degraded'
   const isOffline = service.status === 'offline'
   const isChecking = service.status === 'checking'
 
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[var(--color-border-subtle)] last:border-0">
-      <span className="text-xs text-[var(--color-text-secondary)] font-medium">{service.name}</span>
+    <div className={cn(
+      "flex items-center justify-between px-3 py-3 border-b border-[var(--color-border-subtle)] last:border-0",
+      index % 2 === 0 ? "bg-[var(--color-bg-secondary)]" : "bg-transparent",
+      !isOnline && "opacity-60"
+    )}>
+      <span className="text-[13px] text-[var(--color-text-secondary)] font-medium">{service.name}</span>
       <div className="flex items-center gap-2">
         {service.latency && (
-          <span className="text-[9px] text-[var(--color-text-muted)] font-mono">{service.latency}ms</span>
+          <span className="text-[10px] text-[var(--color-text-muted)] font-mono">{service.latency}ms</span>
         )}
-        {isChecking && <Loader2 size={12} className="animate-spin text-[var(--color-text-muted)]" />}
-        {isOnline && <CheckCircle size={13} className="text-[var(--color-risk-safe)]" />}
-        {isDegraded && <AlertTriangle size={13} className="text-[var(--color-risk-monitor)]" />}
-        {isOffline && <AlertTriangle size={13} className="text-[var(--color-risk-critical)]" />}
+        {isChecking && <Loader2 size={14} className="animate-spin text-[var(--color-text-muted)]" />}
+        {isOnline && <CheckCircle size={14} className="text-[var(--color-risk-safe)]" />}
+        {isDegraded && <AlertTriangle size={14} className="text-[var(--color-risk-monitor)]" />}
+        {isOffline && <AlertTriangle size={14} className="text-[var(--color-risk-critical)]" />}
         <span className={cn(
-          'text-[9px] font-bold uppercase tracking-wider',
+          'text-[10px] font-bold uppercase tracking-wider',
           isOnline && 'text-[var(--color-risk-safe)]',
-          isDegraded && 'text-[var(--color-risk-monitor)]',
-          isOffline && 'text-[var(--color-risk-critical)]',
+          isDegraded && 'text-[var(--color-text-primary)]',
+          isOffline && 'text-[var(--color-text-primary)]',
           isChecking && 'text-[var(--color-text-muted)]'
         )}>
           {isChecking ? '···' : service.status}
@@ -156,9 +160,9 @@ export function SystemHealthPanel({
       </div>
 
       {/* Service Rows */}
-      <div className="space-y-0">
-        {services.map(service => (
-          <StatusRow key={service.name} service={service} />
+      <div className="space-y-0 rounded-lg overflow-hidden border border-[var(--color-border-subtle)]">
+        {services.map((service, index) => (
+          <StatusRow key={service.name} service={service} index={index} />
         ))}
       </div>
 

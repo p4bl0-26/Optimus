@@ -301,7 +301,7 @@ export function FocusModeClient({ obligations, riskProfiles, recommendedFocus }:
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
                 className="font-orbitron text-[120px] md:text-[180px] font-bold text-[var(--color-text-primary)] leading-none tracking-tighter"
-                style={{ textShadow: '0 0 40px rgba(0, 112, 243, 0.2)' }}
+                style={{ textShadow: '0 0 60px rgba(118,192,67,0.10)' }}
               >
                 {formatTime(timeLeft)}
               </motion.div>
@@ -320,7 +320,7 @@ export function FocusModeClient({ obligations, riskProfiles, recommendedFocus }:
           <div className="lg:col-span-1 space-y-6">
             
             {/* Chief Directive */}
-            <div className="intel-card border-l-4 border-l-[var(--color-accent-primary)] bg-[var(--color-accent-primary)]/5 p-5">
+            <div className="intel-card border-none shadow-[0_0_32px_rgba(118,192,67,0.10)] bg-[var(--color-bg-secondary)] p-6">
               <p className="text-[10px] font-bold text-[var(--color-accent-primary)] uppercase tracking-wider mb-3 flex items-center gap-2">
                 <Bot size={12} /> CHIEF DIRECTIVE
               </p>
@@ -334,7 +334,7 @@ export function FocusModeClient({ obligations, riskProfiles, recommendedFocus }:
             </div>
 
             {/* Execution Plan */}
-            <div className="intel-card p-5 h-full max-h-[400px] flex flex-col">
+            <div className="intel-card p-6 h-full max-h-[400px] flex flex-col border-none shadow-none bg-[var(--color-bg-secondary)]">
               <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-4 flex items-center gap-2">
                 <Target size={12} /> TODAY&apos;S EXECUTION PLAN
               </p>
@@ -372,13 +372,13 @@ export function FocusModeClient({ obligations, riskProfiles, recommendedFocus }:
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-[12px] flex items-center justify-center p-4"
           >
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="intel-card max-w-sm w-full p-6 bg-[var(--color-bg-primary)] shadow-2xl border-[var(--color-risk-critical)]/50 text-center"
+              className="intel-card max-w-sm w-full p-8 bg-[var(--color-bg-primary)] shadow-2xl border-[var(--color-risk-critical)]/50 text-center"
             >
               <AlertTriangle size={32} className="text-[var(--color-risk-critical)] mx-auto mb-4" />
               <h3 className="text-lg font-bold text-[var(--color-text-primary)] font-orbitron mb-2 uppercase tracking-wider">LEAVE FOCUS MODE?</h3>

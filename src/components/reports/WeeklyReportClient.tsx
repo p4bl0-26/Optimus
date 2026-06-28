@@ -141,7 +141,7 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
             <h2 className="text-[10px] font-bold text-[var(--color-accent-primary)] uppercase tracking-wider flex items-center gap-2 mb-4">
               <Activity size={12} /> EXECUTIVE SUMMARY
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 p-6 bg-[var(--color-bg-secondary)] rounded-xl">
               <div>
                 <p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wider mb-1">Completed</p>
                 <p className="text-xl font-bold font-orbitron text-[var(--color-risk-safe)]">{report.completedCount} <span className="text-[10px] text-[var(--color-text-muted)]">obs</span></p>
@@ -165,7 +165,7 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
           </section>
 
           {/* Productivity Metrics & Risk Trend */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="intel-card p-6">
               <h2 className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider flex items-center gap-2 mb-4">
                 <Target size={12} /> RISK EXPOSURE
@@ -217,7 +217,7 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
             </section>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Memory Insights */}
             <section className="intel-card p-6">
               <h2 className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider flex items-center gap-2 mb-4">

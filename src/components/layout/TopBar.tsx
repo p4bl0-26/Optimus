@@ -15,8 +15,10 @@ import Link from 'next/link'
 import { PAGE_META } from '@/constants/navigation'
 import type { AppRoute } from '@/constants/navigation'
 import { AskChiefDrawer } from '@/components/intelligence/AskChiefDrawer'
-import { DemoTour } from '@/components/demo/DemoTour'
+import { JudgeExperience } from '@/components/demo/JudgeExperience'
 import { DemoResetButton } from '@/components/demo/DemoResetButton'
+import { AccountDropdown } from './AccountDropdown'
+import { NotificationDrawer } from '@/components/notifications/NotificationDrawer'
 
 interface TopBarProps {
   onMobileMenuToggle?: () => void
@@ -27,7 +29,8 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
   const pathname = usePathname()
   const meta = PAGE_META[pathname as AppRoute] ?? { title: pathname === '/focus' ? 'Focus Mode' : 'OPTIMUS', description: '' }
   const [isChiefOpen, setIsChiefOpen] = useState(false)
-  const [isTourOpen, setIsTourOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+
   const isFocusMode = pathname === '/focus'
 
   return (
@@ -36,7 +39,7 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
         id="topbar"
         className={cn(
           'sticky top-0 z-20 flex items-center justify-between',
-          'h-16 px-4 md:px-6',
+          'py-8 px-4 md:px-6',
           'bg-[var(--topbar-bg)] border-b border-[var(--topbar-border)]',
           'backdrop-blur-[var(--topbar-backdrop)]',
           'flex-shrink-0',
@@ -72,14 +75,14 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           >
             <div className="flex items-center gap-2 mb-0.5">
               <h1
-                className="text-sm font-semibold text-[var(--color-text-primary)] truncate"
+                className="text-[44px] tracking-wider font-semibold text-[var(--color-text-primary)] truncate"
                 style={{ fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)' }}
               >
                 {meta.title}
               </h1>
               <span className="status-dot w-1.5 h-1.5 opacity-60" />
             </div>
-            <p className="text-[11px] text-[var(--color-text-muted)] truncate hidden sm:block">
+            <p className="text-[13px] text-[var(--color-text-muted)] truncate hidden sm:block opacity-[0.65]">
               {meta.description}
             </p>
           </motion.div>
@@ -88,62 +91,36 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
         {/* Right: Demo Controls + Ask Chief + Notifications + Avatar */}
         <div className="flex items-center gap-2 flex-shrink-0">
 
-          {/* ▶ START DEMO button */}
           <button
             id="start-demo-btn"
-            onClick={() => setIsTourOpen(true)}
-            className={cn(
-              'hidden md:flex items-center gap-1.5 h-8 px-3 rounded-lg',
-              'border border-[var(--color-accent-primary)]/50',
-              'bg-[var(--color-accent-glow)]',
-              'text-[var(--color-accent-primary)] text-xs font-bold',
-              'hover:bg-[var(--color-accent-primary)]/20',
-              'hover:border-[var(--color-accent-primary)]',
-              'transition-all duration-150'
-            )}
+            onClick={() => window.dispatchEvent(new Event('start-judge-tour'))}
+            className="btn-base btn-primary hidden md:flex"
             title="Start guided demo tour"
           >
-            <Play size={10} className="fill-current" />
-            <span>Start Demo</span>
+            <Play size={14} className="fill-current" />
+            <span>START DEMO</span>
           </button>
 
           {/* WEEKLY REPORT button */}
           <Link
             href="/reports"
             id="weekly-report-btn"
-            className={cn(
-              'hidden sm:flex items-center gap-1.5 h-8 px-3 rounded-lg',
-              'border border-[var(--color-border)]',
-              'bg-[var(--color-bg-elevated)]',
-              'text-[var(--color-text-secondary)] text-xs font-bold uppercase tracking-wider',
-              'hover:bg-[var(--color-accent-primary)]/10',
-              'hover:text-[var(--color-accent-primary)]',
-              'hover:border-[var(--color-accent-primary)]/40',
-              'transition-all duration-150'
-            )}
+            className="btn-base btn-secondary hidden sm:flex tracking-wider"
             title="View Weekly Executive Report"
           >
-            <BarChart3 size={12} strokeWidth={2} />
-            <span>Weekly Report</span>
+            <BarChart3 size={14} strokeWidth={2} />
+            <span>WEEKLY REPORT</span>
           </Link>
 
           {/* FOCUS MODE button */}
           <Link
             href="/focus"
             id="enter-focus-mode-btn"
-            className={cn(
-              'hidden sm:flex items-center gap-1.5 h-8 px-3 rounded-lg',
-              'border border-[var(--color-risk-high)]/50',
-              'bg-[var(--color-risk-high)]/10',
-              'text-[var(--color-risk-high)] text-xs font-bold uppercase tracking-wider',
-              'hover:bg-[var(--color-risk-high)]/20',
-              'hover:border-[var(--color-risk-high)]',
-              'transition-all duration-150'
-            )}
+            className="btn-base btn-secondary hidden sm:flex tracking-wider"
             title="Enter distraction-free execution mode"
           >
-            <Crosshair size={12} strokeWidth={2} />
-            <span>Enter Focus Mode</span>
+            <Crosshair size={14} strokeWidth={2} />
+            <span>FOCUS MODE</span>
           </Link>
 
           {/* Reset Demo */}
@@ -157,19 +134,10 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
             <button
               id="ask-chief-btn"
               onClick={() => setIsChiefOpen(true)}
-              className={cn(
-                'hidden sm:flex items-center gap-2 h-8 px-3 rounded-lg',
-                'border border-[var(--color-border)]',
-                'bg-[var(--color-bg-elevated)]',
-                'text-[var(--color-text-secondary)] text-xs font-medium',
-                'hover:text-[var(--color-accent-primary)]',
-                'hover:border-[var(--color-accent-primary)]/40',
-                'hover:bg-[var(--color-accent-glow)]',
-                'transition-all duration-150'
-              )}
+              className="btn-base btn-secondary hidden sm:flex"
               title="Open Chief of Staff Intelligence Layer"
             >
-              <Bot size={13} strokeWidth={1.5} />
+              <Bot size={14} strokeWidth={1.5} />
               <span>Ask Chief</span>
             </button>
           )}
@@ -178,6 +146,7 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           {!isFocusMode && (
             <button
               id="notifications-btn"
+              onClick={() => setIsNotificationsOpen(true)}
               className={cn(
                 'relative flex items-center justify-center w-9 h-9 rounded-lg',
                 'border border-[var(--color-border)]',
@@ -198,39 +167,19 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           {/* Divider */}
           <div className="w-px h-5 bg-[var(--color-border)] hidden sm:block" />
 
-          {/* User avatar */}
-          <button
-            id="user-avatar-btn"
-            className={cn(
-              'flex items-center gap-2 rounded-lg',
-              'hover:bg-[var(--color-bg-elevated)]',
-              'transition-all duration-150 p-1'
-            )}
-            aria-label="User profile"
-          >
-            <div
-              className={cn(
-                'w-7 h-7 rounded-full',
-                'bg-gradient-to-br from-[var(--color-accent-tertiary)] to-[var(--color-accent-secondary)]',
-                'flex items-center justify-center',
-                'text-[10px] font-bold text-[var(--color-text-inverse)]',
-                'border border-[var(--color-accent-primary)]/30'
-              )}
-            >
-              H
-            </div>
-            <span className="text-xs font-medium text-[var(--color-text-secondary)] hidden lg:block">
-              Himank
-            </span>
-          </button>
+          {/* User avatar / Account Dropdown */}
+          <AccountDropdown />
         </div>
       </header>
 
       {/* Ask Chief Drawer — Chief of Staff Intelligence Layer */}
       <AskChiefDrawer isOpen={isChiefOpen} onClose={() => setIsChiefOpen(false)} />
 
-      {/* Demo Tour */}
-      <DemoTour isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} />
+      {/* Notifications Drawer */}
+      <NotificationDrawer isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
+
+      {/* Judge Experience Orchestrator */}
+      <JudgeExperience />
     </>
   )
 }

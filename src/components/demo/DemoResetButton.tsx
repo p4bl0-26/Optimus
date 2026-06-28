@@ -42,20 +42,11 @@ export function DemoResetButton({ onReset }: DemoResetButtonProps) {
       <button
         id="demo-reset-btn"
         onClick={() => { setShowModal(true); setState('idle') }}
-        className={cn(
-          'hidden sm:flex items-center gap-1.5 h-8 px-3 rounded-lg',
-          'border border-[var(--color-border)]',
-          'bg-[var(--color-bg-elevated)]',
-          'text-[var(--color-text-muted)] text-xs font-medium',
-          'hover:text-[var(--color-text-secondary)]',
-          'hover:border-[var(--color-border-focus)]',
-          'hover:bg-[var(--color-bg-card)]',
-          'transition-all duration-150'
-        )}
+        className="btn-base btn-ghost hidden sm:inline-flex"
         title="Reset demo workspace"
       >
-        <RotateCcw size={11} />
-        <span>Reset Demo</span>
+        <RotateCcw size={14} />
+        <span>RESET DEMO</span>
       </button>
 
       <AnimatePresence>
