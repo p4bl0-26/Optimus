@@ -288,112 +288,113 @@ export function Sidebar({
           })}
         </nav>
 
-        {/* ── User Profile & Account Controls ──────────────────────── */}
-        <AnimatePresence initial={false}>
-          {!effectiveIsCollapsed && !isFocusMode && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="mx-4 mb-2 flex flex-col gap-4 p-6 rounded-2xl border border-[rgba(118,192,67,0.15)] bg-[rgba(9,9,9,0.96)] backdrop-blur-[24px]"
-            >
-              <div className="flex items-center gap-3 border-b border-[var(--sidebar-border)] pb-4">
-                <div className="w-10 h-10 rounded-full bg-[var(--color-bg-elevated)] border border-[var(--sidebar-border)] flex items-center justify-center flex-shrink-0 text-lg font-orbitron font-bold text-[var(--color-text-primary)] uppercase">
-                  {user?.user_metadata?.full_name?.charAt(0) || 'O'}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase truncate">
-                    {user?.user_metadata?.full_name || 'Operator'}
-                  </p>
-                  <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider uppercase mt-1">
-                    AI Chief of Staff Operator
-                  </p>
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-risk-safe)] animate-pulse" />
-                    <span className="text-[10px] text-[var(--color-risk-safe)] font-mono uppercase tracking-wider">Operational</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={handleToggleJudgeMode}
-                  className="w-full h-12 rounded-lg border border-[var(--sidebar-border)] bg-[var(--color-bg-elevated)] text-[11px] font-bold tracking-widest text-[var(--color-text-primary)] uppercase hover:-translate-y-[1px] hover:border-[var(--color-border-focus)] transition-all flex items-center justify-center"
-                >
-                  {judgeMode ? 'EXIT JUDGE MODE' : 'ENTER JUDGE MODE'}
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="w-full h-12 rounded-lg border border-[var(--color-risk-critical)]/30 bg-[var(--color-risk-critical-bg)] text-[11px] font-bold tracking-widest text-[var(--color-risk-critical)] uppercase hover:-translate-y-[1px] hover:bg-[var(--color-risk-critical)] hover:text-[var(--color-text-inverse)] transition-all flex items-center justify-center"
-                >
-                  LOGOUT
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Collapsed User icon */}
-        {effectiveIsCollapsed && !isFocusMode && (
-          <div className="mx-auto mb-2 flex flex-col items-center gap-1">
-            <div className="w-9 h-9 rounded-lg border border-[var(--sidebar-border)] bg-[var(--color-bg-elevated)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-bg-surface)] transition-colors" onClick={() => onToggle()}>
-              <span className="text-sm font-bold text-[var(--color-text-primary)] font-orbitron">
+        {/* ── Unified Footer ──────────────────────── */}
+        {!isFocusMode && (
+          <div className={cn(
+            "flex flex-col border-t border-[var(--sidebar-border)] transition-all duration-300 ease-in-out flex-shrink-0",
+            effectiveIsCollapsed ? "p-4 items-center gap-4" : "p-6 gap-6"
+          )}>
+            {/* User Profile */}
+            <div className={cn(
+              "flex transition-all duration-300 ease-in-out w-full",
+              effectiveIsCollapsed ? "justify-center" : "items-center gap-3"
+            )}>
+              {/* Avatar Container */}
+              <div 
+                className={cn(
+                  "rounded-full bg-[var(--color-bg-elevated)] border border-[var(--sidebar-border)] flex items-center justify-center flex-shrink-0 text-lg font-orbitron font-bold text-[var(--color-text-primary)] uppercase transition-all duration-300 ease-in-out",
+                  effectiveIsCollapsed ? "w-9 h-9 cursor-pointer hover:bg-[var(--color-bg-surface)]" : "w-10 h-10"
+                )}
+                onClick={effectiveIsCollapsed ? onToggle : undefined}
+                title={effectiveIsCollapsed ? "Expand to view profile" : undefined}
+              >
                 {user?.user_metadata?.full_name?.charAt(0) || 'O'}
-              </span>
+              </div>
+              
+              {/* User Info */}
+              <AnimatePresence initial={false}>
+                {!effectiveIsCollapsed && (
+                  <motion.div
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: 'auto' }}
+                    exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="min-w-0 flex-1 overflow-hidden whitespace-nowrap"
+                  >
+                    <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase truncate">
+                      {user?.user_metadata?.full_name || 'Operator'}
+                    </p>
+                    <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider uppercase mt-1 truncate">
+                      AI Chief of Staff Operator
+                    </p>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-risk-safe)] animate-pulse" />
+                      <span className="text-[10px] text-[var(--color-risk-safe)] font-mono uppercase tracking-wider">Operational</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-risk-safe)]" />
+
+            {/* Action Buttons (Judge/Logout) */}
+            <AnimatePresence initial={false}>
+              {!effectiveIsCollapsed && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="flex flex-col gap-2 overflow-hidden w-full"
+                >
+                  <button
+                    onClick={handleToggleJudgeMode}
+                    className="w-full h-12 rounded-lg border border-[var(--sidebar-border)] bg-[var(--color-bg-elevated)] text-[11px] font-bold tracking-widest text-[var(--color-text-primary)] uppercase hover:-translate-y-[1px] hover:border-[var(--color-border-focus)] transition-all duration-300 ease-in-out flex items-center justify-center flex-shrink-0"
+                  >
+                    {judgeMode ? 'EXIT JUDGE MODE' : 'ENTER JUDGE MODE'}
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full h-12 rounded-lg border border-[var(--color-risk-critical)]/30 bg-[var(--color-risk-critical-bg)] text-[11px] font-bold tracking-widest text-[var(--color-risk-critical)] uppercase hover:-translate-y-[1px] hover:bg-[var(--color-risk-critical)] hover:text-[var(--color-text-inverse)] transition-all duration-300 ease-in-out flex items-center justify-center flex-shrink-0"
+                  >
+                    LOGOUT
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Theme Toggle & Collapse Button */}
+            <div className={cn(
+              "flex flex-col gap-4 transition-all duration-300 ease-in-out w-full",
+              effectiveIsCollapsed ? "items-center" : ""
+            )}>
+              <ThemeToggle collapsed={effectiveIsCollapsed} />
+              
+              <button
+                id="sidebar-collapse-btn"
+                onClick={onToggle}
+                className={cn(
+                  'flex items-center rounded-lg border border-[var(--color-border)]',
+                  'bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]',
+                  'hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-focus)]',
+                  'transition-all duration-300 ease-in-out cursor-pointer',
+                  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-accent-primary)]',
+                  effectiveIsCollapsed ? 'h-9 w-9 justify-center flex-shrink-0' : 'h-9 w-full px-3 gap-2.5 flex-shrink-0'
+                )}
+                aria-label={effectiveIsCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                title={effectiveIsCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {effectiveIsCollapsed ? (
+                  <ChevronRight size={14} strokeWidth={1.5} />
+                ) : (
+                  <>
+                    <ChevronLeft size={14} strokeWidth={1.5} className="flex-shrink-0" />
+                    <span className="text-xs font-medium truncate">Collapse</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         )}
-
-        {/* ── Theme Toggle & Collapse Button ────────────────── */}
-        <div
-          className={cn(
-            'border-t border-[var(--sidebar-border)] p-4 space-y-5 flex-shrink-0'
-          )}
-        >
-          {!isFocusMode && <ThemeToggle collapsed={effectiveIsCollapsed} />}
-
-          {/* Exit Focus Mode OR Collapse toggle */}
-          {isFocusMode ? (
-            <Link
-              href="/"
-              className={cn(
-                'flex items-center rounded-lg border border-[var(--color-risk-critical)]/30',
-                'bg-[var(--color-risk-critical-bg)] text-[var(--color-risk-critical)]',
-                'hover:bg-[var(--color-risk-critical)] hover:text-[var(--color-text-inverse)]',
-                'transition-all duration-150 cursor-pointer justify-center h-9 w-9 mx-auto'
-              )}
-              title="Exit Focus Mode"
-            >
-              <Target size={14} strokeWidth={2} />
-            </Link>
-          ) : (
-            <button
-              id="sidebar-collapse-btn"
-              onClick={onToggle}
-              className={cn(
-                'flex items-center rounded-lg border border-[var(--color-border)]',
-                'bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]',
-                'hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-focus)]',
-                'transition-all duration-150 cursor-pointer',
-                'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-accent-primary)]',
-                effectiveIsCollapsed ? 'h-9 w-9 mx-auto justify-center' : 'h-9 w-full px-3 gap-2.5'
-              )}
-              aria-label={effectiveIsCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              title={effectiveIsCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {effectiveIsCollapsed ? (
-                <ChevronRight size={14} strokeWidth={1.5} />
-              ) : (
-                <>
-                  <ChevronLeft size={14} strokeWidth={1.5} />
-                  <span className="text-xs font-medium">Collapse</span>
-                </>
-              )}
-            </button>
-          )}
-        </div>
       </motion.aside>
     </>
   )

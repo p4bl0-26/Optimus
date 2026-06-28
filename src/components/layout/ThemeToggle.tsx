@@ -39,54 +39,37 @@ export function ThemeToggle({ collapsed = false, className }: ThemeToggleProps) 
   const isDark = theme === 'dark'
 
   return (
-    <motion.button
+    <div
       id="theme-toggle"
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={cn(
         'relative flex items-center gap-2.5 rounded-lg',
         'border border-[var(--color-border)]',
         'bg-[var(--color-bg-elevated)]',
         'text-[var(--color-text-secondary)]',
-        'hover:text-[var(--color-text-primary)]',
-        'hover:border-[var(--color-accent-primary)]',
-        'hover:bg-[var(--color-accent-glow)]',
-        'transition-all duration-200 cursor-pointer',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-primary)]',
-        collapsed ? 'h-9 w-9 justify-center' : 'h-9 w-full px-3',
+        'transition-all duration-200 cursor-default opacity-80',
+        collapsed ? 'h-9 w-9 justify-center flex-shrink-0' : 'h-9 w-full px-3 flex-shrink-0',
         className
       )}
-      whileTap={{ scale: 0.95 }}
-      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-      title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+      aria-label="Theme: OPTIMUS Dark (Default)"
+      title="Theme: OPTIMUS Dark (Default)"
     >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={isDark ? 'moon' : 'sun'}
-          initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-          animate={{ rotate: 0, opacity: 1, scale: 1 }}
-          exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-          transition={{ duration: 0.2, ease: 'easeInOut' }}
-          className="flex-shrink-0"
-        >
-          {isDark ? (
-            <Moon size={15} strokeWidth={1.5} className="text-[var(--color-accent-primary)]" />
-          ) : (
-            <Sun size={15} strokeWidth={1.5} className="text-[var(--color-accent-primary)]" />
-          )}
-        </motion.span>
-      </AnimatePresence>
+      <span className="flex-shrink-0">
+        <Moon size={15} strokeWidth={1.5} className="text-[var(--color-accent-primary)]" />
+      </span>
 
-      {!collapsed && (
-        <motion.span
-          initial={{ opacity: 0, x: -4 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -4 }}
-          transition={{ duration: 0.15 }}
-          className="text-xs font-medium tracking-wide"
-        >
-          {isDark ? 'Dark Mode' : 'Light Mode'}
-        </motion.span>
-      )}
-    </motion.button>
+      <AnimatePresence initial={false}>
+        {!collapsed && (
+          <motion.span
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 'auto' }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="text-[11px] font-medium tracking-wide truncate"
+          >
+            OPTIMUS Dark (Default)
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
