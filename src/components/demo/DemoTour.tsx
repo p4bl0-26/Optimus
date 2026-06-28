@@ -136,8 +136,21 @@ export const TOUR_STEPS: TourStep[] = [
     targetId: 'formAssistant',
   },
   {
-    id: 'reports',
+    id: 'accountability',
     step: 9,
+    title: 'Accountability Layer',
+    badges: ['CORE', 'NEW'],
+    description: 'Dynamic Action Center that surfaces critical interventions before they become failures.',
+    whyItMatters: 'Alerts are noise. Deterministic interventions are signal.',
+    technicalHighlights: ['Intervention Engine', 'Conflict Resolution', 'One-Click Action'],
+    realWorldImpact: 'Resolves schedule conflicts and overloads instantly without manual triage.',
+    narrationText: 'The Accountability Layer acts as your Action Center. It does not just alert you to problems; it prepares deterministic interventions for schedule conflicts and overloads, ready for your one-click approval.',
+    estimatedSeconds: 30,
+    targetId: 'accountability',
+  },
+  {
+    id: 'reports',
+    step: 10,
     title: 'Weekly Executive Reports',
     badges: ['CORE'],
     description: 'A deterministic summary of your week’s performance, wins, and misses.',
@@ -189,9 +202,26 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
     if (!isOpen) return;
 
     const updateSpotlight = () => {
+      if (spotlight.activeTarget) {
+        const prevEl = document.querySelector(spotlight.activeTarget) as HTMLElement;
+        if (prevEl) prevEl.style.transform = '';
+      }
+
       if (step.targetId && JUDGE_TARGETS[step.targetId]) {
-        const state = computeSpotlight(JUDGE_TARGETS[step.targetId], 12);
-        setSpotlight(state);
+        const selector = JUDGE_TARGETS[step.targetId];
+        const el = document.querySelector(selector) as HTMLElement;
+        
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.style.transition = 'transform 0.3s ease';
+          el.style.transform = 'scale(1.015)';
+          const state = computeSpotlight(selector, 12);
+          setSpotlight(state);
+        } else {
+          console.warn(`[Spotlight Engine] Target not found for selector: ${selector}. Skipping step gracefully.`);
+          recordFeatureSkipped(step.id);
+          setSpotlight({ activeTarget: null, bounds: null, arrowPosition: null });
+        }
       } else {
         setSpotlight({ activeTarget: null, bounds: null, arrowPosition: null });
       }
@@ -207,11 +237,15 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
     const t = setTimeout(updateSpotlight, 100);
 
     return () => {
+      if (spotlight.activeTarget) {
+        const prevEl = document.querySelector(spotlight.activeTarget) as HTMLElement;
+        if (prevEl) prevEl.style.transform = '';
+      }
       window.removeEventListener('resize', updateSpotlight);
       window.removeEventListener('scroll', updateSpotlight);
       clearTimeout(t);
     };
-  }, [isOpen, step]);
+  }, [isOpen, step, spotlight.activeTarget]);
 
   const handleComplete = useCallback(() => {
     recordTourCompletion();
@@ -309,7 +343,7 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
       <div 
         className="fixed inset-0 z-[100] pointer-events-none transition-all duration-250 ease-in-out"
         style={{
-          backgroundColor: 'rgba(0,0,0,0.8)',
+          backgroundColor: 'rgba(0,0,0,0.20)',
           backdropFilter: 'blur(6px)',
           clipPath: spotlight.bounds ? `polygon(
             0% 0%, 0% 100%, 

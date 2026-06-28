@@ -132,7 +132,7 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           {/* Ask Chief — wired to Chief of Staff Intelligence Layer */}
           {!isFocusMode && (
             <button
-              id="ask-chief-btn"
+              id="ask-chief"
               onClick={() => setIsChiefOpen(true)}
               className="btn-base btn-secondary hidden sm:flex"
               title="Open Chief of Staff Intelligence Layer"

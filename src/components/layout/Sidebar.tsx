@@ -167,10 +167,16 @@ export function Sidebar({
               ? pathname === '/'
               : pathname.startsWith(item.href)
 
+            const domId = item.id === 'schedule' ? 'execution-schedule' :
+                          item.id === 'actions' ? 'work-accelerator' :
+                          item.id === 'briefings' ? 'form-assistant' :
+                          item.id === 'reports' ? 'weekly-reports' :
+                          `nav-${item.id}`;
+
             return (
               <Link
                 key={item.id}
-                id={`nav-${item.id}`}
+                id={domId}
                 href={item.href}
                 onClick={onMobileClose}
                 className={cn(

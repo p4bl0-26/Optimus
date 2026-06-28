@@ -41,20 +41,15 @@ export function AccountDropdown() {
   };
 
   const handleLogout = () => {
-    // Requirements:
-    // ✓ Clear judge session
-    // ✓ Clear authentication state
-    // ✓ Return to Authentication Gate
-    // ✓ Prevent developer account leakage
-    if (judgeMode) {
-      exitJudgeSession();
-    }
+    localStorage.removeItem("optimus_auth");
+    localStorage.removeItem("optimus_judge");
+    sessionStorage.clear();
     
-    // Simulate clearing auth state
-    localStorage.removeItem('optimus_auth');
+    // Clear any ?mode=judge from URL without reloading immediately
+    window.history.replaceState({}, "", window.location.pathname);
     
-    // Full window reload to return to the Authentication Gate (StartupWrapper will catch lack of auth)
-    window.location.href = '/';
+    // Hard redirect to root which will trigger the Auth Gate due to missing localStorage
+    window.location.replace('/');
   };
 
   return (
@@ -82,9 +77,17 @@ export function AccountDropdown() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-64 bg-[var(--color-bg-base)] border border-[var(--color-border)] rounded-xl shadow-2xl overflow-hidden z-[200]"
+            className="absolute right-0 bg-[var(--color-bg-base)] overflow-hidden"
+            style={{
+              top: 'calc(100% + 12px)',
+              width: '280px',
+              borderRadius: '16px',
+              zIndex: 9999,
+              boxShadow: '0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(118,192,67,.15)',
+            }}
           >
-            <div className="p-4 border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+            <div className="p-5">
+            <div className="pb-4 mb-2 border-b border-[var(--color-border)]">
               <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase">
                 Himank Garg
               </p>
@@ -120,6 +123,7 @@ export function AccountDropdown() {
                 <LogOut size={14} />
                 Logout
               </button>
+            </div>
             </div>
           </motion.div>
         )}

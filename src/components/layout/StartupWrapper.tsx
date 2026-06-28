@@ -23,18 +23,27 @@ export function StartupWrapper({ children }: { children: React.ReactNode }) {
 
   const handleCompleteSplash = () => {
     setShowSplash(false);
-    if (!isJudgeMode()) {
-      setShowAuthGate(true);
+    
+    // Auth Gate logic
+    if (typeof window !== 'undefined') {
+      const hasAuth = !!localStorage.getItem("optimus_auth");
+      const hasJudge = !!localStorage.getItem("optimus_judge");
+      const isJudgeUrl = new URLSearchParams(window.location.search).get("mode") === "judge";
+      
+      if (!hasAuth && !hasJudge && !isJudgeUrl) {
+        setShowAuthGate(true);
+      }
     }
   };
 
   const handleLogin = () => {
-    // In a real app this would redirect to OAuth
+    localStorage.setItem("optimus_auth", "true");
     setShowAuthGate(false);
   };
 
   const handleEnterJudgeMode = async () => {
     await resetJudgeData();
+    localStorage.setItem("optimus_judge", "true");
     setShowAuthGate(false);
     // Let DemoTour know it should start automatically
     setTimeout(() => {

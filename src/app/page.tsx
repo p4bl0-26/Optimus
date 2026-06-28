@@ -388,7 +388,13 @@ export default function CommandCenterPage() {
         </div>
       </div>
 
+      {/* ─── RESPONSIBILITY MATRIX HERO ────────────────────────── */}
+      <div id="responsibility-matrix" className="mb-8">
+        <ResponsibilityMap data={combinedData} />
+      </div>
+
       {/* ─── EXECUTIVE BRIEFING HERO ──────────────────────────── */}
+      <div id="executive-briefing">
       <SectionContainer spacing="lg">
         <div className="intel-card border-t-4 border-t-[var(--color-accent-primary)] bg-[var(--color-bg-surface)] p-7 relative overflow-hidden shadow-lg leading-relaxed">
           <div className="flex items-center gap-2 mb-4 border-b border-[var(--color-border)] pb-3">
@@ -467,7 +473,7 @@ export default function CommandCenterPage() {
                   <h3 className="text-xs font-bold text-[var(--color-accent-primary)] uppercase tracking-wider mb-3 flex items-center gap-1">
                     <Target size={12} /> Today&apos;s Focus
                   </h3>
-                  <div className="p-5 bg-[var(--color-accent-primary)]/10 border border-[var(--color-accent-primary)]/30 rounded-lg relative overflow-hidden">
+                  <div id="focus-mode" className="p-5 bg-[var(--color-accent-primary)]/10 border border-[var(--color-accent-primary)]/30 rounded-lg relative overflow-hidden">
                     <div className="absolute top-4 right-4">
                       <span className="px-2 py-1 rounded-full bg-[var(--color-accent-primary)]/20 border border-[var(--color-accent-primary)]/40 text-[10px] font-mono font-bold text-[var(--color-accent-primary)]">
                         CONF: {recommendedFocus.confidence}%
@@ -493,17 +499,14 @@ export default function CommandCenterPage() {
           </div>
         </div>
       </SectionContainer>
-
-      {/* ─── HERO NETWORK & OUTCOMES ──────────────────────────── */}
-      {/* ─── RESPONSIBILITY MATRIX HERO ────────────────────────── */}
-      <div className="mb-8">
-        <ResponsibilityMap data={combinedData} />
       </div>
+
 
       {/* ─── REMAINING INTELLIGENCE MODULES ──────────────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         {/* Future Outcomes (Linked to highest risk target) */}
-        <SectionContainer title="Future Outcomes Engine" className="xl:col-span-1" spacing="none">
+        <div id="future-outcomes" className="xl:col-span-1">
+        <SectionContainer title="Future Outcomes Engine" spacing="none">
           <div className="intel-card p-6 h-[480px] flex flex-col">
             <p className="text-[13px] text-[var(--color-text-muted)] mb-6 flex items-center justify-between">
               <span>Targeting: <span className="font-bold text-[var(--color-text-primary)]">{highestRiskTarget && highestRiskTarget !== 'None' ? highestRiskTarget : 'Network'}</span></span>
@@ -555,6 +558,7 @@ export default function CommandCenterPage() {
             </div>
           </div>
         </SectionContainer>
+        </div>
       </div>
       {/* ─── INSIGHTS & ACTIONS ─────────────────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -612,7 +616,7 @@ export default function CommandCenterPage() {
           {/* Dynamic Action Center */}
           <div className="lg:col-span-2">
           <SectionContainer title="Action Center (Interventions)" spacing="none">
-            <div className="intel-card p-0 overflow-hidden h-[360px] overflow-y-auto scrollbar-hide">
+            <div id="accountability-layer" className="intel-card p-0 overflow-hidden h-[360px] overflow-y-auto scrollbar-hide">
             <AnimatePresence>
               {interventions.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full gap-3 py-8 px-4 text-center">
