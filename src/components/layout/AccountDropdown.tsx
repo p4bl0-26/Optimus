@@ -82,10 +82,10 @@ export function AccountDropdown() {
         aria-expanded={isOpen}
       >
         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--color-accent-tertiary)] to-[var(--color-accent-secondary)] flex items-center justify-center text-[10px] font-bold text-[var(--color-text-inverse)] border border-[var(--color-accent-primary)]/30">
-          {user?.user_metadata?.name?.[0]?.toUpperCase() || 'O'}
+          {(user?.user_metadata?.optimus_display_name || user?.user_metadata?.name || user?.user_metadata?.full_name)?.[0]?.toUpperCase() || 'O'}
         </div>
         <span className="text-xs font-medium text-[var(--color-text-secondary)] hidden lg:block">
-          {user?.user_metadata?.name || 'Operator'}
+          {user?.user_metadata?.optimus_display_name || user?.user_metadata?.name || user?.user_metadata?.full_name || 'Operator'}
         </span>
         <ChevronDown size={12} className="text-[var(--color-text-muted)] hidden lg:block" />
       </button>
@@ -113,13 +113,12 @@ export function AccountDropdown() {
             <div style={{ paddingTop: '24px', paddingBottom: '20px', paddingInline: '24px' }}>
               <div style={{ marginBottom: '24px' }} className="border-b border-[var(--color-border)] pb-6 flex flex-col items-center">
                 <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase text-center w-full truncate px-2">
-                  {user?.user_metadata?.full_name || 'Operator'}
+                  {user?.user_metadata?.optimus_display_name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'Operator'}
                 </p>
                 <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider uppercase text-center mt-4">
                   AI Chief of Staff Operator
                 </p>
               </div>
-              
               <div className="flex flex-col gap-4">
                 <button
                   onClick={handleToggleJudgeMode}

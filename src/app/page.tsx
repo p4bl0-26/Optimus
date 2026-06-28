@@ -14,6 +14,7 @@ import { ResponsibilityMap } from '@/components/dashboard/ResponsibilityMap'
 import { getDynamicGreeting, getGreetingPeriod, formatLocalTime, formatLocalDate } from '@/lib/utils/greeting'
 import { isJudgeMode } from '@/lib/demo/judgeSession'
 import { supabase } from '@/lib/db/supabase'
+import { DisplayNameModal } from '@/components/auth/DisplayNameModal'
 
 
 // ─── Stat Card ────────────────────────────────────────────────
@@ -75,30 +76,36 @@ export default function CommandCenterPage() {
   const [firstName, setFirstName] = useState<string>('OPERATOR');
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user?.user_metadata?.full_name) {
-        const name = session.user.user_metadata.full_name.split(' ')[0];
-        setFirstName(name.toUpperCase());
-      } else if (session?.user?.user_metadata?.name) {
-        const name = session.user.user_metadata.name.split(' ')[0];
-        setFirstName(name.toUpperCase());
+    const checkName = (session: any) => {
+      const metadata = session?.user?.user_metadata
+      if (metadata?.optimus_display_name) {
+        setFirstName(metadata.optimus_display_name.toUpperCase())
+      } else if (metadata?.full_name) {
+        setFirstName(metadata.full_name.split(' ')[0].toUpperCase())
+      } else if (metadata?.name) {
+        setFirstName(metadata.name.split(' ')[0].toUpperCase())
+      } else {
+        setFirstName('OPERATOR')
       }
+    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      checkName(session)
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (session?.user?.user_metadata?.full_name) {
-        const name = session.user.user_metadata.full_name.split(' ')[0];
-        setFirstName(name.toUpperCase());
-      } else if (session?.user?.user_metadata?.name) {
-        const name = session.user.user_metadata.name.split(' ')[0];
-        setFirstName(name.toUpperCase());
-      } else {
-        setFirstName('OPERATOR');
-      }
+      checkName(session)
     });
+
+    // Listen for custom event from DisplayNameModal
+    const handleDisplayNameUpdate = () => {
+      supabase.auth.getSession().then(({ data: { session } }) => checkName(session))
+    }
+    window.addEventListener('optimus-display-name-updated', handleDisplayNameUpdate)
 
     return () => {
       subscription.unsubscribe();
+      window.removeEventListener('optimus-display-name-updated', handleDisplayNameUpdate)
     };
   }, []);
 
@@ -171,6 +178,8 @@ export default function CommandCenterPage() {
 
   return (
     <PageContainer id="command-center-page">
+      {!judgeActive && <DisplayNameModal onComplete={() => {}} />}
+      
       {/* ── Header: Animated Greeting ───────────────────────── */}
       <div className="mb-8 flex justify-between items-start gap-8">
         <div className="flex-1 min-w-0">

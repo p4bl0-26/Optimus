@@ -308,7 +308,7 @@ export function Sidebar({
                 onClick={effectiveIsCollapsed ? onToggle : undefined}
                 title={effectiveIsCollapsed ? "Expand to view profile" : undefined}
               >
-                {user?.user_metadata?.full_name?.charAt(0) || 'O'}
+                {(user?.user_metadata?.optimus_display_name || user?.user_metadata?.full_name)?.charAt(0) || 'O'}
               </div>
               
               {/* User Info */}
@@ -322,7 +322,7 @@ export function Sidebar({
                     className="min-w-0 flex-1 overflow-hidden whitespace-nowrap"
                   >
                     <p className="text-sm font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] uppercase truncate">
-                      {user?.user_metadata?.full_name || 'Operator'}
+                      {user?.user_metadata?.optimus_display_name || user?.user_metadata?.full_name || 'Operator'}
                     </p>
                     <p className="text-[10px] font-mono text-[var(--color-text-muted)] tracking-wider uppercase mt-1 truncate">
                       AI Chief of Staff Operator
