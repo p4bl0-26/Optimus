@@ -1,20 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import StartupAnimation from './StartupAnimation';
+import { useSplash } from '@/contexts/SplashContext';
 
 export function StartupWrapper({ children }: { children: React.ReactNode }) {
-  const [showAnimation, setShowAnimation] = useState(true);
-
+  const { showSplash, setShowSplash } = useSplash();
 
   const handleComplete = () => {
-    setShowAnimation(false);
-    sessionStorage.setItem('optimus_startup_seen', 'true');
+    setShowSplash(false);
   };
 
   return (
     <>
-      {showAnimation && <StartupAnimation onComplete={handleComplete} />}
+      {showSplash && <StartupAnimation onComplete={handleComplete} />}
       {children}
     </>
   );

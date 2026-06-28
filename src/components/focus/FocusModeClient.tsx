@@ -142,9 +142,7 @@ export function FocusModeClient({ obligations, riskProfiles, recommendedFocus }:
   }
 
   // Rescue Plan rendering
-  const rescuePlan = profile?.missing_work ? (
-    typeof profile.missing_work === 'string' ? JSON.parse(profile.missing_work) : profile.missing_work
-  ) : null
+  const rescuePlan = profile?.future_outcomes?.rescuePlan || null
 
   // UI Components
   if (isComplete) {
@@ -342,16 +340,15 @@ export function FocusModeClient({ obligations, riskProfiles, recommendedFocus }:
               </p>
               
               <div className="flex-1 overflow-y-auto pr-2 space-y-4 scrollbar-hide">
-                {rescuePlan?.steps ? (
-                  rescuePlan.steps.map((step: any, idx: number) => (
+                {rescuePlan?.actions?.today && rescuePlan.actions.today.length > 0 ? (
+                  rescuePlan.actions.today.map((action: string, idx: number) => (
                     <div key={idx} className="relative pl-6">
                       <div className="absolute left-0 top-1 w-3 h-3 rounded-full border-2 border-[var(--color-accent-primary)] bg-[var(--color-bg-primary)] z-10" />
-                      {idx !== rescuePlan.steps.length - 1 && (
+                      {idx !== rescuePlan.actions.today.length - 1 && (
                         <div className="absolute left-1.5 top-4 w-px h-full bg-[var(--color-border)] z-0" />
                       )}
                       <p className="text-[10px] font-bold text-[var(--color-accent-primary)] uppercase mb-1">STEP {idx + 1}</p>
-                      <p className="text-sm font-medium text-[var(--color-text-primary)] mb-1">{step.action}</p>
-                      <p className="text-xs text-[var(--color-text-secondary)]">{step.expected_outcome}</p>
+                      <p className="text-sm font-medium text-[var(--color-text-primary)] mb-1">{action}</p>
                     </div>
                   ))
                 ) : (

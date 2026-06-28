@@ -2,13 +2,14 @@
 
 import { PageContainer } from '@/components/layout/PageContainer'
 import { SectionContainer } from '@/components/layout/SectionContainer'
-import { Shield, Target, Zap, AlertTriangle, Clock, ArrowRight, BrainCircuit, Activity } from 'lucide-react'
+import { Shield, Brain, Zap, Clock, Calendar, CheckCircle2, AlertTriangle, Target, Activity, ArrowRight, Crosshair, Map, Briefcase, GraduationCap, BrainCircuit } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useSimulationEngine } from '@/hooks/useSimulationEngine'
 import { runDiscoveryAction, runClassroomDiscoveryAction, runCalendarDiscoveryAction } from '@/app/actions/discovery'
 import { SystemHealthPanel } from '@/components/dashboard/SystemHealthPanel'
+import { ResolveConflictButton } from '@/components/intelligence/ResolveConflictButton'
 
 
 // ─── Stat Card ────────────────────────────────────────────────
@@ -581,25 +582,48 @@ export default function CommandCenterPage() {
                   animate={{ opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
-                  <Link href={`/obligations/${intervention.obligation_id}`}>
-                    <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors group cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                          <AlertTriangle size={14} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-primary)] transition-colors" />
+                  {intervention.type === 'Schedule Conflict Detected' ? (
+                    <div className="flex flex-col p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
+                            <AlertTriangle size={14} className="text-[var(--color-text-muted)] transition-colors" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
+                            <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
-                          <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
+                        <div 
+                          className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500"
+                          style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}
+                        >
+                          {intervention.severity}
                         </div>
                       </div>
-                      <div 
-                        className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500"
-                        style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}
-                      >
-                        {intervention.severity}
-                      </div>
+                      <ResolveConflictButton eventId={intervention.obligation_id} />
                     </div>
-                  </Link>
+                  ) : (
+                    <Link href={`/obligations/${intervention.obligation_id}`}>
+                      <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors group cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
+                            <AlertTriangle size={14} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-primary)] transition-colors" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
+                            <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
+                          </div>
+                        </div>
+                        <div 
+                          className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500"
+                          style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}
+                        >
+                          {intervention.severity}
+                        </div>
+                      </div>
+                    </Link>
+                  )}
                 </motion.div>
               )})}
             </AnimatePresence>

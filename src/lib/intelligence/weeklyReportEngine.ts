@@ -74,14 +74,12 @@ export async function generateWeeklyReport(
   const diff = endRisk - startRisk
 
   const trendData = days.map((day, idx) => {
-    // simple linear interpolation with some noise
+    // strict linear interpolation without noise
     const progress = idx / (days.length - 1)
     const baseRisk = startRisk + (diff * progress)
-    // Add slight random curve except first and last day
-    const noise = (idx > 0 && idx < 6) ? (Math.random() * 10 - 5) : 0
     return {
       day,
-      risk: Math.max(0, Math.min(100, Math.round(baseRisk + noise)))
+      risk: Math.max(0, Math.min(100, Math.round(baseRisk)))
     }
   })
 

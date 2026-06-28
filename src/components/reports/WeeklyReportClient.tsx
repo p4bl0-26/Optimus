@@ -35,20 +35,29 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
             points={points}
             vectorEffect="non-scaling-stroke"
           />
-          {/* Data Points */}
-          {report.trendData.map((d, i) => (
-            <circle
-              key={i}
-              cx={i * (100 / 6)}
-              cy={100 - d.risk}
-              r="2.5"
-              fill="var(--color-bg-primary)"
-              stroke={strokeColor}
-              strokeWidth="1.5"
-              vectorEffect="non-scaling-stroke"
-            />
-          ))}
         </svg>
+
+        {/* Data Points HTML Overlay */}
+        {report.trendData.map((d, i) => {
+          const x = i * (100 / 6)
+          const y = 100 - d.risk
+          return (
+            <div 
+              key={i}
+              className="absolute w-3 h-3 -ml-1.5 -mt-1.5 rounded-full border-2 bg-[var(--color-bg-primary)] group z-10 hover:scale-125 transition-transform cursor-pointer"
+              style={{ 
+                left: `${x}%`, 
+                top: `${y}%`,
+                borderColor: strokeColor 
+              }}
+            >
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded text-[10px] text-[var(--color-text-primary)] font-bold opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-20">
+                {d.risk} Risk
+              </div>
+            </div>
+          )
+        })}
+
         {/* X-Axis Labels */}
         <div className="flex justify-between mt-2 text-[10px] text-[var(--color-text-muted)] font-mono uppercase">
           {report.trendData.map(d => (
@@ -67,6 +76,10 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
     <>
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
           body * {
             visibility: hidden;
           }
@@ -78,14 +91,24 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
             left: 0;
             top: 0;
             width: 100%;
+            margin: 0;
+            padding: 0;
             background: white !important;
             color: black !important;
           }
           .intel-card {
             border: 1px solid #ccc !important;
             background: white !important;
+            page-break-inside: avoid;
             break-inside: avoid;
             box-shadow: none !important;
+            margin-bottom: 20px;
+          }
+          [class*="md:grid-cols-4"] {
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+          }
+          [class*="md:grid-cols-2"] {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           }
           * {
             color: black !important;

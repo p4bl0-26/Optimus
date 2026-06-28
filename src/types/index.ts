@@ -125,3 +125,78 @@ export interface WeeklyExecutiveReport {
     risk: number
   }[]
 }
+
+export interface ScheduledBlock {
+  id: string;
+  obligationId: string;
+  title: string;
+  source: string;
+  riskBand: string;
+  startTime: string;
+  endTime: string;
+  confidence: number;
+  reason: string;
+}
+
+export interface WeeklySchedule {
+  generatedAt: string;
+  confidence: number;
+  overloadedDays: string[];
+  criticalWarnings: string[];
+  blocks: ScheduledBlock[];
+}
+
+// ============================================================
+// Phase 10.8: Work Accelerator & Form Assistant Types
+// ============================================================
+
+export interface WorkAccelerationPackage {
+  executiveSummary: string;
+  blueprint: string[];
+  researchTopics: string[];
+  referencesNeeded: string[];
+  firstDraft?: string;
+  estimatedDuration: number;   // in minutes
+  successProbability: number;  // 0–100
+  generatedAt: string;
+}
+
+export interface FormDraft {
+  id: string;
+  formType: string;
+  title: string;
+  completedFields: number;
+  totalFields: number;
+  confidence: number;           // 0–100
+  missingFields: string[];
+  fields: Record<string, string>;
+  recommendations: string[];
+  status: 'READY' | 'MISSING_INFORMATION' | 'REQUIRES_APPROVAL';
+}
+
+// ─── Future-Ready Architecture (DO NOT EXECUTE) ───────────────
+// Prepared for future browser automation capability.
+// Human approval remains mandatory — OPTIMUS MUST NEVER execute these.
+export interface BrowserAction {
+  action: 'fill';
+  selector: string;
+  value: string;
+}
+
+
+// ============================================================
+// Phase 10.9: Adaptive Executive Summarizer Types
+// ============================================================
+
+export type ExecutiveSummaryRiskLevel = 'NORMAL' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+export type ExecutionState = 'INFORM' | 'PLAN' | 'EXECUTE' | 'CRISIS';
+
+export interface ExecutiveSummaryPackage {
+  riskLevel: ExecutiveSummaryRiskLevel;
+  executionState: ExecutionState;
+  executiveSummary: string;
+  enabledCapabilities: string[];  // what was generated at this level
+  chiefDirective?: string;        // populated at HIGH / CRITICAL
+  confidence: number;             // 0–100
+}
+

@@ -8,6 +8,7 @@ import type { NavItem } from '@/types'
 export const ROUTES = {
   dashboard: '/',
   obligations: '/obligations',
+  schedule: '/schedule',
   actions: '/actions',
   briefings: '/briefings',
   reports: '/reports',
@@ -49,6 +50,12 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'BarChart3',
   },
   {
+    id: 'schedule',
+    label: 'Execution Schedule',
+    href: '/schedule',
+    icon: 'Calendar',
+  },
+  {
     id: 'settings',
     label: 'Settings',
     href: '/settings',
@@ -77,6 +84,10 @@ export const PAGE_META: Record<AppRoute, { title: string; description: string }>
   '/reports': {
     title: 'Executive Reports',
     description: 'Weekly intelligence and operational performance',
+  },
+  '/schedule': {
+    title: 'AUTONOMOUS SCHEDULE',
+    description: 'AI-generated weekly execution plan',
   },
   '/settings': {
     title: 'Settings',

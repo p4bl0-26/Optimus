@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import { AppShell } from '@/components/layout/AppShell'
 import { StartupWrapper } from '@/components/layout/StartupWrapper'
+import { SplashProvider } from '@/contexts/SplashContext'
 
 // ─── Fonts ───────────────────────────────────────────────────
 const orbitron = Orbitron({
@@ -78,9 +79,11 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <StartupWrapper>
-            <AppShell>{children}</AppShell>
-          </StartupWrapper>
+          <SplashProvider>
+            <StartupWrapper>
+              <AppShell>{children}</AppShell>
+            </StartupWrapper>
+          </SplashProvider>
         </ThemeProvider>
       </body>
     </html>

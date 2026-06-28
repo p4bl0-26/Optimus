@@ -24,6 +24,7 @@ import {
   User,
   BookOpen,
   BarChart3,
+  Calendar,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './ThemeToggle'
@@ -38,6 +39,7 @@ const ICON_MAP = {
   Settings,
   BookOpen,
   BarChart3,
+  Calendar,
 } as const
 
 type IconName = keyof typeof ICON_MAP

@@ -3,6 +3,11 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { SectionContainer } from '@/components/layout/SectionContainer'
 import { obligationRepo, riskProfileRepo, interventionRepo, agentActivityRepo, agentMemoryRepo } from '@/lib/repositories'
 import { Shield, Target, AlertTriangle, Clock, ArrowRight, Zap, Activity, Mail, Calendar, GraduationCap, ChevronRight, Brain } from 'lucide-react'
+import { WhatIfSimulator } from '@/components/intelligence/WhatIfSimulator'
+import { EscalateButton } from '@/components/intelligence/EscalateButton'
+import { WorkAccelerator } from '@/components/intelligence/WorkAccelerator'
+import { AdaptiveExecutiveSummary } from '@/components/intelligence/AdaptiveExecutiveSummary'
+import { FormAssistantPanel } from '@/components/intelligence/FormAssistantPanel'
 
 // Helper for deterministic confidence
 function getChiefConfidence(riskScore: number) {
@@ -269,6 +274,37 @@ export default async function ObligationDetail({ params }: { params: Promise<{ i
             </div>
           </SectionContainer>
 
+          {/* 10.9 EXECUTIVE INTELLIGENCE */}
+          <SectionContainer title="Executive Intelligence" spacing="none">
+            <AdaptiveExecutiveSummary
+              obligationId={obligation.id}
+              initialRiskScore={risk.score}
+            />
+          </SectionContainer>
+
+          {/* 9. WHAT-IF SIMULATOR */}
+          <SectionContainer title="Simulation Engine" spacing="none">
+            <WhatIfSimulator 
+              deadline={new Date(obligation.due_date || new Date().toISOString())} 
+              importance={(obligation.priority === 'critical' ? 'Critical' : obligation.priority === 'high' ? 'High' : obligation.priority === 'low' ? 'Low' : 'Medium') as any} 
+              currentProgress={0} 
+            />
+          </SectionContainer>
+
+          {/* 10. AI WORK ACCELERATOR */}
+          <SectionContainer title="AI Work Accelerator" spacing="none">
+            <WorkAccelerator
+              obligationId={obligation.id}
+              obligationType={obligation.type}
+              obligationTitle={obligation.title}
+            />
+          </SectionContainer>
+
+          {/* 10.10 AUTONOMOUS FORM ASSISTANT */}
+          <SectionContainer title="Autonomous Form Assistant" spacing="none">
+            <FormAssistantPanel obligationId={obligation.id} />
+          </SectionContainer>
+
           {/* 5. AI RESCUE PLAN */}
           <SectionContainer title="Strategic Sequence" spacing="none">
             <div className="intel-card p-0 overflow-hidden">
@@ -320,6 +356,11 @@ export default async function ObligationDetail({ params }: { params: Promise<{ i
                 </ul>
               </div>
             </div>
+          </SectionContainer>
+
+          {/* 10. ACCOUNTABILITY ESCALATION */}
+          <SectionContainer title="Accountability" spacing="none">
+            <EscalateButton obligationId={obligation.id} />
           </SectionContainer>
 
           {/* 9. ACTION CENTER (Filtered) */}
