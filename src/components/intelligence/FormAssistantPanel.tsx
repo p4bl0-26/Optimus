@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 export function FormAssistantPanel({ obligationId }: { obligationId: string }) {
   return (
-    <div className="intel-card flex flex-col h-full overflow-hidden border border-[var(--color-border)]" id="form-assistant">
+    <div className="intel-card flex flex-col h-full overflow-hidden border border-[var(--color-border)]" id="approval-workflow">
       <div className="p-4 border-b border-[var(--color-border)] flex items-start justify-between bg-[var(--color-bg-surface)]">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded bg-[var(--color-accent-primary)]/10 flex items-center justify-center border border-[var(--color-accent-primary)]/30">

@@ -52,7 +52,7 @@ export function ArchitectureOverlay({ isOpen, onClose }: ArchitectureOverlayProp
         </button>
 
         {/* System Flow */}
-        <div className="flex-1 p-8 md:p-12 overflow-y-auto custom-scrollbar flex flex-col items-center border-r border-[var(--color-border)]">
+        <div id="execution-pipeline" className="flex-1 p-8 md:p-12 overflow-y-auto custom-scrollbar flex flex-col items-center border-r border-[var(--color-border)]">
           <h2 className="text-2xl font-bold font-orbitron tracking-widest text-[var(--color-text-primary)] mb-8 uppercase text-center flex items-center gap-3">
             <Layers className="text-[var(--color-accent-primary)]" />
             [ SYSTEM FLOW ]

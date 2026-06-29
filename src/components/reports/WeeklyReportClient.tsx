@@ -83,10 +83,10 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
           body * {
             visibility: hidden;
           }
-          #printable-report, #printable-report * {
+          #weekly-report-card, #weekly-report-card * {
             visibility: visible;
           }
-          #printable-report {
+          #weekly-report-card {
             position: absolute;
             left: 0;
             top: 0;
@@ -134,7 +134,7 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
           </button>
         </div>
 
-        <div id="printable-report" className="space-y-8">
+        <div id="weekly-report-card" className="space-y-8">
           
           {/* Executive Summary */}
           <section className="intel-card p-6">

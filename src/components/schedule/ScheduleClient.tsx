@@ -119,7 +119,7 @@ export function ScheduleClient({ schedule, recommendations }: ScheduleClientProp
         confidence={schedule.confidence} 
       />
 
-      <div className="space-y-8 print:space-y-6">
+      <div id="calendar-optimizer" className="space-y-8 print:space-y-6">
         <h2 className="font-orbitron font-bold text-lg tracking-widest text-[var(--color-text-primary)] uppercase border-b border-[var(--color-border)] pb-2 print:text-black">
           WEEKLY EXECUTION PLAN
         </h2>

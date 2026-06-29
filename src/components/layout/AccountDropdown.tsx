@@ -117,36 +117,29 @@ export function AccountDropdown() {
                 </p>
               </div>
               <div className="flex flex-col gap-4">
-                <button
-                  onClick={handleToggleJudgeMode}
-                  className="w-full flex items-center justify-center gap-3 text-[11px] font-bold tracking-widest uppercase transition-all hover:bg-[rgba(118,192,67,0.10)] text-[var(--color-text-primary)] group"
-                  style={{
-                    height: '48px',
-                    paddingInline: '20px',
-                    borderRadius: '12px',
-                    transition: 'all 200ms ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 0 24px rgba(118,192,67,0.12)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  {judgeMode ? (
-                    <>
-                      <ShieldAlert size={14} className="text-[var(--color-risk-critical)]" />
-                      Exit Judge Mode
-                    </>
-                  ) : (
-                    <>
-                      <Play size={14} className="text-[var(--color-accent-primary)]" />
-                      Enter Judge Mode
-                    </>
-                  )}
-                </button>
+                {judgeMode && (
+                  <button
+                    onClick={handleToggleJudgeMode}
+                    className="w-full flex items-center justify-center gap-3 text-[11px] font-bold tracking-widest uppercase transition-all hover:bg-[rgba(118,192,67,0.10)] text-[var(--color-text-primary)] group"
+                    style={{
+                      height: '48px',
+                      paddingInline: '20px',
+                      borderRadius: '12px',
+                      transition: 'all 200ms ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 0 24px rgba(118,192,67,0.12)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    <ShieldAlert size={14} className="text-[var(--color-risk-critical)]" />
+                    Exit Judge Mode
+                  </button>
+                )}
 
                 <button
                   onClick={handleLogout}

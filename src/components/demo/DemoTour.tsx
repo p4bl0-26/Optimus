@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, X, Pause, Play, CheckCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { JUDGE_TARGETS } from '@/constants/judgeTargets';
 import { computeSpotlight, SpotlightState } from '@/lib/demo/spotlightEngine';
@@ -27,6 +28,7 @@ export interface TourStep {
   narrationText: string;
   estimatedSeconds: number;
   targetId: keyof typeof JUDGE_TARGETS | null;
+  route?: string;
 }
 
 export const TOUR_STEPS: TourStep[] = [
@@ -107,6 +109,7 @@ export const TOUR_STEPS: TourStep[] = [
     narrationText: 'The Autonomous Scheduler eliminates calendar tetris. It analyzes your existing appointments, calculates your workload density, and automatically blocks out time for your most critical obligations. It ensures you have the time to succeed.',
     estimatedSeconds: 30,
     targetId: 'scheduler',
+    route: '/schedule',
   },
   {
     id: 'reports',
@@ -120,6 +123,7 @@ export const TOUR_STEPS: TourStep[] = [
     narrationText: 'Finally, at the end of the week, OPTIMUS generates a comprehensive Executive Report. It analyzes your completed tasks, highlights your wins, identifies systemic misses, and provides actionable insights to improve your execution for the week ahead.',
     estimatedSeconds: 30,
     targetId: 'reports',
+    route: '/reports',
   },
   {
     id: 'accountability',
@@ -146,6 +150,7 @@ export const TOUR_STEPS: TourStep[] = [
     narrationText: 'OPTIMUS automatically prepares administrative workflows, validates requirements, and gathers supporting evidence. Human operators no longer fill forms—they simply review and approve AI-generated work.',
     estimatedSeconds: 30,
     targetId: 'formAssistant',
+    route: '/obligations/demo-ob-001',
   },
   {
     id: 'architecture',
@@ -171,6 +176,7 @@ interface DemoTourProps {
 }
 
 export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }: DemoTourProps) {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [spotlight, setSpotlight] = useState<SpotlightState>({ activeTarget: null, bounds: null, arrowPosition: null });
   const [autoPlay, setAutoPlay] = useState(false);
@@ -212,6 +218,22 @@ export function DemoTour({ isOpen, onClose, onOpenArchitecture, onTourComplete }
         setSpotlight({ activeTarget: null, bounds: null, arrowPosition: null });
         return;
       }
+
+      // Autonomous Navigation handling
+      const currentPath = window.location.pathname;
+      const targetRoute = step.route || '/';
+      
+      if (currentPath !== targetRoute) {
+        console.log(`[Spotlight Engine] Navigating to ${targetRoute} for step ${step.id}`);
+        router.push(targetRoute);
+      }
+
+      // Wait a moment for rendering/navigation
+      if (currentPath !== targetRoute) {
+         await new Promise(r => setTimeout(r, 800));
+      }
+
+      if (!isMounted) return;
 
       if (step.targetId && JUDGE_TARGETS[step.targetId]) {
         const selector = JUDGE_TARGETS[step.targetId];

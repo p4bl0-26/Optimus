@@ -440,7 +440,7 @@ export default function CommandCenterPage() {
       {/* ─── EXECUTIVE BRIEFING HERO ──────────────────────────── */}
       <div id="executive-briefing">
       <SectionContainer spacing="lg">
-        <div className="intel-card border-t-4 border-t-[var(--color-accent-primary)] bg-[var(--color-bg-surface)] p-7 relative overflow-hidden shadow-lg leading-relaxed">
+        <div id="executive-priority-panel" className="intel-card border-t-4 border-t-[var(--color-accent-primary)] bg-[var(--color-bg-surface)] p-7 relative overflow-hidden shadow-lg leading-relaxed">
           <div className="flex items-center gap-2 mb-4 border-b border-[var(--color-border)] pb-3">
             <BrainCircuit size={24} className="text-[var(--color-accent-primary)]" />
             <h2 className="text-lg font-bold text-[var(--color-text-primary)] font-orbitron uppercase tracking-widest">
@@ -557,7 +557,7 @@ export default function CommandCenterPage() {
               {agentStates.Future === 'ANALYZING' && <span className="animate-pulse text-[var(--color-accent-primary)]">Simulating...</span>}
             </p>
             
-            <div className="space-y-5 flex-1">
+            <div id="future-simulator" className="space-y-5 flex-1">
               {/* Displaying simple default outcomes if none stored in jsonb, else map jsonb */}
               {combinedData[0]?.future_outcomes?.outcomes?.length > 0 ? combinedData[0].future_outcomes.outcomes.map((outcome: {type: string, successProbability: number, projectedResult: string}, i: number) => {
                 const outColor = outcome.type === 'Recommended' ? 'var(--color-risk-safe)' : 
@@ -678,7 +678,7 @@ export default function CommandCenterPage() {
               {[...interventions].sort((a, b) => {
                 const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
                 return (severityMap[b.severity] || 0) - (severityMap[a.severity] || 0);
-              }).map((intervention) => {
+              }).map((intervention, index) => {
                 const colorMap: Record<string, string> = {
                   low: 'var(--color-risk-safe)',
                   medium: 'var(--color-risk-monitor)',
@@ -690,6 +690,7 @@ export default function CommandCenterPage() {
                 return (
                 <motion.div 
                   key={intervention.id}
+                  id={index === 0 ? "critical-intervention" : undefined}
                   layout
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
