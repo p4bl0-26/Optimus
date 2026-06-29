@@ -119,19 +119,19 @@ export function ScheduleClient({ schedule, recommendations }: ScheduleClientProp
         confidence={schedule.confidence} 
       />
 
-      <div id="calendar-optimizer" className="space-y-8 print:space-y-6">
+      <div className="space-y-8 print:space-y-6">
         <h2 className="font-orbitron font-bold text-lg tracking-widest text-[var(--color-text-primary)] uppercase border-b border-[var(--color-border)] pb-2 print:text-black">
           WEEKLY EXECUTION PLAN
         </h2>
 
-        {Object.entries(groupedBlocks).map(([day, blocks]) => (
+        {Object.entries(groupedBlocks).map(([day, blocks], dIndex) => (
           <div key={day} className="space-y-4 break-inside-avoid">
             <h3 className="font-orbitron font-bold text-sm text-[var(--color-accent-primary)] uppercase">
               {day}
             </h3>
             
             <div className="space-y-3">
-              {blocks.map((block) => {
+              {blocks.map((block, index) => {
                 const startTime = new Date(block.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
                 const endTime = new Date(block.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
                 
@@ -141,6 +141,7 @@ export function ScheduleClient({ schedule, recommendations }: ScheduleClientProp
                 return (
                   <motion.div
                     key={block.id}
+                    id={dIndex === 0 && index === 0 ? "calendar-optimizer" : undefined}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     className={cn(

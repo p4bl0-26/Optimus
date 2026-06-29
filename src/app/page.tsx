@@ -440,7 +440,7 @@ export default function CommandCenterPage() {
       {/* ─── EXECUTIVE BRIEFING HERO ──────────────────────────── */}
       <div id="executive-briefing">
       <SectionContainer spacing="lg">
-        <div id="executive-priority-panel" className="intel-card border-t-4 border-t-[var(--color-accent-primary)] bg-[var(--color-bg-surface)] p-7 relative overflow-hidden shadow-lg leading-relaxed">
+        <div className="intel-card border-t-4 border-t-[var(--color-accent-primary)] bg-[var(--color-bg-surface)] p-7 relative overflow-hidden shadow-lg leading-relaxed">
           <div className="flex items-center gap-2 mb-4 border-b border-[var(--color-border)] pb-3">
             <BrainCircuit size={24} className="text-[var(--color-accent-primary)]" />
             <h2 className="text-lg font-bold text-[var(--color-text-primary)] font-orbitron uppercase tracking-widest">
@@ -458,7 +458,7 @@ export default function CommandCenterPage() {
             <div className="col-span-1 lg:col-span-2 space-y-5">
               <div>
                 <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Morning Briefing</h3>
-                <div className="p-4 bg-[var(--color-bg-primary)] rounded-lg border border-[var(--color-border)]">
+                <div id="executive-priority-panel" className="p-4 bg-[var(--color-bg-primary)] rounded-lg border border-[var(--color-border)]">
                   <p className="text-sm text-[var(--color-text-primary)] whitespace-pre-line leading-relaxed">
                     {morningBriefing || executiveSummary || 'Systems nominal. No critical intelligence generated.'}
                   </p>
@@ -557,7 +557,7 @@ export default function CommandCenterPage() {
               {agentStates.Future === 'ANALYZING' && <span className="animate-pulse text-[var(--color-accent-primary)]">Simulating...</span>}
             </p>
             
-            <div id="future-simulator" className="space-y-5 flex-1">
+            <div className="space-y-5 flex-1">
               {/* Displaying simple default outcomes if none stored in jsonb, else map jsonb */}
               {combinedData[0]?.future_outcomes?.outcomes?.length > 0 ? combinedData[0].future_outcomes.outcomes.map((outcome: {type: string, successProbability: number, projectedResult: string}, i: number) => {
                 const outColor = outcome.type === 'Recommended' ? 'var(--color-risk-safe)' : 
@@ -565,7 +565,7 @@ export default function CommandCenterPage() {
                 const bgStyle = outcome.type === 'Recommended' ? { backgroundColor: 'var(--color-risk-safe-bg)', borderColor: 'var(--color-risk-safe-border)' } : {}
                 
                 return (
-                  <div key={i} className="px-4 py-0 h-14 rounded-lg border border-[var(--color-border)] transition-all duration-500 flex flex-col justify-center" style={{...bgStyle}}>
+                  <div key={i} id={i === 0 ? "future-simulator" : undefined} className="px-4 py-0 h-14 rounded-lg border border-[var(--color-border)] transition-all duration-500 flex flex-col justify-center" style={{...bgStyle}}>
                     <div className="flex justify-between items-center mb-1">
                       <p className="text-[13px] font-bold flex items-center gap-2" style={{ color: outColor }}>
                         {outcome.type === 'Recommended' && <Target size={14} />}
@@ -662,23 +662,39 @@ export default function CommandCenterPage() {
           <SectionContainer title="Action Center (Interventions)" spacing="none">
             <div id="accountability-layer" className="intel-card p-0 overflow-hidden h-[360px] overflow-y-auto scrollbar-hide">
             <AnimatePresence>
-              {interventions.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-full gap-3 py-8 px-4 text-center">
-                  <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
-                    <Shield size={16} className="text-[var(--color-risk-safe)]" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">No Active Interventions</p>
-                    <p className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">
-                      OPTIMUS is monitoring all obligations. No conflicts or overloads detected.
-                    </p>
-                  </div>
-                </div>
-              )}
-              {[...interventions].sort((a, b) => {
-                const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
-                return (severityMap[b.severity] || 0) - (severityMap[a.severity] || 0);
-              }).map((intervention, index) => {
+              {(() => {
+                const displayInterventions = (judgeActive && interventions.length === 0) 
+                  ? [
+                      {
+                        id: 'demo-int-mock',
+                        obligation_id: 'demo-ob-mock',
+                        type: 'Schedule Conflict Detected',
+                        severity: 'critical',
+                        message: 'CRITICAL: Client Strategy Meeting and Hackathon Submission both require full attention on the same day.',
+                      }
+                    ]
+                  : interventions;
+
+                if (displayInterventions.length === 0) {
+                  return (
+                    <div className="flex flex-col items-center justify-center h-full gap-3 py-8 px-4 text-center">
+                      <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
+                        <Shield size={16} className="text-[var(--color-risk-safe)]" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">No Active Interventions</p>
+                        <p className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">
+                          OPTIMUS is monitoring all obligations. No conflicts or overloads detected.
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return [...displayInterventions].sort((a, b) => {
+                  const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+                  return (severityMap[b.severity] || 0) - (severityMap[a.severity] || 0);
+                }).map((intervention, index) => {
                 const colorMap: Record<string, string> = {
                   low: 'var(--color-risk-safe)',
                   medium: 'var(--color-risk-monitor)',
@@ -739,7 +755,8 @@ export default function CommandCenterPage() {
                     </Link>
                   )}
                 </motion.div>
-              )})}
+                )
+              })})()}
             </AnimatePresence>
             </div>
           </SectionContainer>

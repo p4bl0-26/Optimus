@@ -134,10 +134,10 @@ export function WeeklyReportClient({ report }: WeeklyReportClientProps) {
           </button>
         </div>
 
-        <div id="weekly-report-card" className="space-y-8">
+        <div className="space-y-8">
           
           {/* Executive Summary */}
-          <section className="intel-card p-6">
+          <section id="weekly-report-card" className="intel-card p-6">
             <h2 className="text-[10px] font-bold text-[var(--color-accent-primary)] uppercase tracking-wider flex items-center gap-2 mb-4">
               <Activity size={12} /> EXECUTIVE SUMMARY
             </h2>
