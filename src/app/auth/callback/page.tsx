@@ -29,6 +29,7 @@ export default function AuthCallbackPage() {
         
         // Remove any stale judge state
         localStorage.removeItem("optimus_judge");
+        localStorage.removeItem("optimus_judge_mode");
         
         // Redirect to dashboard
         if (isMounted) router.replace('/');
@@ -39,6 +40,7 @@ export default function AuthCallbackPage() {
           if (delayedSession) {
             localStorage.setItem("optimus_auth", "true");
             localStorage.removeItem("optimus_judge");
+            localStorage.removeItem("optimus_judge_mode");
             if (isMounted) router.replace('/');
           } else {
             if (isMounted) router.replace('/?auth=failed');

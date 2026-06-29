@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/db/supabase'
 import { User, Mail, Calendar as CalendarIcon, BookOpen, MessageSquare, CheckCircle2, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 interface OnboardingModalProps {
   onComplete: () => void;
@@ -12,6 +13,7 @@ interface OnboardingModalProps {
 }
 
 export function OnboardingModal({ onComplete, initialStep = 1 }: OnboardingModalProps) {
+  const router = useRouter()
   const [step, setStep] = useState<1 | 2>(initialStep)
   
   // Step 1 State
@@ -94,7 +96,7 @@ export function OnboardingModal({ onComplete, initialStep = 1 }: OnboardingModal
           // For now, we'll redirect to the first selected one.
           const firstIntegration = toConnect[0]
           if (firstIntegration !== 'whatsapp') { // whatsapp is disabled
-             window.location.assign(`/api/integrations/${firstIntegration}/connect`);
+             router.push(`/api/integrations/${firstIntegration}/connect`);
              return // Do not call onComplete here, user is redirecting
           }
         }

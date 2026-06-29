@@ -62,14 +62,11 @@ export function AccountDropdown() {
     await supabase.auth.signOut();
     localStorage.removeItem("optimus_auth");
     localStorage.removeItem("optimus_judge");
+    localStorage.removeItem("optimus_judge_mode");
     sessionStorage.clear();
     
     window.history.replaceState({}, "", "/");
     router.replace('/');
-    
-    setTimeout(() => {
-      window.location.reload();
-    }, 50);
   };
 
   return (

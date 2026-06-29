@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import { AppShell } from '@/components/layout/AppShell'
 import { StartupWrapper } from '@/components/layout/StartupWrapper'
 import { SplashProvider } from '@/contexts/SplashContext'
+import { AppErrorBoundary } from '@/components/system/AppErrorBoundary'
 
 // ─── Fonts ───────────────────────────────────────────────────
 const orbitron = Orbitron({
@@ -81,7 +82,9 @@ export default function RootLayout({
         <ThemeProvider>
           <SplashProvider>
             <StartupWrapper>
-              <AppShell>{children}</AppShell>
+              <AppErrorBoundary>
+                <AppShell>{children}</AppShell>
+              </AppErrorBoundary>
             </StartupWrapper>
           </SplashProvider>
         </ThemeProvider>

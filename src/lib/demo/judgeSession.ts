@@ -18,7 +18,6 @@ export function exitJudgeSession() {
     localStorage.removeItem(JUDGE_KEY);
     document.cookie = `${JUDGE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     window.dispatchEvent(new Event('judge-mode-changed'));
-    window.location.href = '/';
   }
 }
 

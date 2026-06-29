@@ -22,8 +22,10 @@ export function ScheduleClient({ schedule, recommendations }: ScheduleClientProp
 
   const handleRegenerate = async () => {
     setIsRegenerating(true);
-    // Refresh the current route to re-run server-side orchestration
-    router.refresh();
+    // Refresh the current route to re-run server-side orchestration without a hard refresh
+    if (typeof window !== 'undefined') {
+      router.replace(window.location.pathname);
+    }
     setTimeout(() => setIsRegenerating(false), 800);
   };
 

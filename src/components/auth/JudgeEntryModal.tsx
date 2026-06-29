@@ -11,33 +11,8 @@ interface JudgeEntryModalProps {
 }
 
 export function JudgeEntryModal({ onEnterJudgeMode }: JudgeEntryModalProps) {
-  const [show, setShow] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authError, setAuthError] = useState(false);
-
-  // Example: Show after a short delay (post splash animation)
-  useEffect(() => {
-    // If they are already in judge mode via URL, don't show the modal here
-    // In actual implementation, page.tsx or layout.tsx will handle the URL param and skip this modal
-    if (!isJudgeMode()) {
-      const timer = setTimeout(() => setShow(true), 2000); // 2 seconds delay to allow splash
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  // Trap focus & disable escape
-  useEffect(() => {
-    if (!show) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [show]);
-
-  if (!show) return null;
 
   const handleGoogleLogin = async () => {
     try {
@@ -46,10 +21,7 @@ export function JudgeEntryModal({ onEnterJudgeMode }: JudgeEntryModalProps) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo:
-            window.location.hostname === "localhost"
-              ? "http://localhost:3000/auth/callback"
-              : "https://optimus-gray.vercel.app/auth/callback",
+          redirectTo: window.location.origin,
           queryParams: {
             prompt: "select_account"
           }
