@@ -11,14 +11,37 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
     const timings = [
       setTimeout(() => setPhase(1), 500),   // Scene 1: Logo fade & scale in
       setTimeout(() => setPhase(2), 1500),  // Scene 2: Energy Pulse / Shockwave
-      setTimeout(() => setPhase(3), 2200),  // Scene 3: Typography appears
+      setTimeout(() => setPhase(3), 2200),  // Scene 3: Typography orchestrations begin
       setTimeout(() => {
         setPhase(4); // Fade out
         setTimeout(onComplete, 800);
-      }, 4500)
+      }, 5800) // Hold composition for 1.5s after tagline fully appears
     ];
     return () => timings.forEach(clearTimeout);
   }, [onComplete]);
+
+  const optimusLetters = "OPTIMUS".split('');
+
+  const containerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1, 
+        delayChildren: 2.2 
+      }
+    }
+  };
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 6, filter: 'blur(4px)' },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      filter: 'blur(0px)',
+      transition: { duration: 0.4, ease: "easeOut" } 
+    }
+  };
 
   return (
     <motion.div
@@ -64,30 +87,51 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
 
       {/* Typography (Final Hero Shot) */}
       <div className="absolute bottom-16 flex flex-col items-center justify-center text-center w-full z-20">
+        
+        {/* Letter-by-letter OPTIMUS */}
         <motion.h1
-          className="text-4xl md:text-5xl font-bold text-white tracking-[0.35em] font-orbitron uppercase mb-3"
-          initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }}
-          animate={phase >= 3 ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 15 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-4xl md:text-5xl font-bold text-white tracking-[0.35em] font-orbitron uppercase mb-3 flex items-center justify-center"
+          variants={containerVariants}
+          initial="hidden"
+          animate={phase >= 3 ? "visible" : "hidden"}
           style={{ fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)' }}
         >
-          OPTIMUS
+          {optimusLetters.map((letter, index) => (
+            <div key={index} className="relative inline-flex items-center justify-center">
+              <motion.span 
+                variants={letterVariants}
+                className="relative z-10"
+              >
+                {letter}
+              </motion.span>
+              
+              {/* Subtle green energy pulse & dissolving particles effect behind each letter */}
+              <motion.div
+                className="absolute inset-0 z-0 bg-[var(--color-accent-primary)] rounded-full mix-blend-screen blur-[8px]"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={phase >= 3 ? { opacity: [0, 0.8, 0], scale: [0.5, 1.5, 2] } : { opacity: 0 }}
+                transition={{ duration: 0.6, delay: 2.2 + (index * 0.1), ease: "easeOut" }}
+              />
+            </div>
+          ))}
         </motion.h1>
         
+        {/* Left-to-right scanning reveal for subtitle */}
         <motion.p
           className="text-[12px] md:text-[14px] font-mono text-[var(--color-accent-primary)] tracking-[0.4em] uppercase mb-8"
-          initial={{ opacity: 0 }}
-          animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          initial={{ clipPath: 'inset(0% 100% 0% 0%)', opacity: 0 }}
+          animate={phase >= 3 ? { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1 } : { clipPath: 'inset(0% 100% 0% 0%)', opacity: 0 }}
+          transition={{ duration: 0.8, delay: 3.2, ease: "easeInOut" }}
         >
           Your AI Chief of Staff
         </motion.p>
 
+        {/* Very subtle fade in for tagline */}
         <motion.div
           className="overflow-hidden"
           initial={{ opacity: 0 }}
           animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 1, delay: 0.7 }}
+          transition={{ duration: 1.5, delay: 4.3 }}
         >
           <p className="text-[10px] md:text-xs text-zinc-500 font-light tracking-widest italic" style={{ letterSpacing: '0.2em' }}>
             &quot;AI ACTS FIRST. HUMANS APPROVE.&quot;
