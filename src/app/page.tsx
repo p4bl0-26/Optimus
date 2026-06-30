@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useSimulationEngine } from '@/hooks/useSimulationEngine'
+import { SystemHealthPanel } from '@/components/dashboard/SystemHealthPanel'
 import { ResolveConflictButton } from '@/components/intelligence/ResolveConflictButton'
 import { ResponsibilityMap } from '@/components/dashboard/ResponsibilityMap'
 import { getDynamicGreeting, getGreetingPeriod, formatLocalTime, formatLocalDate } from '@/lib/utils/greeting'
@@ -41,9 +42,7 @@ export default function CommandCenterPage() {
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => checkName(session));
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => checkName(session));
-
     const handleDisplayNameUpdate = () => {
       supabase.auth.getSession().then(({ data: { session } }) => checkName(session))
     }
@@ -67,7 +66,7 @@ export default function CommandCenterPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const { obligations, riskProfiles, interventions, morningBriefing, executiveSummary, highestRiskTarget, agentStates, loading, error } = useSimulationEngine()
+  const { obligations, riskProfiles, interventions, events, morningBriefing, executiveSummary, highestRiskTarget, agentStates, loading, error, isGmailConnected, isClassroomConnected, isCalendarConnected } = useSimulationEngine()
 
   const combinedData = useMemo(() => {
     if (!obligations.length || !riskProfiles.length) return []
@@ -104,6 +103,7 @@ export default function CommandCenterPage() {
   }
 
   const criticalCount = combinedData.filter(d => d.risk_band === 'Critical').length
+  const formatTime = (d: Date) => d.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
 
   return (
     <PageContainer id="command-center-page">
@@ -195,202 +195,272 @@ export default function CommandCenterPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+      {/* ── Main Layout (Flex) ───────────────────────── */}
+      <div className="flex flex-col xl:flex-row gap-8 mb-8 w-full max-w-full">
         
-        {/* LEFT COLUMN: Responsibility Matrix -> Future Outcomes */}
-        <div className="flex flex-col gap-8">
+        {/* MAIN CONTENT AREA */}
+        <div className="flex-1 flex flex-col gap-8 min-w-0">
           
-          {/* RESPONSIBILITY MATRIX (Hero Feature) */}
-          <div id="responsibility-map" className="w-full">
+          {/* RESPONSIBILITY MATRIX (Hero Feature - Full Width, No Clipping) */}
+          <div id="responsibility-map" className="w-full relative min-h-[400px]" style={{ minWidth: 'min(1200px, 100%)' }}>
             <ResponsibilityMap data={combinedData} />
           </div>
 
-          {/* FUTURE OUTCOMES ENGINE */}
-          <SectionContainer title="Future Outcomes Engine" spacing="none">
-            <div className="intel-card p-6 h-[400px] flex flex-col">
-              <p className="text-[13px] text-[var(--color-text-muted)] mb-6 flex items-center justify-between">
-                <span>Targeting: <span className="font-bold text-[var(--color-text-primary)]">{highestRiskTarget && highestRiskTarget !== 'None' ? highestRiskTarget : 'Network'}</span></span>
-                {agentStates.Future === 'ANALYZING' && <span className="animate-pulse text-[var(--color-accent-primary)]">Simulating...</span>}
-              </p>
-              
-              <div className="space-y-4 flex-1 overflow-y-auto pr-2">
-                {combinedData[0]?.future_outcomes?.outcomes?.length > 0 ? combinedData[0].future_outcomes.outcomes.map((outcome: {type: string, successProbability: number, projectedResult: string}, i: number) => {
-                  const outColor = outcome.type === 'Recommended' ? 'var(--color-risk-safe)' : 
-                                  outcome.type === 'Current' ? 'var(--color-risk-monitor)' : 'var(--color-risk-critical)'
-                  const bgStyle = outcome.type === 'Recommended' ? { backgroundColor: 'var(--color-risk-safe-bg)', borderColor: 'var(--color-risk-safe-border)' } : {}
-                  
-                  return (
-                    <div key={i} id={i === 0 ? "future-simulator" : undefined} className="px-4 py-3 rounded-lg border border-[var(--color-border)] transition-all duration-500 flex flex-col justify-center" style={{...bgStyle}}>
-                      <div className="flex justify-between items-center mb-1">
-                        <p className="text-[13px] font-bold flex items-center gap-2" style={{ color: outColor }}>
-                          {outcome.type === 'Recommended' && <Target size={14} />}
-                          {outcome.type === 'Current' && <Activity size={14} />}
-                          {outcome.type === 'Danger' && <AlertTriangle size={14} />}
-                          {outcome.type} Path
-                        </p>
-                        <motion.p 
-                          key={outcome.successProbability}
-                          initial={{ opacity: 0.5 }}
-                          animate={{ opacity: 1 }}
-                          className="text-[20px] font-bold font-orbitron" 
-                          style={{ color: outColor }}
-                        >
-                          {outcome.successProbability}%
-                        </motion.p>
-                      </div>
-                      <p className="text-[11px] text-[var(--color-text-secondary)] opacity-80 truncate">{outcome.projectedResult}</p>
-                    </div>
-                  )
-                }) : (
-                  <div className="flex flex-col items-center justify-center h-full gap-3 text-center py-6">
-                    <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
-                      <Shield size={16} className="text-[var(--color-risk-safe)]" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">All Systems Stable</p>
-                      <p className="text-[10px] text-[var(--color-text-muted)] max-w-[180px] leading-relaxed">
-                        OPTIMUS predicts no critical future risks. Operational state remains stable.
+          {/* SECOND ROW: 3 COLUMNS (Execution Pipeline) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* EXECUTIVE BRIEFING (What happened?) */}
+            <div className="lg:col-span-1 flex flex-col">
+              <div className="intel-card border-t-4 border-t-[var(--color-accent-primary)] bg-[var(--color-bg-surface)] p-7 relative overflow-hidden shadow-lg leading-relaxed h-[500px] flex flex-col">
+                <div className="flex items-center gap-2 mb-6 border-b border-[var(--color-border)] pb-3 shrink-0">
+                  <BrainCircuit size={24} className="text-[var(--color-accent-primary)]" />
+                  <h2 className="text-lg font-bold text-[var(--color-text-primary)] font-orbitron uppercase tracking-widest">
+                    Executive Briefing
+                  </h2>
+                </div>
+                <div className="space-y-6 flex-1 overflow-y-auto">
+                  <div>
+                    <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Morning Briefing</h3>
+                    <div id="executive-priority-panel" className="p-4 bg-[var(--color-bg-primary)] rounded-lg border border-[var(--color-border)]">
+                      <p className="text-sm text-[var(--color-text-primary)] whitespace-pre-line leading-relaxed">
+                        {morningBriefing || executiveSummary || 'Systems nominal. No critical intelligence generated.'}
                       </p>
                     </div>
                   </div>
-                )}
-              </div>
-            </div>
-          </SectionContainer>
-
-        </div>
-
-        {/* RIGHT COLUMN: Executive Briefing -> Action Center */}
-        <div className="flex flex-col gap-8">
-          
-          {/* EXECUTIVE BRIEFING & HIGHEST RISK */}
-          <div className="intel-card border-t-4 border-t-[var(--color-accent-primary)] bg-[var(--color-bg-surface)] p-7 relative overflow-hidden shadow-lg leading-relaxed h-[560px]">
-            <div className="flex items-center gap-2 mb-6 border-b border-[var(--color-border)] pb-3">
-              <BrainCircuit size={24} className="text-[var(--color-accent-primary)]" />
-              <h2 className="text-lg font-bold text-[var(--color-text-primary)] font-orbitron uppercase tracking-widest">
-                Executive Briefing
-              </h2>
-              <div className="ml-auto flex gap-2">
-                <span className="px-2 py-1 bg-[var(--color-bg-elevated)] rounded text-[10px] text-[var(--color-text-muted)] font-mono uppercase border border-[var(--color-border)]">
-                  {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-6 flex-1 overflow-y-auto">
-              <div>
-                <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Morning Briefing</h3>
-                <div id="executive-priority-panel" className="p-4 bg-[var(--color-bg-primary)] rounded-lg border border-[var(--color-border)]">
-                  <p className="text-sm text-[var(--color-text-primary)] whitespace-pre-line leading-relaxed">
-                    {morningBriefing || executiveSummary || 'Systems nominal. No critical intelligence generated.'}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-xs font-bold text-[var(--color-risk-high)] uppercase tracking-wider mb-3">Highest Risk Target</h3>
-                <div className="p-5 bg-[var(--color-bg-secondary)] rounded-lg border border-[var(--color-border)]">
-                  <p className="text-[24px] font-bold text-[var(--color-risk-high)] mb-3 font-orbitron leading-tight">
-                    {highestRiskTarget}
-                  </p>
-                  <p className="text-[13px] text-[var(--color-text-muted)] leading-relaxed">
-                    Requires immediate strategic management to prevent failure cascades.
-                  </p>
+                  <div>
+                    <h3 className="text-xs font-bold text-[var(--color-risk-high)] uppercase tracking-wider mb-3">Highest Risk Target</h3>
+                    <div className="p-5 bg-[var(--color-bg-secondary)] rounded-lg border border-[var(--color-border)]">
+                      <p className="text-[20px] font-bold text-[var(--color-risk-high)] mb-3 font-orbitron leading-tight break-words">
+                        {highestRiskTarget}
+                      </p>
+                      <p className="text-[13px] text-[var(--color-text-muted)] leading-relaxed">
+                        Requires immediate strategic management to prevent failure cascades.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* ACTION CENTER */}
-          <SectionContainer title="Action Center (Interventions)" spacing="none">
-            <div id="accountability-layer" className="intel-card p-0 overflow-hidden h-[400px] overflow-y-auto scrollbar-hide">
-              <AnimatePresence>
-                {(() => {
-                  const displayInterventions = (judgeActive && interventions.length === 0) 
-                    ? [{
-                        id: 'demo-int-mock',
-                        obligation_id: 'demo-ob-mock',
-                        type: 'Schedule Conflict Detected',
-                        severity: 'critical',
-                        message: 'CRITICAL: Client Strategy Meeting and Hackathon Submission both require full attention on the same day.',
-                      }]
-                    : interventions;
+            {/* ACTION CENTER (What should I do?) */}
+            <div className="lg:col-span-1 flex flex-col">
+              <SectionContainer title="Action Center (Interventions)" spacing="none">
+                <div id="accountability-layer" className="intel-card p-0 overflow-hidden h-[456px] overflow-y-auto scrollbar-hide">
+                  <AnimatePresence>
+                    {(() => {
+                      const displayInterventions = (judgeActive && interventions.length === 0) 
+                        ? [{
+                            id: 'demo-int-mock',
+                            obligation_id: 'demo-ob-mock',
+                            type: 'Schedule Conflict Detected',
+                            severity: 'critical',
+                            message: 'CRITICAL: Client Strategy Meeting and Hackathon Submission both require full attention on the same day.',
+                          }]
+                        : interventions;
 
-                  if (displayInterventions.length === 0) {
-                    return (
-                      <div className="flex flex-col items-center justify-center h-full gap-3 py-8 px-4 text-center">
+                      if (displayInterventions.length === 0) {
+                        return (
+                          <div className="flex flex-col items-center justify-center h-full gap-3 py-8 px-4 text-center">
+                            <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
+                              <Shield size={16} className="text-[var(--color-risk-safe)]" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">No Active Interventions</p>
+                              <p className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">
+                                OPTIMUS is monitoring all obligations. No conflicts detected.
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return [...displayInterventions].sort((a, b) => {
+                        const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+                        return (severityMap[b.severity] || 0) - (severityMap[a.severity] || 0);
+                      }).map((intervention, index) => {
+                        const colorMap: Record<string, string> = {
+                          low: 'var(--color-risk-safe)', medium: 'var(--color-risk-monitor)',
+                          high: 'var(--color-risk-high)', critical: 'var(--color-risk-critical)',
+                        }
+                        const color = colorMap[intervention.severity] || 'var(--color-text-primary)'
+                        
+                        return (
+                          <motion.div 
+                            key={intervention.id} id={index === 0 ? "critical-intervention" : undefined}
+                            layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                          >
+                            {intervention.type === 'Schedule Conflict Detected' ? (
+                              <div className="flex flex-col p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors">
+                                <div className="flex items-center justify-between mb-2 gap-2">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
+                                      <AlertTriangle size={14} className="text-[var(--color-text-muted)] transition-colors" />
+                                    </div>
+                                    <div>
+                                      <p className="text-[10px] font-bold text-[var(--color-text-primary)] leading-tight">{intervention.type.toUpperCase()}</p>
+                                    </div>
+                                  </div>
+                                  <div className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500" style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}>
+                                    {intervention.severity}
+                                  </div>
+                                </div>
+                                <p className="text-[11px] text-[var(--color-text-secondary)] mb-3">{intervention.message}</p>
+                                <ResolveConflictButton eventId={intervention.obligation_id} />
+                              </div>
+                            ) : (
+                              <Link href={`/obligations/${intervention.obligation_id}`}>
+                                <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors group cursor-pointer">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
+                                      <AlertTriangle size={14} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-primary)] transition-colors" />
+                                    </div>
+                                    <div>
+                                      <p className="text-[10px] font-bold text-[var(--color-text-primary)] leading-tight">{intervention.type.toUpperCase()}</p>
+                                      <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
+                                    </div>
+                                  </div>
+                                  <div className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500" style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}>
+                                    {intervention.severity}
+                                  </div>
+                                </div>
+                              </Link>
+                            )}
+                          </motion.div>
+                        )
+                      })
+                    })()}
+                  </AnimatePresence>
+                </div>
+              </SectionContainer>
+            </div>
+
+            {/* FUTURE OUTCOMES ENGINE (What happens next?) */}
+            <div className="lg:col-span-1 flex flex-col">
+              <SectionContainer title="Future Outcomes Engine" spacing="none">
+                <div className="intel-card p-6 h-[456px] flex flex-col">
+                  <p className="text-[13px] text-[var(--color-text-muted)] mb-6 flex items-center justify-between">
+                    <span>Targeting: <span className="font-bold text-[var(--color-text-primary)] truncate max-w-[150px] inline-block align-bottom">{highestRiskTarget && highestRiskTarget !== 'None' ? highestRiskTarget : 'Network'}</span></span>
+                    {agentStates.Future === 'ANALYZING' && <span className="animate-pulse text-[var(--color-accent-primary)]">Simulating...</span>}
+                  </p>
+                  
+                  <div className="space-y-4 flex-1 overflow-y-auto pr-2">
+                    {combinedData[0]?.future_outcomes?.outcomes?.length > 0 ? combinedData[0].future_outcomes.outcomes.map((outcome: {type: string, successProbability: number, projectedResult: string}, i: number) => {
+                      const outColor = outcome.type === 'Recommended' ? 'var(--color-risk-safe)' : 
+                                      outcome.type === 'Current' ? 'var(--color-risk-monitor)' : 'var(--color-risk-critical)'
+                      const bgStyle = outcome.type === 'Recommended' ? { backgroundColor: 'var(--color-risk-safe-bg)', borderColor: 'var(--color-risk-safe-border)' } : {}
+                      
+                      return (
+                        <div key={i} id={i === 0 ? "future-simulator" : undefined} className="px-4 py-3 rounded-lg border border-[var(--color-border)] transition-all duration-500 flex flex-col justify-center" style={{...bgStyle}}>
+                          <div className="flex justify-between items-center mb-1">
+                            <p className="text-[12px] font-bold flex items-center gap-2" style={{ color: outColor }}>
+                              {outcome.type === 'Recommended' && <Target size={14} />}
+                              {outcome.type === 'Current' && <Activity size={14} />}
+                              {outcome.type === 'Danger' && <AlertTriangle size={14} />}
+                              {outcome.type} Path
+                            </p>
+                            <motion.p 
+                              key={outcome.successProbability}
+                              initial={{ opacity: 0.5 }}
+                              animate={{ opacity: 1 }}
+                              className="text-[18px] font-bold font-orbitron" 
+                              style={{ color: outColor }}
+                            >
+                              {outcome.successProbability}%
+                            </motion.p>
+                          </div>
+                          <p className="text-[11px] text-[var(--color-text-secondary)] opacity-80 line-clamp-2">{outcome.projectedResult}</p>
+                        </div>
+                      )
+                    }) : (
+                      <div className="flex flex-col items-center justify-center h-full gap-3 text-center py-6">
                         <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
                           <Shield size={16} className="text-[var(--color-risk-safe)]" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">No Active Interventions</p>
-                          <p className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">
-                            OPTIMUS is monitoring all obligations. No conflicts detected.
+                          <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">All Systems Stable</p>
+                          <p className="text-[10px] text-[var(--color-text-muted)] max-w-[180px] leading-relaxed mx-auto">
+                            OPTIMUS predicts no critical future risks. Operational state remains stable.
                           </p>
                         </div>
                       </div>
-                    );
-                  }
+                    )}
+                  </div>
+                </div>
+              </SectionContainer>
+            </div>
 
-                  return [...displayInterventions].sort((a, b) => {
-                    const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
-                    return (severityMap[b.severity] || 0) - (severityMap[a.severity] || 0);
-                  }).map((intervention, index) => {
-                    const colorMap: Record<string, string> = {
-                      low: 'var(--color-risk-safe)', medium: 'var(--color-risk-monitor)',
-                      high: 'var(--color-risk-high)', critical: 'var(--color-risk-critical)',
-                    }
-                    const color = colorMap[intervention.severity] || 'var(--color-text-primary)'
-                    
-                    return (
-                      <motion.div 
-                        key={intervention.id} id={index === 0 ? "critical-intervention" : undefined}
-                        layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                      >
-                        {intervention.type === 'Schedule Conflict Detected' ? (
-                          <div className="flex flex-col p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                                  <AlertTriangle size={14} className="text-[var(--color-text-muted)] transition-colors" />
-                                </div>
-                                <div>
-                                  <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
-                                  <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
-                                </div>
-                              </div>
-                              <div className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500" style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}>
-                                {intervention.severity}
-                              </div>
-                            </div>
-                            <ResolveConflictButton eventId={intervention.obligation_id} />
-                          </div>
-                        ) : (
-                          <Link href={`/obligations/${intervention.obligation_id}`}>
-                            <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors group cursor-pointer">
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                                  <AlertTriangle size={14} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-primary)] transition-colors" />
-                                </div>
-                                <div>
-                                  <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
-                                  <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
-                                </div>
-                              </div>
-                              <div className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500" style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}>
-                                {intervention.severity}
-                              </div>
-                            </div>
-                          </Link>
-                        )}
-                      </motion.div>
-                    )
-                  })
-                })()}
-              </AnimatePresence>
+          </div>
+        </div>
+
+        {/* RIGHT UTILITY RAIL (Fixed 320px) */}
+        <div className="xl:w-[320px] flex-shrink-0 flex flex-col gap-6">
+          
+          {/* SYSTEM HEALTH */}
+          <SectionContainer title="System Health" spacing="none">
+            <SystemHealthPanel
+              isGmailConnected={isGmailConnected}
+              isClassroomConnected={isClassroomConnected}
+              isCalendarConnected={isCalendarConnected}
+            />
+          </SectionContainer>
+
+          {/* ACTIVE ENGINES */}
+          <SectionContainer title="Active Engines" spacing="none">
+            <div className="intel-card p-4 space-y-3">
+              {Object.entries(agentStates).map(([agent, state]) => (
+                <div key={agent} className="flex justify-between items-center py-2 border-b border-[var(--color-border-subtle)] last:border-0">
+                  <span className="text-[11px] font-mono text-[var(--color-text-primary)]">{agent}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: state !== 'IDLE' ? 'var(--color-risk-safe)' : 'var(--color-text-muted)' }} />
+                    <span className="text-[9px] font-bold tracking-widest text-[var(--color-text-muted)] uppercase text-right">
+                      {state as string}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </SectionContainer>
+
+          {/* LIVE SYSTEM EVENTS */}
+          <SectionContainer title="Live System Events" spacing="none">
+            <div className="intel-card p-0 overflow-hidden h-[400px] flex flex-col bg-[var(--color-bg-primary)]">
+              <div className="p-3 border-b border-[var(--color-border)] flex items-center gap-2 bg-[var(--color-bg-secondary)]">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent-primary)] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-accent-primary)]"></span>
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--color-text-muted)]">Autonomous Event Stream</span>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
+                <AnimatePresence initial={false}>
+                  {events.map((evt) => {
+                    const color = evt.type === 'system' ? 'var(--color-text-muted)' :
+                                  evt.type === 'alert' ? 'var(--color-risk-critical)' :
+                                  evt.type === 'success' ? 'var(--color-risk-safe)' : 'var(--color-accent-primary)'
+                    return (
+                      <motion.div
+                        key={evt.id}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-start gap-3 border-l-2 pl-3"
+                        style={{ borderLeftColor: color }}
+                      >
+                        <div className="text-[9px] font-mono text-[var(--color-text-muted)] flex-shrink-0 mt-0.5">
+                          {formatTime(evt.timestamp)}
+                        </div>
+                        <div className="text-[11px] text-[var(--color-text-secondary)]">
+                          <span className="font-semibold" style={{ color }}>[{evt.type.toUpperCase()}]</span> {evt.message}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </AnimatePresence>
+              </div>
+            </div>
+          </SectionContainer>
+
         </div>
       </div>
     </PageContainer>

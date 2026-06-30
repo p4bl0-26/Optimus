@@ -236,7 +236,7 @@ export function ResponsibilityMap({ data }: ResponsibilityMapProps) {
 
   return (
     <div
-      className="w-full flex flex-col relative overflow-hidden rounded-2xl border border-[rgba(118,192,67,0.15)] shadow-2xl bg-[var(--color-bg-primary)] min-h-[700px] lg:min-h-[850px] max-w-[1600px]"
+      className="w-full flex flex-col relative rounded-2xl border border-[rgba(118,192,67,0.15)] shadow-2xl bg-[var(--color-bg-primary)] min-h-[700px] lg:min-h-[850px] max-w-[1600px]"
       style={{ margin: '0 auto' }}
     >
       {/* ── Background matrix grid ───────────────────────────── */}
