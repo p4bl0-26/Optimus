@@ -39,7 +39,7 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
       opacity: 1, 
       y: 0, 
       filter: 'blur(0px)',
-      transition: { duration: 0.4, ease: "easeOut" } 
+      transition: { duration: 0.4, ease: "easeOut" as const } 
     }
   };
 
