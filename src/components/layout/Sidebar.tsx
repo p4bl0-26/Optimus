@@ -345,14 +345,12 @@ export function Sidebar({
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
                   className="flex flex-col gap-2 overflow-hidden w-full"
                 >
-                  {judgeMode && (
-                    <button
-                      onClick={handleToggleJudgeMode}
-                      className="w-full h-12 rounded-lg border border-[var(--sidebar-border)] bg-[var(--color-bg-elevated)] text-[11px] font-bold tracking-widest text-[var(--color-text-primary)] uppercase hover:-translate-y-[1px] hover:border-[var(--color-border-focus)] transition-all duration-300 ease-in-out flex items-center justify-center flex-shrink-0"
-                    >
-                      EXIT JUDGE MODE
-                    </button>
-                  )}
+                  <button
+                    onClick={handleToggleJudgeMode}
+                    className="w-full h-12 rounded-lg border border-[var(--sidebar-border)] bg-[var(--color-bg-elevated)] text-[11px] font-bold tracking-widest text-[var(--color-text-primary)] uppercase hover:-translate-y-[1px] hover:border-[var(--color-border-focus)] transition-all duration-300 ease-in-out flex items-center justify-center flex-shrink-0"
+                  >
+                    {judgeMode ? 'EXIT JUDGE MODE' : 'ENTER JUDGE MODE'}
+                  </button>
                   <button
                     onClick={handleLogout}
                     className="w-full h-12 rounded-lg border border-[var(--color-risk-critical)]/30 bg-[var(--color-risk-critical-bg)] text-[11px] font-bold tracking-widest text-[var(--color-risk-critical)] uppercase hover:-translate-y-[1px] hover:bg-[var(--color-risk-critical)] hover:text-[var(--color-text-inverse)] transition-all duration-300 ease-in-out flex items-center justify-center flex-shrink-0"

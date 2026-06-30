@@ -9,7 +9,7 @@
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Bell, Menu, Bot, Play, Crosshair, BarChart3 } from 'lucide-react'
+import { Bell, Menu, Bot, Play, BarChart3 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { PAGE_META } from '@/constants/navigation'
@@ -31,8 +31,6 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
   const [isChiefOpen, setIsChiefOpen] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
 
-  const isFocusMode = pathname === '/focus'
-
   return (
     <>
       <header
@@ -47,130 +45,111 @@ export function TopBar({ onMobileMenuToggle, className }: TopBarProps) {
           className
         )}
       >
-        {/* Left: Mobile menu + Page Title */}
-        <div className="flex items-center gap-3" style={{ flex: '1 1 auto', minWidth: '0' }}>
-          {/* Mobile hamburger */}
-          <button
-            id="mobile-menu-btn"
-            onClick={onMobileMenuToggle}
-            className={cn(
-              'md:hidden flex items-center justify-center w-9 h-9 rounded-lg',
-              'text-[var(--color-text-secondary)]',
-              'hover:text-[var(--color-text-primary)]',
-              'hover:bg-[var(--color-bg-elevated)]',
-              'border border-[var(--color-border)]',
-              'transition-all duration-150'
-            )}
-            aria-label="Toggle navigation menu"
-          >
-            <Menu size={16} strokeWidth={1.5} />
-          </button>
-
-          {/* Page title area */}
-          <motion.div
-            key={pathname}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex flex-col"
-            style={{ flex: '1 1 auto', minWidth: '320px' }}
-          >
-            <div className="flex items-center gap-2 mb-0.5">
-              <h1
-                className="font-bold text-[var(--color-text-primary)] uppercase"
-                style={{ 
-                  fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)',
-                  fontSize: 'clamp(36px, 4vw, 64px)', // Desktop 64, laptop 56, tablet 48, mobile 36 approx
-                  letterSpacing: '0.08em',
-                  lineHeight: '1.0'
-                }}
-              >
-                {meta.title}
-              </h1>
-              <span className="status-dot w-2 h-2 opacity-60 flex-shrink-0" />
-            </div>
-            <p className="text-[13px] text-[var(--color-text-muted)] truncate hidden sm:block opacity-[0.65]">
-              {meta.description}
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Right: Demo Controls + Ask Chief + Notifications */}
-        <div className="flex items-center gap-2 flex-wrap justify-end shrink-0">
-
-          <button
-            id="start-demo-btn"
-            onClick={() => window.dispatchEvent(new Event('start-judge-tour'))}
-            className="btn-base btn-primary hidden md:flex"
-            title="Start guided demo tour"
-          >
-            <Play size={14} className="fill-current" />
-            <span>START DEMO</span>
-          </button>
-
-          {/* WEEKLY REPORT button */}
-          <Link
-            href="/reports"
-            id="weekly-report-btn"
-            className="btn-base btn-secondary hidden sm:flex tracking-wider"
-            title="View Weekly Executive Report"
-          >
-            <BarChart3 size={14} strokeWidth={2} />
-            <span>WEEKLY REPORT</span>
-          </Link>
-
-          {/* FOCUS MODE button */}
-          <Link
-            href="/focus"
-            id="enter-focus-mode-btn"
-            className="btn-base btn-secondary hidden sm:flex tracking-wider"
-            title="Enter distraction-free execution mode"
-          >
-            <Crosshair size={14} strokeWidth={2} />
-            <span>FOCUS MODE</span>
-          </Link>
-
-          {/* Reset Demo */}
-          <DemoResetButton />
-
-          {/* Divider */}
-          <div className="w-px h-5 bg-[var(--color-border)] hidden sm:block" />
-
-          {/* Ask Chief — wired to Chief of Staff Intelligence Layer */}
-          {!isFocusMode && (
+        {/* Left: Mobile menu + Page Title + Action Controls */}
+        <div className="flex items-center gap-6" style={{ flex: '1 1 auto', minWidth: '0' }}>
+          <div className="flex items-center gap-3">
+            {/* Mobile hamburger */}
             <button
-              id="ask-chief"
-              onClick={() => setIsChiefOpen(true)}
-              className="btn-base btn-secondary hidden sm:flex"
-              title="Open Chief of Staff Intelligence Layer"
-            >
-              <Bot size={14} strokeWidth={1.5} />
-              <span>Ask Chief</span>
-            </button>
-          )}
-
-          {/* Notifications */}
-          {!isFocusMode && (
-            <button
-              id="notifications-btn"
-              onClick={() => setIsNotificationsOpen(true)}
+              id="mobile-menu-btn"
+              onClick={onMobileMenuToggle}
               className={cn(
-                'relative flex items-center justify-center w-9 h-9 rounded-lg',
-                'border border-[var(--color-border)]',
-                'bg-[var(--color-bg-elevated)]',
+                'md:hidden flex items-center justify-center w-9 h-9 rounded-lg',
                 'text-[var(--color-text-secondary)]',
                 'hover:text-[var(--color-text-primary)]',
-                'hover:border-[var(--color-accent-primary)]/40',
-                'hover:bg-[var(--color-accent-glow)]',
+                'hover:bg-[var(--color-bg-elevated)]',
+                'border border-[var(--color-border)]',
                 'transition-all duration-150'
               )}
-              aria-label="Notifications"
-              title="Notifications"
+              aria-label="Toggle navigation menu"
             >
-              <Bell size={15} strokeWidth={1.5} />
+              <Menu size={16} strokeWidth={1.5} />
             </button>
-          )}
 
+            {/* Page title area */}
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex flex-col"
+              style={{ minWidth: '200px' }}
+            >
+              <div className="flex items-center gap-2 mb-0.5">
+                <h1
+                  className="font-bold text-[var(--color-text-primary)] uppercase"
+                  style={{ 
+                    fontFamily: 'var(--font-orbitron, Orbitron, sans-serif)',
+                    fontSize: 'clamp(24px, 3vw, 48px)',
+                    letterSpacing: '0.08em',
+                    lineHeight: '1.0'
+                  }}
+                >
+                  {meta.title}
+                </h1>
+                <span className="status-dot w-2 h-2 opacity-60 flex-shrink-0" />
+              </div>
+              <p className="text-[13px] text-[var(--color-text-muted)] truncate hidden sm:block opacity-[0.65]">
+                {meta.description}
+              </p>
+            </motion.div>
+          </div>
+
+          {/* LEFT COMMANDS (Start Demo, Weekly Report, Reset Demo) */}
+          <div className="hidden lg:flex items-center gap-2 ml-4 border-l border-[var(--color-border)] pl-6">
+            <button
+              id="start-demo-btn"
+              onClick={() => window.dispatchEvent(new Event('start-judge-tour'))}
+              className="btn-base btn-primary"
+              title="Start guided demo tour"
+            >
+              <Play size={14} className="fill-current" />
+              <span>START DEMO</span>
+            </button>
+
+            <Link
+              href="/reports"
+              id="weekly-report-btn"
+              className="btn-base btn-secondary tracking-wider"
+              title="View Weekly Executive Report"
+            >
+              <BarChart3 size={14} strokeWidth={2} />
+              <span>WEEKLY REPORT</span>
+            </Link>
+
+            <DemoResetButton />
+          </div>
+        </div>
+
+        {/* Right: Ask Chief + Notifications */}
+        <div className="flex items-center gap-2 justify-end shrink-0">
+          <button
+            id="ask-chief"
+            onClick={() => setIsChiefOpen(true)}
+            className="btn-base btn-secondary hidden sm:flex"
+            title="Open Chief of Staff Intelligence Layer"
+          >
+            <Bot size={14} strokeWidth={1.5} />
+            <span>Ask Chief</span>
+          </button>
+
+          <button
+            id="notifications-btn"
+            onClick={() => setIsNotificationsOpen(true)}
+            className={cn(
+              'relative flex items-center justify-center w-9 h-9 rounded-lg',
+              'border border-[var(--color-border)]',
+              'bg-[var(--color-bg-elevated)]',
+              'text-[var(--color-text-secondary)]',
+              'hover:text-[var(--color-text-primary)]',
+              'hover:border-[var(--color-accent-primary)]/40',
+              'hover:bg-[var(--color-accent-glow)]',
+              'transition-all duration-150'
+            )}
+            aria-label="Notifications"
+            title="Notifications"
+          >
+            <Bell size={15} strokeWidth={1.5} />
+          </button>
         </div>
       </header>
 
