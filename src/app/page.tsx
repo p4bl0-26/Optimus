@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useSimulationEngine } from '@/hooks/useSimulationEngine'
-import { runDiscoveryAction, runClassroomDiscoveryAction, runCalendarDiscoveryAction } from '@/app/actions/discovery'
 import { SystemHealthPanel } from '@/components/dashboard/SystemHealthPanel'
 import { ResolveConflictButton } from '@/components/intelligence/ResolveConflictButton'
 import { ResponsibilityMap } from '@/components/dashboard/ResponsibilityMap'
@@ -120,7 +119,7 @@ export default function CommandCenterPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const { obligations, riskProfiles, interventions, events, briefing, agentStates, loading, error, isGmailConnected, gmailAccountEmail, isClassroomConnected, isCalendarConnected, executiveSummary, morningBriefing, eveningBriefing, highestRiskTarget, recommendedFocus, strategicRecommendations, overloadedDays } = useSimulationEngine()
+  const { obligations, riskProfiles, interventions, events, briefing, agentStates, loading, error, executiveSummary, morningBriefing, eveningBriefing, highestRiskTarget, recommendedFocus, strategicRecommendations, overloadedDays } = useSimulationEngine()
 
   const combinedData = useMemo(() => {
     if (!obligations.length || !riskProfiles.length) return []
@@ -303,117 +302,6 @@ export default function CommandCenterPage() {
             )}
           </AnimatePresence>
 
-          {/* Integration buttons row */}
-          <div className="flex items-center gap-3 mt-5 flex-wrap">
-            {isGmailConnected ? (
-              <button 
-                disabled
-                title={gmailAccountEmail ? `Connected to ${gmailAccountEmail}` : undefined}
-                className="px-3 py-1.5 rounded bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] text-xs font-bold text-[var(--color-risk-safe)] flex items-center gap-1 opacity-100"
-              >
-                Gmail Connected ✓
-              </button>
-            ) : (
-              <a href="/api/integrations/gmail/connect" className="px-3 py-1.5 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] hover:border-[var(--color-accent-primary)] hover:text-[var(--color-accent-primary)] transition-colors">
-                Connect Gmail
-              </a>
-            )}
-            {isClassroomConnected ? (
-              <button
-                disabled
-                className="px-3 py-1.5 rounded bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] text-xs font-bold text-[var(--color-risk-safe)] flex items-center gap-1 opacity-100"
-              >
-                Classroom Connected ✓
-              </button>
-            ) : (
-              <a
-                href="/api/integrations/classroom/connect"
-                className="px-3 py-1.5 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] hover:border-[var(--color-accent-primary)] hover:text-[var(--color-accent-primary)] transition-colors"
-              >
-                Connect Classroom
-              </a>
-            )}
-            {isCalendarConnected ? (
-              <button
-                disabled
-                className="px-3 py-1.5 rounded bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] text-xs font-bold text-[var(--color-risk-safe)] flex items-center gap-1 opacity-100"
-              >
-                Calendar Connected ✓
-              </button>
-            ) : (
-              <a
-                href="/api/integrations/calendar/connect"
-                className="px-3 py-1.5 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] hover:border-[var(--color-accent-primary)] hover:text-[var(--color-accent-primary)] transition-colors"
-              >
-                Connect Calendar
-              </a>
-            )}
-            <button 
-              onClick={async (e) => {
-                const btn = e.currentTarget;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = 'Scanning Inbox...';
-                btn.disabled = true;
-                const res = await runDiscoveryAction();
-                if (res.success) {
-                  const count = res.newObligations ?? 0;
-                  btn.innerHTML = count > 0 ? `Found ${count} New` : 'Inbox Clean';
-                } else {
-                  btn.innerHTML = 'Error!';
-                }
-                setTimeout(() => {
-                  btn.innerHTML = originalText;
-                  btn.disabled = false;
-                }, 3000);
-              }} 
-              className="px-3 py-1.5 rounded bg-[var(--color-accent-primary)] text-[var(--color-bg-primary)] text-xs font-bold hover:bg-[var(--color-accent-secondary)] transition-colors flex items-center gap-1 disabled:opacity-50"
-            >
-              <Zap size={12} /> Run Discovery Sweep
-            </button>
-            <button
-              onClick={async (e) => {
-                const btn = e.currentTarget;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = 'Scanning Courses...';
-                btn.disabled = true;
-                const res = await runClassroomDiscoveryAction();
-                if (res.success) {
-                  const count = res.newObligations ?? 0;
-                  btn.innerHTML = count > 0 ? `Found ${count} New` : 'Courses Clean';
-                } else {
-                  btn.innerHTML = 'Error!';
-                }
-                setTimeout(() => {
-                  btn.innerHTML = originalText;
-                  btn.disabled = false;
-                }, 3000);
-              }}
-              className="px-3 py-1.5 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] text-xs font-bold hover:bg-[var(--color-accent-primary)] hover:text-[var(--color-bg-primary)] transition-colors flex items-center gap-1 disabled:opacity-50"
-            >
-              <Zap size={12} /> Run Classroom Sweep
-            </button>
-            <button
-              onClick={async (e) => {
-                const btn = e.currentTarget;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = 'Scanning Calendar...';
-                btn.disabled = true;
-                const res = await runCalendarDiscoveryAction();
-                if (res.success) {
-                  const count = res.newObligations ?? 0;
-                  btn.innerHTML = count > 0 ? `Found ${count} New` : 'Calendar Clean';
-                } else {
-                  btn.innerHTML = 'Error!';
-                }
-                setTimeout(() => {
-                  btn.innerHTML = originalText;
-                  btn.disabled = false;
-                }, 3000);
-              }}
-              className="px-3 py-1.5 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] text-xs font-bold hover:bg-[var(--color-accent-primary)] hover:text-[var(--color-bg-primary)] transition-colors flex items-center gap-1 disabled:opacity-50"
-            >
-              <Zap size={12} /> Run Calendar Sweep
-            </button>
           </div>
         </div>
         <div className="text-right hidden sm:block">

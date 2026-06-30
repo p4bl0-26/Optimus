@@ -12,6 +12,7 @@ export const ROUTES = {
   actions: '/actions',
   briefings: '/briefings',
   reports: '/reports',
+  socials: '/socials',
   settings: '/settings',
 } as const
 
@@ -56,6 +57,12 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'Calendar',
   },
   {
+    id: 'socials',
+    label: 'Socials',
+    href: '/socials',
+    icon: 'Share2',
+  },
+  {
     id: 'settings',
     label: 'Settings',
     href: '/settings',
@@ -88,6 +95,10 @@ export const PAGE_META: Record<AppRoute, { title: string; description: string }>
   '/schedule': {
     title: 'AUTONOMOUS SCHEDULE',
     description: 'AI-generated weekly execution plan',
+  },
+  '/socials': {
+    title: 'Socials',
+    description: 'Manage your connected platforms and communication channels',
   },
   '/settings': {
     title: 'Settings',

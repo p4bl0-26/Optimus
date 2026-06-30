@@ -28,6 +28,7 @@ import {
   BookOpen,
   BarChart3,
   Calendar,
+  Share2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV_ITEMS } from '@/constants/navigation'
@@ -42,6 +43,7 @@ const ICON_MAP = {
   BookOpen,
   BarChart3,
   Calendar,
+  Share2,
 } as const
 
 type IconName = keyof typeof ICON_MAP
