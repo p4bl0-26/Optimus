@@ -50,8 +50,7 @@ function StatusRow({ service, index }: { service: ServiceHealth, index: number }
   return (
     <div className={cn(
       "flex items-center justify-between px-3 py-3 border-b border-[var(--color-border-subtle)] last:border-0",
-      index % 2 === 0 ? "bg-[var(--color-bg-secondary)]" : "bg-transparent",
-      !isOnline && "opacity-60"
+      index % 2 === 0 ? "bg-[var(--color-bg-secondary)]" : "bg-transparent"
     )}>
       <span className="text-[13px] text-[var(--color-text-secondary)] font-medium">{service.name}</span>
       <div className="flex items-center gap-2">
@@ -63,10 +62,10 @@ function StatusRow({ service, index }: { service: ServiceHealth, index: number }
         {isDegraded && <AlertTriangle size={14} className="text-[var(--color-risk-monitor)]" />}
         {isOffline && <AlertTriangle size={14} className="text-[var(--color-risk-critical)]" />}
         <span className={cn(
-          'text-[10px] font-bold uppercase tracking-wider',
+          'text-[10px] font-bold uppercase tracking-wider whitespace-nowrap',
           isOnline && 'text-[var(--color-risk-safe)]',
           isDegraded && 'text-[var(--color-text-primary)]',
-          isOffline && 'text-[var(--color-text-primary)]',
+          isOffline && 'text-[var(--color-risk-critical)]',
           isChecking && 'text-[var(--color-text-muted)]'
         )}>
           {isChecking ? '···' : service.status}

@@ -492,163 +492,109 @@ export default function CommandCenterPage() {
         </div>
       </div>
       {/* ─── INSIGHTS & ACTIONS ─────────────────────────────── */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        
-        {/* Dynamic Event Stream */}
-        <SectionContainer title="Live System Events">
-          <div className="intel-card p-0 overflow-hidden h-[360px] flex flex-col bg-[var(--color-bg-primary)]">
-            <div className="p-3 border-b border-[var(--color-border)] flex items-center gap-2 bg-[var(--color-bg-secondary)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent-primary)] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-accent-primary)]"></span>
-              </span>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--color-text-muted)]">Autonomous Event Stream</span>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
-              <AnimatePresence initial={false}>
-                {events.map((evt) => {
-                  const color = evt.type === 'system' ? 'var(--color-text-muted)' :
-                                evt.type === 'alert' ? 'var(--color-risk-critical)' :
-                                evt.type === 'success' ? 'var(--color-risk-safe)' : 'var(--color-accent-primary)'
-                  return (
-                    <motion.div
-                      key={evt.id}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-start gap-3 border-l-2 pl-3"
-                      style={{ borderLeftColor: color }}
-                    >
-                      <div className="text-[9px] font-mono text-[var(--color-text-muted)] flex-shrink-0 mt-0.5">
-                        {formatTime(evt.timestamp)}
+      <div className="grid grid-cols-1 gap-6">
+        {/* Dynamic Action Center */}
+        <SectionContainer title="Action Center (Interventions)" spacing="none">
+          <div id="accountability-layer" className="intel-card p-0 overflow-hidden h-[360px] overflow-y-auto scrollbar-hide">
+          <AnimatePresence>
+            {(() => {
+              const displayInterventions = (judgeActive && interventions.length === 0) 
+                ? [
+                    {
+                      id: 'demo-int-mock',
+                      obligation_id: 'demo-ob-mock',
+                      type: 'Schedule Conflict Detected',
+                      severity: 'critical',
+                      message: 'CRITICAL: Client Strategy Meeting and Hackathon Submission both require full attention on the same day.',
+                    }
+                  ]
+                : interventions;
+
+              if (displayInterventions.length === 0) {
+                return (
+                  <div className="flex flex-col items-center justify-center h-full gap-3 py-8 px-4 text-center">
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
+                      <Shield size={16} className="text-[var(--color-risk-safe)]" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">No Active Interventions</p>
+                      <p className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">
+                        OPTIMUS is monitoring all obligations. No conflicts or overloads detected.
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+
+              return [...displayInterventions].sort((a, b) => {
+                const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+                return (severityMap[b.severity] || 0) - (severityMap[a.severity] || 0);
+              }).map((intervention, index) => {
+              const colorMap: Record<string, string> = {
+                low: 'var(--color-risk-safe)',
+                medium: 'var(--color-risk-monitor)',
+                high: 'var(--color-risk-high)',
+                critical: 'var(--color-risk-critical)',
+              }
+              const color = colorMap[intervention.severity] || 'var(--color-text-primary)'
+              
+              return (
+              <motion.div 
+                key={intervention.id}
+                id={index === 0 ? "critical-intervention" : undefined}
+                layout
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              >
+                {intervention.type === 'Schedule Conflict Detected' ? (
+                  <div className="flex flex-col p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
+                          <AlertTriangle size={14} className="text-[var(--color-text-muted)] transition-colors" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
+                          <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
+                        </div>
                       </div>
-                      <div className="text-[11px] text-[var(--color-text-secondary)]">
-                        <span className="font-semibold" style={{ color }}>[{evt.type.toUpperCase()}]</span> {evt.message}
+                      <div 
+                        className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500"
+                        style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}
+                      >
+                        {intervention.severity}
                       </div>
-                    </motion.div>
-                  )
-                })}
-              </AnimatePresence>
-            </div>
+                    </div>
+                    <ResolveConflictButton eventId={intervention.obligation_id} />
+                  </div>
+                ) : (
+                  <Link href={`/obligations/${intervention.obligation_id}`}>
+                    <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors group cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
+                          <AlertTriangle size={14} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-primary)] transition-colors" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
+                          <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
+                        </div>
+                      </div>
+                      <div 
+                        className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500"
+                        style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}
+                      >
+                        {intervention.severity}
+                      </div>
+                    </div>
+                  </Link>
+                )}
+              </motion.div>
+              )
+            })})()}
+          </AnimatePresence>
           </div>
         </SectionContainer>
-
-        {/* System Health + Action Center Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* System Health */}
-          <div className="lg:col-span-1">
-            <SystemHealthPanel
-              isGmailConnected={isGmailConnected}
-              isClassroomConnected={isClassroomConnected}
-              isCalendarConnected={isCalendarConnected}
-            />
-          </div>
-
-          {/* Dynamic Action Center */}
-          <div className="lg:col-span-2">
-          <SectionContainer title="Action Center (Interventions)" spacing="none">
-            <div id="accountability-layer" className="intel-card p-0 overflow-hidden h-[360px] overflow-y-auto scrollbar-hide">
-            <AnimatePresence>
-              {(() => {
-                const displayInterventions = (judgeActive && interventions.length === 0) 
-                  ? [
-                      {
-                        id: 'demo-int-mock',
-                        obligation_id: 'demo-ob-mock',
-                        type: 'Schedule Conflict Detected',
-                        severity: 'critical',
-                        message: 'CRITICAL: Client Strategy Meeting and Hackathon Submission both require full attention on the same day.',
-                      }
-                    ]
-                  : interventions;
-
-                if (displayInterventions.length === 0) {
-                  return (
-                    <div className="flex flex-col items-center justify-center h-full gap-3 py-8 px-4 text-center">
-                      <div className="w-10 h-10 rounded-full bg-[var(--color-risk-safe-bg)] border border-[var(--color-risk-safe)] flex items-center justify-center">
-                        <Shield size={16} className="text-[var(--color-risk-safe)]" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-[var(--color-text-primary)] mb-1">No Active Interventions</p>
-                        <p className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">
-                          OPTIMUS is monitoring all obligations. No conflicts or overloads detected.
-                        </p>
-                      </div>
-                    </div>
-                  );
-                }
-
-                return [...displayInterventions].sort((a, b) => {
-                  const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
-                  return (severityMap[b.severity] || 0) - (severityMap[a.severity] || 0);
-                }).map((intervention, index) => {
-                const colorMap: Record<string, string> = {
-                  low: 'var(--color-risk-safe)',
-                  medium: 'var(--color-risk-monitor)',
-                  high: 'var(--color-risk-high)',
-                  critical: 'var(--color-risk-critical)',
-                }
-                const color = colorMap[intervention.severity] || 'var(--color-text-primary)'
-                
-                return (
-                <motion.div 
-                  key={intervention.id}
-                  id={index === 0 ? "critical-intervention" : undefined}
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                >
-                  {intervention.type === 'Schedule Conflict Detected' ? (
-                    <div className="flex flex-col p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                            <AlertTriangle size={14} className="text-[var(--color-text-muted)] transition-colors" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
-                            <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
-                          </div>
-                        </div>
-                        <div 
-                          className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500"
-                          style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}
-                        >
-                          {intervention.severity}
-                        </div>
-                      </div>
-                      <ResolveConflictButton eventId={intervention.obligation_id} />
-                    </div>
-                  ) : (
-                    <Link href={`/obligations/${intervention.obligation_id}`}>
-                      <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-secondary)] transition-colors group cursor-pointer">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                            <AlertTriangle size={14} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-primary)] transition-colors" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-bold text-[var(--color-text-primary)]">{intervention.type.toUpperCase()}</p>
-                            <p className="text-[11px] text-[var(--color-text-secondary)]">{intervention.message}</p>
-                          </div>
-                        </div>
-                        <div 
-                          className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 transition-colors duration-500"
-                          style={{ color, borderColor: `${color}40`, backgroundColor: `${color}10` }}
-                        >
-                          {intervention.severity}
-                        </div>
-                      </div>
-                    </Link>
-                  )}
-                </motion.div>
-                )
-              })})()}
-            </AnimatePresence>
-            </div>
-          </SectionContainer>
-          </div>
-        </div>
       </div>
     </PageContainer>
   )

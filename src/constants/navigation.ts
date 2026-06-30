@@ -13,6 +13,7 @@ export const ROUTES = {
   briefings: '/briefings',
   reports: '/reports',
   socials: '/socials',
+  status: '/status',
   settings: '/settings',
 } as const
 
@@ -63,6 +64,12 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'Share2',
   },
   {
+    id: 'status',
+    label: 'System Status',
+    href: '/status',
+    icon: 'Activity',
+  },
+  {
     id: 'settings',
     label: 'Settings',
     href: '/settings',
@@ -99,6 +106,10 @@ export const PAGE_META: Record<AppRoute, { title: string; description: string }>
   '/socials': {
     title: 'Socials',
     description: 'Manage your connected platforms and communication channels',
+  },
+  '/status': {
+    title: 'System Status',
+    description: 'Live event stream and health monitoring for all OPTIMUS systems',
   },
   '/settings': {
     title: 'Settings',
