@@ -302,8 +302,7 @@ export default function CommandCenterPage() {
             )}
           </AnimatePresence>
 
-          </div>
-        </div>
+
         <div className="text-right hidden sm:block">
           <p className="text-[10px] font-mono text-[var(--color-text-muted)] uppercase mb-2">Agent Status</p>
           <div className="flex flex-col items-end gap-1.5">
