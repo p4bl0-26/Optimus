@@ -9,13 +9,13 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
 
   useEffect(() => {
     const timings = [
-      setTimeout(() => setPhase(1), 100),   // Scene 1: Logo fade & scale in
-      setTimeout(() => setPhase(2), 500),   // Scene 2: Energy Pulse / Shockwave
-      setTimeout(() => setPhase(3), 800),   // Scene 3: Typography orchestrations begin
+      setTimeout(() => setPhase(1), 200),   // Scene 1: Logo fade & scale in
+      setTimeout(() => setPhase(2), 700),   // Scene 2: Energy Pulse / Shockwave
+      setTimeout(() => setPhase(3), 1100),   // Scene 3: Typography orchestrations begin
       setTimeout(() => {
         setPhase(4); // Fade out
         setTimeout(onComplete, 500);
-      }, 2000) // Whole animation finishes at 2 seconds
+      }, 2500) // Fade out begins at 2.5s, whole animation finishes at 3s
     ];
     return () => timings.forEach(clearTimeout);
   }, [onComplete]);
@@ -27,8 +27,8 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
     visible: {
       opacity: 1,
       transition: { 
-        staggerChildren: 0.05, 
-        delayChildren: 0.8 
+        staggerChildren: 0.06, 
+        delayChildren: 1.1 
       }
     }
   };
@@ -39,7 +39,7 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
       opacity: 1, 
       y: 0, 
       filter: 'blur(0px)',
-      transition: { duration: 0.2, ease: "easeOut" as const } 
+      transition: { duration: 0.3, ease: "easeOut" as const } 
     }
   };
 
@@ -81,7 +81,7 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
             style={{ width: 150, height: 150 }}
             initial={{ scale: 0.5, opacity: 1 }}
             animate={{ scale: 4, opacity: 0, borderWidth: "0px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           />
         )}
       </div>
@@ -111,7 +111,7 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
                 className="absolute inset-0 z-0 bg-[var(--color-accent-primary)] rounded-full mix-blend-screen blur-[8px]"
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={phase >= 3 ? { opacity: [0, 0.8, 0], scale: [0.5, 1.5, 2] } : { opacity: 0 }}
-                transition={{ duration: 0.4, delay: 0.8 + (index * 0.05), ease: "easeOut" }}
+                transition={{ duration: 0.5, delay: 1.1 + (index * 0.06), ease: "easeOut" }}
               />
             </div>
           ))}
@@ -122,7 +122,7 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
           className="text-[12px] md:text-[14px] font-mono text-[var(--color-accent-primary)] tracking-[0.4em] uppercase mb-8"
           initial={{ clipPath: 'inset(0% 100% 0% 0%)', opacity: 0 }}
           animate={phase >= 3 ? { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1 } : { clipPath: 'inset(0% 100% 0% 0%)', opacity: 0 }}
-          transition={{ duration: 0.6, delay: 1.2, ease: "easeInOut" }}
+          transition={{ duration: 0.6, delay: 1.6, ease: "easeInOut" }}
         >
           Your AI Chief of Staff
         </motion.p>
@@ -132,7 +132,7 @@ export default function StartupAnimation({ onComplete }: { onComplete: () => voi
           className="overflow-hidden"
           initial={{ opacity: 0 }}
           animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.6, delay: 1.5 }}
+          transition={{ duration: 0.6, delay: 1.9 }}
         >
           <p className="text-[10px] md:text-xs text-zinc-500 font-light tracking-widest italic" style={{ letterSpacing: '0.2em' }}>
             &quot;AI ACTS FIRST. HUMANS APPROVE.&quot;
