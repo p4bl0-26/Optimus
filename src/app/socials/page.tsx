@@ -45,17 +45,27 @@ export default function SocialsPage() {
       <div className="grid grid-cols-1 gap-6">
         {/* Active Integrations */}
         <div className="intel-card p-5 border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-elevated)]">
-          <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[var(--color-border)]">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: `var(--color-accent-primary)15`, border: `1px solid var(--color-accent-primary)30` }}
-            >
-              <Link2 size={15} strokeWidth={1.5} className="text-[var(--color-accent-primary)]" />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 pb-3 border-b border-[var(--color-border)] justify-between">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: `var(--color-accent-primary)15`, border: `1px solid var(--color-accent-primary)30` }}
+              >
+                <Link2 size={15} strokeWidth={1.5} className="text-[var(--color-accent-primary)]" />
+              </div>
+              <div>
+                <p className="text-[12px] font-bold text-[var(--color-text-primary)] uppercase tracking-widest">Active Data Pipelines</p>
+                <p className="text-[10px] text-[var(--color-text-muted)]">Connect platforms and manually trigger discovery sweeps</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[12px] font-bold text-[var(--color-text-primary)] uppercase tracking-widest">Active Data Pipelines</p>
-              <p className="text-[10px] text-[var(--color-text-muted)]">Connect platforms and manually trigger discovery sweeps</p>
-            </div>
+            {(!isGmailConnected || !isClassroomConnected || !isCalendarConnected) && (
+              <a 
+                href="/api/integrations/gmail/connect?state=chain_all"
+                className="px-4 py-2 rounded bg-[var(--color-accent-primary)] text-[var(--color-bg-primary)] text-xs font-bold hover:bg-[var(--color-accent-secondary)] transition-colors flex items-center gap-1.5 uppercase tracking-wider whitespace-nowrap"
+              >
+                <Link2 size={14} /> Connect All
+              </a>
+            )}
           </div>
 
           <div className="space-y-4">

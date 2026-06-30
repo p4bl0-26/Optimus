@@ -10,6 +10,7 @@ import { getActiveUserId } from '@/lib/auth';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
+  const state = searchParams.get('state');
 
   if (!code) {
     console.log('[GMAIL CALLBACK] [FAIL] No authorization code provided in URL.');
@@ -71,9 +72,14 @@ export async function GET(request: Request) {
       }
       console.log('[GMAIL CALLBACK] [SUCCESS] Inserted new integration tokens');
     }
+    // Handle chaining
+    if (state === 'chain_all') {
+      console.log('[GMAIL CALLBACK] Chaining to Classroom...');
+      return NextResponse.redirect(new URL('/api/integrations/classroom/connect?state=chain_all', request.url));
+    }
 
     // Redirect back to dashboard
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/socials', request.url));
   } catch (error: any) {
     console.log('[GMAIL CALLBACK] [CRITICAL] Error in Google callback:', error);
     return NextResponse.redirect(new URL('/?error=callback_failed', request.url));

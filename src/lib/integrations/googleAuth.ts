@@ -11,7 +11,7 @@ export function getGoogleOAuthClient(redirectUri?: string) {
 }
 
 // ─── Gmail OAuth ─────────────────────────────────────────────
-export function getAuthUrl() {
+export function getAuthUrl(state?: string) {
   const oauth2Client = getGoogleOAuthClient(GMAIL_REDIRECT_URI);
   const scopes = [
     'https://www.googleapis.com/auth/gmail.readonly',
@@ -21,6 +21,7 @@ export function getAuthUrl() {
     access_type: 'offline',
     prompt: 'consent', // Force consent to ensure we get a refresh token
     scope: scopes,
+    ...(state ? { state } : {})
   });
 }
 
@@ -33,7 +34,7 @@ export async function getTokensFromCode(code: string) {
 // ─── Classroom OAuth ─────────────────────────────────────────
 // Reuses the same Google OAuth client credentials.
 // Scopes required: classroom.courses.readonly + classroom.coursework.me.readonly
-export function getClassroomAuthUrl() {
+export function getClassroomAuthUrl(state?: string) {
   const oauth2Client = getGoogleOAuthClient(CLASSROOM_REDIRECT_URI);
   const scopes = [
     'https://www.googleapis.com/auth/classroom.courses.readonly',
@@ -44,6 +45,7 @@ export function getClassroomAuthUrl() {
     access_type: 'offline',
     prompt: 'consent',
     scope: scopes,
+    ...(state ? { state } : {})
   });
 }
 
@@ -54,7 +56,7 @@ export async function getClassroomTokensFromCode(code: string) {
 }
 
 // ─── Calendar OAuth ──────────────────────────────────────────
-export function getCalendarAuthUrl() {
+export function getCalendarAuthUrl(state?: string) {
   const oauth2Client = getGoogleOAuthClient(CALENDAR_REDIRECT_URI);
   const scopes = [
     'https://www.googleapis.com/auth/calendar.readonly',
@@ -65,6 +67,7 @@ export function getCalendarAuthUrl() {
     access_type: 'offline',
     prompt: 'consent',
     scope: scopes,
+    ...(state ? { state } : {})
   });
 }
 

@@ -15,6 +15,7 @@ import { getActiveUserId } from '@/lib/auth';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
+  const state = searchParams.get('state');
 
   if (!code) {
     console.log('[CALENDAR CALLBACK] [FAIL] No authorization code in URL.');
@@ -79,8 +80,8 @@ export async function GET(request: Request) {
       console.log('[CALENDAR CALLBACK] [SUCCESS] Inserted new Calendar integration.');
     }
 
-    // Redirect back to dashboard
-    return NextResponse.redirect(new URL('/', request.url));
+    // Redirect back to socials
+    return NextResponse.redirect(new URL('/socials', request.url));
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
     console.log('[CALENDAR CALLBACK] [CRITICAL] Unhandled error:', msg);
