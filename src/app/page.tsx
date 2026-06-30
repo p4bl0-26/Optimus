@@ -119,7 +119,7 @@ export default function CommandCenterPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const { obligations, riskProfiles, interventions, events, briefing, agentStates, loading, error, executiveSummary, morningBriefing, eveningBriefing, highestRiskTarget, recommendedFocus, strategicRecommendations, overloadedDays } = useSimulationEngine()
+  const { obligations, riskProfiles, interventions, events, briefing, agentStates, loading, error, executiveSummary, morningBriefing, eveningBriefing, highestRiskTarget, recommendedFocus, strategicRecommendations, overloadedDays, isGmailConnected, isClassroomConnected, isCalendarConnected } = useSimulationEngine()
 
   const combinedData = useMemo(() => {
     if (!obligations.length || !riskProfiles.length) return []
@@ -302,7 +302,7 @@ export default function CommandCenterPage() {
             )}
           </AnimatePresence>
 
-
+          </div>
         <div className="text-right hidden sm:block">
           <p className="text-[10px] font-mono text-[var(--color-text-muted)] uppercase mb-2">Agent Status</p>
           <div className="flex flex-col items-end gap-1.5">
